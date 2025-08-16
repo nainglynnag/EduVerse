@@ -1,0 +1,29 @@
+<!-- Create category form -->
+<div class="p-6 bg-white rounded-lg">
+  <h3 class="text-xl font-bold mb-4">Create Category</h3>
+  <form action="/admin/categories" method="POST">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm mb-1">Name</label>
+        <input name="name" required class="w-full border rounded px-3 py-2" />
+      </div>
+      <div>
+        <label class="block text-sm mb-1">Color Theme</label>
+        <input name="color_theme" class="w-full border rounded px-3 py-2" />
+      </div>
+    </div>
+    <div class="mt-4">
+      <label class="block text-sm mb-1">Description</label>
+      <textarea
+        name="description"
+        rows="4"
+        class="w-full border rounded px-3 py-2"
+      ></textarea>
+    </div>
+    <div class="mt-4">
+      <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded">
+        Create
+      </button>
+    </div>
+  </form>
+</div>
