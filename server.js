@@ -2,6 +2,7 @@ import express from "express";
 import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import { fileURLToPath } from "url";
+import "./config/db.js";
 
 const app = express();
 const PORT = 3000;
