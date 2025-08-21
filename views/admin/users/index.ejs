@@ -53,3 +53,106 @@
     </div>
   </div>
 </div>
+
+<script>
+  let users = [
+    {
+      id: 1,
+      name: "John Doe",
+      email: "john.doe@email.com",
+      joined: "2024-01-15",
+      courses: 5,
+      status: "active",
+      type: "premium",
+    },
+    {
+      id: 2,
+      name: "Jane Smith",
+      email: "jane.smith@email.com",
+      joined: "2024-01-20",
+      courses: 3,
+      status: "active",
+      type: "free",
+    },
+    {
+      id: 3,
+      name: "Bob Johnson",
+      email: "bob.johnson@email.com",
+      joined: "2024-02-01",
+      courses: 8,
+      status: "inactive",
+      type: "premium",
+    },
+  ];
+
+  function showUsers() {
+    // hideAllContent();
+    // document.getElementById("usersContent").classList.remove("hidden");
+    // updateActiveNav("users");
+    document.querySelector("header h1").textContent = "User Management";
+    populateUsersTable();
+  }
+
+  function populateUsersTable() {
+    const tbody = document.getElementById("usersTableBody");
+    tbody.innerHTML = users
+      .map(
+        (user) => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                                <div class="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
+                                    <span class="text-sm font-bold text-white">${user.name
+                                      .split(" ")
+                                      .map((n) => n[0])
+                                      .join("")}</span>
+                                </div>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${
+                                  user.name
+                                }</div>
+                                <div class="text-sm text-gray-500">${
+                                  user.type
+                                } user</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                      user.email
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                      user.joined
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
+                      user.courses
+                    }</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          user.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }">${user.status}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div class="flex space-x-2">
+                            <button onclick="viewItem('user', ${
+                              user.id
+                            })" class="text-blue-600 hover:text-blue-900">View</button>
+                            <button onclick="editItem('user', ${
+                              user.id
+                            })" class="text-indigo-600 hover:text-indigo-900">Edit</button>
+                            <button onclick="deleteItem('user', ${
+                              user.id
+                            })" class="text-red-600 hover:text-red-900">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `
+      )
+      .join("");
+  }
+
+  showUsers();
+</script>
