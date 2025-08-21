@@ -20,10 +20,13 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 // Layouts (express-ejs-layouts)
 app.use(expressLayouts);
+// disable default: views render without layout unless overridden
+app.set("layout", false);
 
 // Routes
 app.get("/", (req, res) => {
-  res.render("index");
+  // landing page will NOT use any layout
+  res.render("index"); // no layout because default is false
 });
 
 app.use("/admin", adminRoutes);
