@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 import "./config/db.js";
 
 import adminRoutes from "./routes/adminRoutes.js";
+import instructorRoutes from "./routes/instructorRoutes.js";
 
 const app = express();
 const PORT = 3000;
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/admin", adminRoutes);
+app.use("/instructor", instructorRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
