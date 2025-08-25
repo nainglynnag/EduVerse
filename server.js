@@ -2,7 +2,7 @@ import express from "express";
 import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import { fileURLToPath } from "url";
-import "./config/db.js";
+// import "./config/db.js";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";

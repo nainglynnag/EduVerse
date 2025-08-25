@@ -2,13 +2,14 @@ import express from "express";
 import {
   adminDashboard,
   createCategories,
-  createCourse,
+  createCourseHandler,
   createInstructor,
   createUser,
   listCategories,
   listCourses,
   listInstructors,
   listUsers,
+  showcreateForm,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -23,7 +24,8 @@ router.get("/", adminDashboard);
 
 // Routes for Courses
 router.get("/courses", listCourses);
-router.get("/courses/create", createCourse);
+router.get("/courses/create", showcreateForm);
+router.post("/courses/create", createCourseHandler);
 
 // Routes for Instructors
 router.get("/instructors", listInstructors);
