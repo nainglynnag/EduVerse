@@ -1,0 +1,357 @@
+<!-- Create Course Content -->
+<div id="createCourseContent">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-gray-800">
+        Create New Course
+      </h2>
+      <p class="text-gray-600">
+        Fill in the details to create your new course
+      </p>
+    </div>
+
+    <form id="createCourseForm" class="space-y-8">
+      <!-- Basic Information -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">
+          Basic Information
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Course Title *</label
+            >
+            <input
+              type="text"
+              id="courseTitle"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Enter course title"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Category *</label
+            >
+            <select
+              id="courseCategory"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="">Select category</option>
+              <!-- Categories will be loaded dynamically -->
+            </select>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Short Description *</label
+            >
+            <textarea
+              id="courseDescription"
+              required
+              rows="3"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="Brief description of your course"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Details -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">
+          Course Details
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Price ($) *</label
+            >
+            <input
+              type="number"
+              id="coursePrice"
+              required
+              min="0"
+              step="0.01"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="0.00"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Duration (hours) *</label
+            >
+            <input
+              type="number"
+              id="courseDuration"
+              required
+              min="1"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="10"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Difficulty Level *</label
+            >
+            <select
+              id="courseDifficulty"
+              required
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              <option value="">Select level</option>
+              <!-- Difficulty levels will be loaded dynamically -->
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Content -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <h3 class="text-lg font-bold text-gray-800 mb-4">
+          Course Content
+        </h3>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Learning Objectives</label
+            >
+            <textarea
+              id="courseObjectives"
+              rows="4"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="What will students learn from this course?"
+            ></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Prerequisites</label
+            >
+            <textarea
+              id="coursePrerequisites"
+              rows="3"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              placeholder="What should students know before taking this course?"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Course Lessons -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-gray-800">
+            Course Lessons
+          </h3>
+          <button
+            type="button"
+            onclick="addLesson()"
+            class="bg-purple-100 text-purple-600 px-4 py-2 rounded-lg hover:bg-purple-200 transition-colors flex items-center space-x-2"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <span>Add Lesson</span>
+          </button>
+        </div>
+        <div id="lessonsContainer" class="space-y-4">
+          <!-- Lessons will be added dynamically -->
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="flex justify-end space-x-4">
+        <a
+          href="/instructor/courses"
+          class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          Cancel
+        </a>
+        <button
+          type="button"
+          onclick="saveDraft()"
+          class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          Save as Draft
+        </button>
+        <button
+          type="submit"
+          class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+        >
+          Publish Course
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  let lessonCounter = 0;
+
+  // Load categories from database
+  async function loadCategories() {
+    try {
+      const response = await fetch('/api/courses/categories');
+      const result = await response.json();
+      
+      if (result.success) {
+        const categorySelect = document.getElementById('courseCategory');
+        
+        // Clear existing options except the first one
+        categorySelect.innerHTML = '<option value="">Select category</option>';
+        
+        // Add categories from database
+        result.data.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category.id;
+          option.textContent = category.display_name || category.title || category.name;
+          option.title = category.description || '';
+          categorySelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  }
+  
+  // Load difficulty levels from database
+  async function loadDifficultyLevels() {
+    try {
+      const response = await fetch('/api/courses/difficulty-levels');
+      const result = await response.json();
+      
+      if (result.success) {
+        const difficultySelect = document.getElementById('courseDifficulty');
+        
+        // Clear existing options except the first one
+        difficultySelect.innerHTML = '<option value="">Select level</option>';
+        
+        // Add difficulty levels from database
+        result.data.forEach(level => {
+          const option = document.createElement('option');
+          option.value = level.id;
+          option.textContent = level.name;
+          option.title = level.description || '';
+          difficultySelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error('Error loading difficulty levels:', error);
+    }
+  }
+
+  // Create course form functions
+  function addLesson() {
+    lessonCounter++;
+    const lessonsContainer = document.getElementById("lessonsContainer");
+    const lessonDiv = document.createElement("div");
+    lessonDiv.className = "border border-gray-200 rounded-lg p-4";
+    lessonDiv.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-medium text-gray-800">Lesson ${lessonCounter}</h4>
+                <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Title</label>
+                    <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter lesson title">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes)</label>
+                    <input type="number" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="15">
+                </div>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
+                <textarea rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of this lesson"></textarea>
+            </div>
+        `;
+    lessonsContainer.appendChild(lessonDiv);
+  }
+
+  function removeLesson(button) {
+    button.closest(".border").remove();
+  }
+
+  function resetCreateForm() {
+    document.getElementById("createCourseForm").reset();
+    document.getElementById("lessonsContainer").innerHTML = "";
+    lessonCounter = 0;
+    addLesson(); // Add first lesson by default
+  }
+
+  function saveDraft() {
+    alert("Course saved as draft! You can continue editing later.");
+  }
+
+  // Form submission
+  document
+    .getElementById("createCourseForm")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      // Get form data
+      const courseData = {
+        title: document.getElementById("courseTitle").value,
+        instructor_id: 4, // Default instructor ID - you can make this dynamic
+        category_id: parseInt(document.getElementById("courseCategory").value),
+        difficulty_id: parseInt(document.getElementById("courseDifficulty").value),
+        price: parseFloat(document.getElementById("coursePrice").value) || 0.00,
+        description: document.getElementById("courseDescription").value,
+        status: 'published'
+      };
+
+      try {
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = "Creating...";
+        submitBtn.disabled = true;
+
+        // Send to API
+        const response = await fetch('/api/courses', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(courseData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert("Course published successfully! Students can now enroll.");
+          window.location.href = '/instructor/courses';
+        } else {
+          alert("Error creating course: " + result.message);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert("Error creating course. Please try again.");
+      } finally {
+        // Reset button state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }
+    });
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', function() {
+    loadCategories();
+    loadDifficultyLevels();
+    addLesson(); // Add first lesson by default
+  });
+</script>
