@@ -29,7 +29,7 @@
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center space-x-3">
           <div
-            class="bg-gradient-to-r from-red-600 to-orange-600 p-2 rounded-lg"
+            class="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg"
           >
             <svg
               class="w-8 h-8 text-white"
@@ -37,18 +37,15 @@
               viewBox="0 0 20 20"
             >
               <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-                clip-rule="evenodd"
+                d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"
               />
             </svg>
           </div>
           <span
-            class="text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent"
+            class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
             >EduVerse</span
           >
         </div>
-        <p class="text-sm text-gray-600 mt-1">Admin Portal</p>
       </div>
 
       <!-- Navigation Menu -->
@@ -161,7 +158,7 @@
     <!-- Mobile Sidebar Overlay -->
     <div
       id="sidebarOverlay"
-      class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"
+      class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
     ></div>
 
     <!-- Main Content -->
@@ -194,8 +191,8 @@
 
             <!-- Page Title -->
             <div class="flex-1 lg:flex-none">
-              <h1 class="text-2xl font-bold text-gray-800">
-                <%= typeof title !== 'undefined' ? title : 'Admin Dashboard' %>
+              <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                <%= typeof title !== 'undefined' ? title : 'Dashboard' %>
               </h1>
             </div>
 
@@ -242,31 +239,31 @@
                   id="quickActionsMenu"
                   class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-30"
                 >
-                  <div class="py-2">
-                    <button
-                      onclick="showCreateModal('course')"
+                  <div class="py-2 flex flex-col">
+                    <a
+                      href="/admin/courses/create"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Course
-                    </button>
-                    <button
-                      onclick="showCreateModal('instructor')"
+                    </a>
+                    <a
+                      href="/admin/instructors/create"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Instructor
-                    </button>
-                    <button
-                      onclick="showCreateModal('user')"
+                    </a>
+                    <a
+                      href="/admin/users/create"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New User
-                    </button>
-                    <button
-                      onclick="showCreateModal('category')"
+                    </a>
+                    <a
+                      href="/admin/categories/create"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Category
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>
@@ -314,45 +311,128 @@
     <%- include('../partials/modals') %>
 
     <script>
-      // Basic UI JS for sidebar and modals - preserved so child pages can use the same functions
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const sidebar = document.getElementById("sidebar");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
-
-      if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener("click", function () {
-          sidebar.classList.toggle("-translate-x-full");
-          sidebarOverlay.classList.toggle("hidden");
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener("click", function () {
-          sidebar.classList.add("-translate-x-full");
-          sidebarOverlay.classList.add("hidden");
-        });
-      }
-
-      document.addEventListener("click", function () {
+      // Initialize admin UI behaviors (idempotent)
+      function initAdminUI() {
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const quickActionsBtn = document.getElementById("quickActionsBtn");
         const quickActionsMenu = document.getElementById("quickActionsMenu");
-        if (quickActionsMenu) quickActionsMenu.classList.add("hidden");
-      });
 
-      function openProfile() {
-        const profileModal = document.getElementById("profileModal");
-        if (profileModal) {
-          profileModal.classList.remove("hidden");
-          document.body.style.overflow = "hidden";
+        // mobile menu toggle
+        if (mobileMenuBtn && sidebar && sidebarOverlay) {
+          const newBtn = mobileMenuBtn.cloneNode(true);
+          mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
+          newBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarOverlay.classList.toggle("hidden");
+          });
         }
+
+        // overlay click to close
+        if (sidebarOverlay && sidebar) {
+          sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+          });
+        }
+
+        // quick actions toggle
+        if (quickActionsBtn && quickActionsMenu) {
+          // guard to avoid multiple bindings
+          quickActionsBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            quickActionsMenu.classList.toggle("hidden");
+          });
+          document.addEventListener("click", function () {
+            quickActionsMenu.classList.add("hidden");
+          });
+        }
+
+        // Responsive behavior: ensure sidebar visibility matches breakpoint immediately
+        function _edu_resizeHandler() {
+          try {
+            if (!sidebar || !sidebarOverlay) return;
+            if (window.innerWidth >= 1024) {
+              // desktop: ensure sidebar visible and overlay hidden
+              sidebar.classList.remove("-translate-x-full");
+              sidebarOverlay.classList.add("hidden");
+            } else {
+              // mobile: hide sidebar by default (user can open it)
+              sidebar.classList.add("-translate-x-full");
+              sidebarOverlay.classList.add("hidden");
+            }
+          } catch (e) {
+            // swallow errors to avoid breaking UI
+            console.warn("resize handler error", e);
+          }
+        }
+
+        // remove previous listener if any, attach fresh
+        if (window._eduResizeHandler) {
+          window.removeEventListener("resize", window._eduResizeHandler);
+        }
+        window._eduResizeHandler = _edu_resizeHandler;
+        window.addEventListener("resize", window._eduResizeHandler);
+
+        // apply once to set initial state
+        _edu_resizeHandler();
+      }
+
+      // Run when DOM is ready, or immediately if already ready
+      // if (document.readyState === "loading") {
+      //   document.addEventListener("DOMContentLoaded", initAdminUI);
+      // } else {
+      //   initAdminUI();
+      // }
+
+      // Profile modal functions
+      function openProfile() {
+        document.getElementById("profileModal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
       }
 
       function closeProfile() {
-        const profileModal = document.getElementById("profileModal");
-        if (profileModal) {
-          profileModal.classList.add("hidden");
-          document.body.style.overflow = "auto";
-        }
+        document.getElementById("profileModal").classList.add("hidden");
+        document.body.style.overflow = "auto";
       }
+
+      // Global modal open/close mapping for admin feature modals
+      // function showCreateModal(type) {
+      //   const mapping = {
+      //     course: "createCourseModal",
+      //     instructor: "createInstructorModal",
+      //     user: "createUserModal",
+      //     category: "createCategoryModal",
+      //   };
+      //   const id = mapping[type];
+      //   if (!id) return;
+      //   const modal = document.getElementById(id);
+      //   if (modal) {
+      //     modal.classList.remove("hidden");
+      //     document.body.style.overflow = "hidden";
+      //   }
+      // }
+
+      // function closeCreateModal(type) {
+      //   const mapping = {
+      //     course: "createCourseModal",
+      //     instructor: "createInstructorModal",
+      //     user: "createUserModal",
+      //     category: "createCategoryModal",
+      //   };
+      //   const id = mapping[type];
+      //   if (!id) return;
+      //   const modal = document.getElementById(id);
+      //   if (modal) {
+      //     modal.classList.add("hidden");
+      //     document.body.style.overflow = "auto";
+      //   }
+      // }
+
+      // Expose to window so child views can re-run initialization after DOM changes
+      // window.initAdminUI = initAdminUI;
+      document.addEventListener("DOMContentLoaded", initAdminUI);
     </script>
 
     <% if (typeof scripts !== 'undefined') { %> <%- scripts %> <% } %>

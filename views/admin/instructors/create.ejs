@@ -1,0 +1,64 @@
+<!-- Create Instructor form fragment -->
+<div class="p-6 bg-white rounded-lg">
+  <form action="/admin/instructors/create" method="POST">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Full Name *</label
+        >
+        <input
+          type="text"
+          name="name"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Email *</label
+        >
+        <input
+          type="email"
+          name="email"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        />
+      </div>
+      <div class="md:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-2"
+          >Specialization *</label
+        >
+        <input
+          type="text"
+          name="specialization"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        />
+      </div>
+    </div>
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+      <textarea
+        name="bio"
+        rows="4"
+        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+      ></textarea>
+    </div>
+
+    <div class="mt-4 flex justify-end space-x-2">
+      <button
+        type="button"
+        onclick="window.history.back()"
+        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 transition-all"
+      >
+        Create
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,6 +1,10 @@
 import express from "express";
 import {
   adminDashboard,
+  createCategories,
+  createCourse,
+  createInstructor,
+  createUser,
   listCategories,
   listCourses,
   listInstructors,
@@ -16,9 +20,21 @@ router.use((req, res, next) => {
 });
 
 router.get("/", adminDashboard);
+
+// Routes for Courses
 router.get("/courses", listCourses);
+router.get("/courses/create", createCourse);
+
+// Routes for Instructors
 router.get("/instructors", listInstructors);
+router.get("/instructors/create", createInstructor);
+
+// Routes for Users
 router.get("/users", listUsers);
+router.get("/users/create", createUser);
+
+// Routes for Categories
 router.get("/categories", listCategories);
+router.get("/categories/create", createCategories);
 
 export default router;
