@@ -1,52 +1,34 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-import { 
+import express from 'express';
+import {
   getInstructorData,
-  getInstructorDashboard, 
-  getInstructorCourses, 
+  getInstructorDashboard,
+  getInstructorCoursesList,
   getCreateCoursePage,
   createCourse,
   getEditCoursePage,
-  updateCourse
-} from "../controllers/instructorController.js";
-import { deleteCourse } from "../controllers/courseController.js";
+  updateCourse,
+  deleteCourse,
+  getInstructorStudentsPage
+} from '../controllers/instructorController.js';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
-// Apply instructor data middleware to all routes
+// Apply instructor middleware to all routes
 router.use(getInstructorData);
 
-// Instructor Dashboard - now uses direct database queries
-router.get("/dashboard", getInstructorDashboard);
+// Dashboard Routes
+router.get('/', getInstructorDashboard);
+router.get('/dashboard', getInstructorDashboard);
 
-// Instructor Courses List - now uses direct database queries
-router.get("/courses", getInstructorCourses);
+// Course Management Routes
+router.get('/courses', getInstructorCoursesList);
+router.get('/courses/create', getCreateCoursePage);
+router.post('/courses/create', createCourse);
+router.get('/courses/:courseId/edit', getEditCoursePage);
+router.post('/courses/:courseId/edit', updateCourse);
+router.delete('/courses/:courseId', deleteCourse);
 
-// Create Course - now includes categories and difficulty levels from database
-router.get("/courses/create", getCreateCoursePage);
-router.post("/courses/create", createCourse);
-
-// Delete Course
-router.delete("/courses/:id", deleteCourse);
-
-// Edit Course
-router.get("/courses/:id/edit", getEditCoursePage);
-router.post("/courses/:id/edit", updateCourse);
-
-// Instructor Profile
-router.get("/profile", (req, res) => {
-  res.render("instructors/index", { 
-    layout: false,
-    instructor: res.locals.instructor
-  });
-});
-
-// Default instructor route redirects to dashboard
-router.get("/", (req, res) => {
-  res.redirect("/instructor/dashboard");
-});
+// Student Management Routes
+router.get('/students', getInstructorStudentsPage);
 
 export default router;

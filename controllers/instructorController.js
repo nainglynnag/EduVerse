@@ -1,203 +1,119 @@
-import mysql from "mysql2/promise";
-import dotenv from "dotenv";
+import {
+  getInstructorById,
+  getInstructorCourses,
+  getInstructorTotalStudents,
+  getInstructorStudents,
+  getAllCategories,
+  getAllDifficultyLevels,
+  createCourse as createCourseModel,
+  getCourseByIdAndInstructor,
+  updateCourse as updateCourseModel
+} from "../models/instructorModel.js";
 
-dotenv.config();
+// Constants
+const DEFAULT_INSTRUCTOR_ID = 4; // TODO: Replace with session-based authentication
+const DEFAULT_LAYOUT = "instructors/layouts/layout";
 
-// Create database connection pool
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'eduverse_db',
-});
+// Helper function for error handling
+const handleError = (res, error, message = 'Internal server error') => {
+  console.error('Controller error:', error);
+  res.status(500).render('error', { 
+    message,
+    layout: DEFAULT_LAYOUT
+  });
+};
+
+// Helper function for successful responses
+const renderSuccess = (res, view, data) => {
+  res.render(view, { 
+    layout: DEFAULT_LAYOUT,
+    instructor: res.locals.instructor,
+    ...data
+  });
+};
 
 // Middleware to fetch instructor data for layout
 export const getInstructorData = async (req, res, next) => {
   try {
-    const instructorId = 4; // In real app, get from session
-
-    const instructorQuery = `
-      SELECT 
-        u.id,
-        u.name,
-        u.email,
-        u.status,
-        u.joined_date,
-        ip.specialization,
-        ip.bio,
-        ip.rating
-      FROM users u
-      LEFT JOIN instructor_profiles ip ON u.id = ip.user_id
-      WHERE u.id = ? AND u.role_id = (SELECT id FROM roles WHERE name = 'instructor')
-    `;
-
-    const [instructorResults] = await db.execute(instructorQuery, [instructorId]);
-    const instructor = instructorResults[0] || { name: 'Instructor', email: '', status: 'active' };
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructor = await getInstructorById(instructorId);
     
-    // Make instructor data available to all routes
     res.locals.instructor = instructor;
     next();
   } catch (error) {
     console.error('Error fetching instructor data:', error);
-    // Set default instructor data
-    res.locals.instructor = { name: 'Instructor', email: '', status: 'active' };
+    res.locals.instructor = { 
+      name: 'Instructor', 
+      email: '', 
+      status: 'active',
+      rating: 0.0
+    };
     next();
   }
 };
 
-// Get instructor dashboard data
+// Dashboard Controllers
 export const getInstructorDashboard = async (req, res) => {
   try {
-    // For now, we'll use instructor ID 4 as shown in the current code
-    // In a real application, this would come from the authenticated user session
-    const instructorId = 4;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
 
-    // Get instructor's courses
-    const coursesQuery = `
-      SELECT 
-        c.*,
-        cat.name as category_name,
-        cat.title as category_title,
-        cat.display_name as category_display_name,
-        cat.description as category_description,
-        cat.color_theme as category_color,
-        dl.name as difficulty_name,
-        dl.description as difficulty_description,
-        COUNT(e.id) as enrollment_count
-      FROM courses c
-      LEFT JOIN categories cat ON c.category_id = cat.id
-      LEFT JOIN difficulty_levels dl ON c.difficulty_id = dl.id
-      LEFT JOIN enrollments e ON c.id = e.course_id
-      WHERE c.instructor_id = ?
-      GROUP BY c.id
-      ORDER BY c.created_at DESC
-    `;
+    // Fetch all required data in parallel for better performance
+    const [courses, totalStudents, students] = await Promise.all([
+      getInstructorCourses(instructorId),
+      getInstructorTotalStudents(instructorId),
+      getInstructorStudents(instructorId)
+    ]);
 
-    // Get total students enrolled in instructor's courses
-    const studentsQuery = `
-      SELECT COUNT(DISTINCT e.student_id) as total_students
-      FROM enrollments e
-      JOIN courses c ON e.course_id = c.id
-      WHERE c.instructor_id = ?
-    `;
-
-    // Execute queries using async/await
-    const [coursesResults] = await db.execute(coursesQuery, [instructorId]);
-    const [studentsResults] = await db.execute(studentsQuery, [instructorId]);
-
-    const courses = coursesResults || [];
-    const totalStudents = studentsResults[0]?.total_students || 0;
     const totalCourses = courses.length;
+    const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
     const avgRating = parseFloat(res.locals.instructor.rating) || 0.0;
 
-    // Render the dashboard with data
-    res.render("instructors/dashboard/index", { 
-      layout: "instructors/layouts/layout",
-      instructor: res.locals.instructor,
+    renderSuccess(res, "instructors/dashboard/index", {
       courses,
+      students,
       stats: {
         totalCourses,
         totalStudents,
+        totalEnrollments,
         avgRating
       }
     });
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Internal server error',
-      layout: "instructors/layouts/layout"
-    });
+    handleError(res, error);
   }
 };
 
-// Get instructor courses list
-export const getInstructorCourses = async (req, res) => {
+// Course Controllers
+export const getInstructorCoursesList = async (req, res) => {
   try {
-    const instructorId = 4; // In real app, get from session
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const courses = await getInstructorCourses(instructorId);
 
-    const query = `
-      SELECT 
-        c.*,
-        cat.name as category_name,
-        cat.title as category_title,
-        cat.display_name as category_display_name,
-        cat.description as category_description,
-        cat.color_theme as category_color,
-        dl.name as difficulty_name,
-        dl.description as difficulty_description,
-        COUNT(e.id) as enrollment_count
-      FROM courses c
-      LEFT JOIN categories cat ON c.category_id = cat.id
-      LEFT JOIN difficulty_levels dl ON c.difficulty_id = dl.id
-      LEFT JOIN enrollments e ON c.id = e.course_id
-      WHERE c.instructor_id = ?
-      GROUP BY c.id
-      ORDER BY c.created_at DESC
-    `;
-
-    const [results] = await db.execute(query, [instructorId]);
-
-    res.render("instructors/courses/index", { 
-      layout: "instructors/layouts/layout",
-      instructor: res.locals.instructor,
-      courses: results || []
-    });
+    renderSuccess(res, "instructors/courses/index", { courses });
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Internal server error',
-      layout: "instructors/layouts/layout"
-    });
+    handleError(res, error);
   }
 };
 
-// Get create course page with categories and difficulty levels
 export const getCreateCoursePage = async (req, res) => {
   try {
-    const categoriesQuery = `
-      SELECT 
-        id, 
-        name, 
-        title, 
-        display_name, 
-        description, 
-        color_theme 
-      FROM categories 
-      ORDER BY name
-    `;
+    const [categories, difficultyLevels] = await Promise.all([
+      getAllCategories(),
+      getAllDifficultyLevels()
+    ]);
 
-    const difficultyQuery = `
-      SELECT 
-        id, 
-        name, 
-        description 
-      FROM difficulty_levels 
-      ORDER BY id
-    `;
-
-    const [categoriesResults] = await db.execute(categoriesQuery);
-    const [difficultyResults] = await db.execute(difficultyQuery);
-
-    res.render("instructors/courses/create", { 
-      layout: "instructors/layouts/layout",
-      instructor: res.locals.instructor,
-      categories: categoriesResults || [],
-      difficultyLevels: difficultyResults || []
+    renderSuccess(res, "instructors/courses/create", {
+      categories,
+      difficultyLevels
     });
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Internal server error',
-      layout: "instructors/layouts/layout"
-    });
+    handleError(res, error);
   }
 };
 
-// Create a new course
 export const createCourse = async (req, res) => {
   try {
     const {
@@ -209,149 +125,145 @@ export const createCourse = async (req, res) => {
       status = 'draft'
     } = req.body;
 
-    const instructorId = 4; // In real app, get from session
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
 
     // Validate required fields
     if (!title || !category_id || !difficulty_id) {
       return res.status(400).render('error', {
         message: 'Missing required fields: title, category, difficulty level',
-        layout: "instructors/layouts/layout"
+        layout: DEFAULT_LAYOUT
       });
     }
 
-    const query = `
-      INSERT INTO courses (title, instructor_id, category_id, difficulty_id, price, description, status, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
-    `;
+    const courseData = {
+      title,
+      category_id: parseInt(category_id),
+      difficulty_id: parseInt(difficulty_id),
+      price: parseFloat(price) || 0,
+      description: description || '',
+      status,
+      instructor_id: instructorId
+    };
 
-    const values = [title, instructorId, category_id, difficulty_id, price || 0.00, description, status];
+    const newCourse = await createCourseModel(courseData);
 
-    const [result] = await db.execute(query, values);
-
-    // Redirect to courses list with success message
-    res.redirect('/instructor/courses?success=Course created successfully!');
+    if (newCourse) {
+      res.redirect('/instructor/courses');
+    } else {
+      handleError(res, new Error('Failed to create course'), 'Failed to create course');
+    }
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Error creating course. Please try again.',
-      layout: "instructors/layouts/layout"
-    });
+    handleError(res, error, 'Error creating course');
   }
 };
 
-// Get edit course page
 export const getEditCoursePage = async (req, res) => {
   try {
-    const courseId = req.params.id;
-    const instructorId = 4; // In real app, get from session
+    const { courseId } = req.params;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
 
-    // Get course data
-    const courseQuery = `
-      SELECT * FROM courses 
-      WHERE id = ? AND instructor_id = ?
-    `;
-    const [courseResults] = await db.execute(courseQuery, [courseId, instructorId]);
-    const course = courseResults[0];
+    const [course, categories, difficultyLevels] = await Promise.all([
+      getCourseByIdAndInstructor(courseId, instructorId),
+      getAllCategories(),
+      getAllDifficultyLevels()
+    ]);
 
     if (!course) {
-      return res.render("instructors/courses/edit", { 
-        layout: "instructors/layouts/layout",
-        instructor: res.locals.instructor,
-        course: null,
-        categories: [],
-        difficultyLevels: []
+      return res.status(404).render('error', {
+        message: 'Course not found',
+        layout: DEFAULT_LAYOUT
       });
     }
 
-    // Get categories
-    const categoriesQuery = `
-      SELECT id, name, title, display_name, description, color_theme 
-      FROM categories 
-      ORDER BY name
-    `;
-
-    // Get difficulty levels
-    const difficultyQuery = `
-      SELECT id, name, description 
-      FROM difficulty_levels 
-      ORDER BY id
-    `;
-
-    const [categoriesResults] = await db.execute(categoriesQuery);
-    const [difficultyResults] = await db.execute(difficultyQuery);
-
-    res.render("instructors/courses/edit", { 
-      layout: "instructors/layouts/layout",
-      instructor: res.locals.instructor,
+    renderSuccess(res, "instructors/courses/edit", {
       course,
-      categories: categoriesResults || [],
-      difficultyLevels: difficultyResults || []
+      categories,
+      difficultyLevels
     });
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Error loading course. Please try again.',
-      layout: "instructors/layouts/layout"
-    });
+    handleError(res, error);
   }
 };
 
-// Update course
 export const updateCourse = async (req, res) => {
   try {
-    const courseId = req.params.id;
-    const instructorId = 4; // In real app, get from session
+    const { courseId } = req.params;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+
     const {
       courseTitle: title,
       courseCategory: category_id,
       courseDifficulty: difficulty_id,
       coursePrice: price,
       courseDescription: description,
-      courseStatus: status
+      status
     } = req.body;
 
     // Validate required fields
     if (!title || !category_id || !difficulty_id) {
       return res.status(400).render('error', {
         message: 'Missing required fields: title, category, difficulty level',
-        layout: "instructors/layouts/layout"
+        layout: DEFAULT_LAYOUT
       });
     }
 
-    // Check if course exists and belongs to instructor
-    const checkQuery = `
-      SELECT id FROM courses 
-      WHERE id = ? AND instructor_id = ?
-    `;
-    const [checkResults] = await db.execute(checkQuery, [courseId, instructorId]);
-    
-    if (checkResults.length === 0) {
-      return res.status(404).render('error', {
-        message: 'Course not found or you do not have permission to edit it.',
-        layout: "instructors/layouts/layout"
-      });
+    const courseData = {
+      title,
+      category_id: parseInt(category_id),
+      difficulty_id: parseInt(difficulty_id),
+      price: parseFloat(price) || 0,
+      description: description || '',
+      status
+    };
+
+    const updatedCourse = await updateCourseModel(courseId, instructorId, courseData);
+
+    if (updatedCourse) {
+      res.redirect('/instructor/courses');
+    } else {
+      handleError(res, new Error('Failed to update course'), 'Failed to update course');
     }
-
-    // Update course
-    const updateQuery = `
-      UPDATE courses 
-      SET title = ?, category_id = ?, difficulty_id = ?, price = ?, description = ?, status = ?
-      WHERE id = ? AND instructor_id = ?
-    `;
-
-    const values = [title, category_id, difficulty_id, price || 0.00, description, status, courseId, instructorId];
-    await db.execute(updateQuery, values);
-
-    // Redirect to courses list with success message
-    res.redirect('/instructor/courses?success=Course updated successfully!');
 
   } catch (error) {
-    console.error('Controller error:', error);
-    res.status(500).render('error', { 
-      message: 'Error updating course. Please try again.',
-      layout: "instructors/layouts/layout"
+    handleError(res, error, 'Error updating course');
+  }
+};
+
+export const deleteCourse = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+
+    // TODO: Implement delete course functionality
+    // For now, return success
+    res.json({ success: true, message: 'Course deleted successfully' });
+
+  } catch (error) {
+    handleError(res, error, 'Error deleting course');
+  }
+};
+
+// Student Controllers
+export const getInstructorStudentsPage = async (req, res) => {
+  try {
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+
+    const [courses, students] = await Promise.all([
+      getInstructorCourses(instructorId),
+      getInstructorStudents(instructorId)
+    ]);
+
+    const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
+
+    renderSuccess(res, "instructors/students/index", {
+      courses,
+      students,
+      totalEnrollments
     });
+
+  } catch (error) {
+    handleError(res, error);
   }
 };

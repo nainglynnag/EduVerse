@@ -68,7 +68,7 @@
                     <input 
                         type="text" 
                         id="searchInput"
-                        placeholder="Search courses..." 
+                        placeholder="Search courses by title, description, category, difficulty, or instructor..." 
                         class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                 </div>
@@ -291,7 +291,10 @@
 
             filteredCourses = allCourses.filter(course => {
                 const matchesSearch = course.title.toLowerCase().includes(searchTerm) || 
-                                    (course.description && course.description.toLowerCase().includes(searchTerm));
+                                    (course.description && course.description.toLowerCase().includes(searchTerm)) ||
+                                    (course.category_name && course.category_name.toLowerCase().includes(searchTerm)) ||
+                                    (course.difficulty_name && course.difficulty_name.toLowerCase().includes(searchTerm)) ||
+                                    (course.instructor_name && course.instructor_name.toLowerCase().includes(searchTerm));
                 const matchesCategory = !categoryFilter || course.category_name === categoryFilter;
                 const matchesDifficulty = !difficultyFilter || course.difficulty_name === difficultyFilter;
 
