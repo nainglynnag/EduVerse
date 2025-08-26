@@ -51,6 +51,18 @@ export const getAllInstructors = async () => {
   return instructors;
 };
 
+export const getAllInstructorsDetails = async () => {
+  const [instructors] = await db.promise().query(`
+    SELECT ip.*, u.name, u.email, u.status, u.joined_date, JSON_ARRAYAGG(c.title) AS courses, COUNT(DISTINCT e.student_id) AS total_students
+    FROM instructor_profiles ip
+    LEFT JOIN users u ON ip.user_id = u.id
+    LEFT JOIN courses c ON ip.user_id = c.instructor_id
+    LEFT JOIN enrollments e ON c.id = e.course_id
+    GROUP BY ip.user_id;
+    `);
+  return instructors;
+};
+
 // Queries for Categories
 export const getAllCategories = async () => {
   const [categories] = await db.promise().query("SELECT * FROM categories");

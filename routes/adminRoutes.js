@@ -10,6 +10,7 @@ import {
   listInstructors,
   listUsers,
   showcreateForm,
+  showInstructorDetail,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -29,6 +30,7 @@ router.post("/courses/create", createCourseHandler);
 
 // Routes for Instructors
 router.get("/instructors", listInstructors);
+router.get("/instructors/:id", showInstructorDetail);
 router.get("/instructors/create", createInstructor);
 
 // Routes for Users

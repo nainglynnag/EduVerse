@@ -4,6 +4,7 @@ import {
   createCourse,
   getAllDifficulties,
   getAllInstructors,
+  getAllInstructorsDetails,
 } from "../models/adminModel.js";
 
 export const adminDashboard = (req, res) => {
@@ -49,11 +50,30 @@ export const createCourseHandler = async (req, res) => {
 };
 
 // Routes for Instructors
-export const listInstructors = (req, res) => {
+export const listInstructors = async (req, res) => {
+  const instructors = await getAllInstructorsDetails();
+  // console.log(instructors);
+
   res.render("admin/instructors/index", {
     layout: "admin/layouts/layout",
     active: "instructors",
     title: "Instructors",
+    instructors,
+  });
+};
+
+export const showInstructorDetail = async (req, res) => {
+  const instructors = await getAllInstructorsDetails();
+  const currentInstructor = instructors.find((instructor) => {
+    return instructor.user_id == req.params.id;
+  });
+  // console.log(currentInstructor);
+
+  res.render("admin/instructors/instructorDetail", {
+    layout: "admin/layouts/layout",
+    active: "instructors",
+    title: "Instructors",
+    currentInstructor,
   });
 };
 

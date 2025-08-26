@@ -1,0 +1,62 @@
+<div class="grid grid-cols-1 lg:grid-cols-4">
+    <h2 class="text-3xl font-bold text-gray-800 mb-4"><%= currentInstructor.name %></h2>
+    <div class="col-span-3">
+        <div class="bg-white rounded-2xl p-6 shadow-md mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">
+            Instructor Information
+        </h3>
+        <div class="space-y-2">
+            <p>
+                <span class="font-medium mr-2">Email:</span>
+                <%= currentInstructor.email %>
+            </p>
+            <p>
+                <span class="font-medium mr-2">Specialization:</span>
+                <%= currentInstructor.specialization %>
+            </p>
+            <p><span class="font-medium mr-2">Courses:</span>
+                <%= currentInstructor.courses.length %>
+            </p </p>
+            <p>
+                <span class="font-medium mr-2">Students:</span>
+                <%= currentInstructor.total_students.toLocaleString() %>
+            </p>
+            <p>
+                <span class="font-medium mr-2">Rating:</span>
+                <%= currentInstructor.rating %> /5
+            </p>
+            <p><span class="font-medium mr-2">Status:</span>
+                <%= currentInstructor.status %>
+            </p>
+            <p><span class="font-medium mr-2">Joined at:</span>
+                <%= currentInstructor.joined_date.toLocaleDateString() %>
+            </p>
+        </div>
+        </div>
+
+        <div class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2">Courses</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <% currentInstructor.courses.map((course) => { %>
+                    <a class="bg-indigo-200 shadow-lg hover:shadow-50 p-4 backdrop-blur-lg bg-opacity-70 rounded-lg cursor-pointer">
+                    <%= course %>
+                </a>
+                <% }) %>
+                
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Actions</h3>
+        <div class="space-y-2">
+            <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Edit Instructor
+            </button>
+
+            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+                Delete Instructor
+            </button>
+        </div>
+    </div>
+</div>
