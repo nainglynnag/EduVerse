@@ -216,24 +216,12 @@
             setupEventListeners();
         });
 
-        async function loadAllCourses() {
-            showLoading();
-            
-            try {
-                const response = await fetch('/api/courses');
-                const result = await response.json();
-                
-                if (result.success) {
-                    allCourses = result.data;
-                    filteredCourses = [...allCourses];
-                    displayCourses(filteredCourses);
-                } else {
-                    showError();
-                }
-            } catch (error) {
-                console.error('Error loading courses:', error);
-                showError();
-            }
+        function loadAllCourses() {
+            // Courses are now loaded server-side
+            const coursesData = JSON.parse('<%- JSON.stringify(courses || []) %>');
+            allCourses = coursesData;
+            filteredCourses = [...allCourses];
+            displayCourses(filteredCourses);
         }
 
         function displayCourses(courses) {
@@ -327,31 +315,26 @@
             document.getElementById('errorState').classList.remove('hidden');
         }
 
-        async function openCourseModal(courseId) {
-            try {
-                const response = await fetch(`/api/courses/${courseId}`);
-                const result = await response.json();
+        function openCourseModal(courseId) {
+            // Find course data from the already loaded courses
+            const course = allCourses.find(c => c.id === courseId);
+            
+            if (course) {
+                // Populate modal with course data
+                document.getElementById('modalTitle').textContent = course.title;
+                document.getElementById('modalDescription').textContent = course.description || 'No description available';
+                document.getElementById('modalInstructor').textContent = course.instructor_name || 'Unknown Instructor';
+                document.getElementById('modalCategory').textContent = course.category_name || 'Uncategorized';
+                document.getElementById('modalDifficulty').textContent = course.difficulty_name || 'Not specified';
+                document.getElementById('modalPrice').textContent = `$${course.price || 0}`;
+                document.getElementById('modalStatus').textContent = course.status || 'Draft';
+                document.getElementById('modalCreated').textContent = course.created_at ? new Date(course.created_at).toLocaleDateString() : '-';
                 
-                if (result.success) {
-                    const course = result.data;
-                    
-                    // Populate modal with course data
-                    document.getElementById('modalTitle').textContent = course.title;
-                    document.getElementById('modalDescription').textContent = course.description || 'No description available';
-                    document.getElementById('modalInstructor').textContent = course.instructor_name || 'Unknown Instructor';
-                    document.getElementById('modalCategory').textContent = course.category_name || 'Uncategorized';
-                    document.getElementById('modalDifficulty').textContent = course.difficulty_name || 'Not specified';
-                    document.getElementById('modalPrice').textContent = `$${course.price || 0}`;
-                    document.getElementById('modalStatus').textContent = course.status || 'Draft';
-                    document.getElementById('modalCreated').textContent = course.created_at ? new Date(course.created_at).toLocaleDateString() : '-';
-                    
-                    // Show modal
-                    document.getElementById('courseModal').classList.remove('hidden');
-                    document.body.style.overflow = 'hidden';
-                }
-            } catch (error) {
-                console.error('Error loading course details:', error);
-                alert('Error loading course details. Please try again.');
+                // Show modal
+                document.getElementById('courseModal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                alert('Course not found');
             }
         }
 

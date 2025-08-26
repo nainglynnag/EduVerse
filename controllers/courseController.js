@@ -1,16 +1,4 @@
-import mysql from "mysql2";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-// Create database connection
-const db = mysql.createConnection({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'eduverse_db',
-});
+import db from "../config/db.js";
 
 // Create a new course
 export const createCourse = async (req, res) => {
@@ -40,31 +28,22 @@ export const createCourse = async (req, res) => {
 
     const values = [title, instructor_id, category_id, difficulty_id, price || 0.00, description, status];
 
-    db.query(query, values, (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error creating course",
-          error: err.message
-        });
-      }
+    const [result] = await db.execute(query, values);
 
-      res.status(201).json({
-        success: true,
-        message: "Course created successfully",
-        courseId: result.insertId,
-        data: {
-          id: result.insertId,
-          title,
-          instructor_id,
-          category_id,
-          difficulty_id,
-          price: price || 0.00,
-          description,
-          status
-        }
-      });
+    res.status(201).json({
+      success: true,
+      message: "Course created successfully",
+      courseId: result.insertId,
+      data: {
+        id: result.insertId,
+        title,
+        instructor_id,
+        category_id,
+        difficulty_id,
+        price: price || 0.00,
+        description,
+        status
+      }
     });
 
   } catch (error) {
@@ -106,21 +85,12 @@ export const getAllCourses = async (req, res) => {
       ORDER BY c.created_at DESC
     `;
 
-    db.query(query, (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching courses",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query);
 
-      res.status(200).json({
-        success: true,
-        count: results.length,
-        data: results
-      });
+    res.status(200).json({
+      success: true,
+      count: results.length,
+      data: results
     });
 
   } catch (error) {
@@ -158,21 +128,12 @@ export const getCoursesByInstructor = async (req, res) => {
       ORDER BY c.created_at DESC
     `;
 
-    db.query(query, [instructor_id], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching instructor courses",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query, [instructor_id]);
 
-      res.status(200).json({
-        success: true,
-        count: results.length,
-        data: results
-      });
+    res.status(200).json({
+      success: true,
+      count: results.length,
+      data: results
     });
 
   } catch (error) {
@@ -216,27 +177,18 @@ export const getCourseById = async (req, res) => {
       GROUP BY c.id
     `;
 
-    db.query(query, [id], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching course",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query, [id]);
 
-      if (results.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Course not found"
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        data: results[0]
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found"
       });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: results[0]
     });
 
   } catch (error) {
@@ -270,27 +222,18 @@ export const updateCourse = async (req, res) => {
 
     const values = [title, category_id, difficulty_id, price, description, status, id];
 
-    db.query(query, values, (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error updating course",
-          error: err.message
-        });
-      }
+    const [result] = await db.execute(query, values);
 
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Course not found"
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: "Course updated successfully"
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found"
       });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Course updated successfully"
     });
 
   } catch (error) {
@@ -308,29 +251,32 @@ export const deleteCourse = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const query = "DELETE FROM courses WHERE id = ?";
+    // First check if course exists and belongs to the instructor
+    const checkQuery = "SELECT instructor_id FROM courses WHERE id = ?";
+    const [checkResult] = await db.execute(checkQuery, [id]);
 
-    db.query(query, [id], (err, result) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error deleting course",
-          error: err.message
-        });
-      }
-
-      if (result.affectedRows === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Course not found"
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: "Course deleted successfully"
+    if (checkResult.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found"
       });
+    }
+
+    // In a real app, you would check if the current user is the instructor
+    // For now, we'll allow deletion if the course exists
+    const deleteQuery = "DELETE FROM courses WHERE id = ?";
+    const [result] = await db.execute(deleteQuery, [id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Course deleted successfully"
     });
 
   } catch (error) {
@@ -358,20 +304,11 @@ export const getCategories = async (req, res) => {
       ORDER BY name
     `;
 
-    db.query(query, (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching categories",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query);
 
-      res.status(200).json({
-        success: true,
-        data: results
-      });
+    res.status(200).json({
+      success: true,
+      data: results
     });
 
   } catch (error) {
@@ -396,20 +333,11 @@ export const getDifficultyLevels = async (req, res) => {
       ORDER BY id
     `;
 
-    db.query(query, (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching difficulty levels",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query);
 
-      res.status(200).json({
-        success: true,
-        data: results
-      });
+    res.status(200).json({
+      success: true,
+      data: results
     });
 
   } catch (error) {
@@ -448,27 +376,18 @@ export const getInstructorProfile = async (req, res) => {
       GROUP BY u.id
     `;
 
-    db.query(query, [instructor_id], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching instructor profile",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query, [instructor_id]);
 
-      if (results.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Instructor not found"
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        data: results[0]
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Instructor not found"
       });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: results[0]
     });
 
   } catch (error) {
@@ -503,21 +422,12 @@ export const getCourseEnrollments = async (req, res) => {
       ORDER BY e.enrolled_at DESC
     `;
 
-    db.query(query, [course_id], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching enrollments",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query, [course_id]);
 
-      res.status(200).json({
-        success: true,
-        count: results.length,
-        data: results
-      });
+    res.status(200).json({
+      success: true,
+      count: results.length,
+      data: results
     });
 
   } catch (error) {
@@ -548,27 +458,18 @@ export const getInstructorById = async (req, res) => {
       WHERE u.id = ?
     `;
 
-    db.query(query, [instructor_id], (err, results) => {
-      if (err) {
-        console.error('Database error:', err);
-        return res.status(500).json({
-          success: false,
-          message: "Error fetching instructor information",
-          error: err.message
-        });
-      }
+    const [results] = await db.execute(query, [instructor_id]);
 
-      if (results.length === 0) {
-        return res.status(404).json({
-          success: false,
-          message: "Instructor not found"
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        data: results[0]
+    if (results.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Instructor not found"
       });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: results[0]
     });
 
   } catch (error) {

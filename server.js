@@ -32,9 +32,47 @@ app.get("/", (req, res) => {
   res.render("index"); // no layout because default is false
 });
 
-app.get("/courses", (req, res) => {
-  // courses listing page
-  res.render("courses"); // no layout because default is false
+app.get("/courses", async (req, res) => {
+  // courses listing page with server-side data
+  try {
+    const db = (await import("./config/db.js")).default;
+    
+    const query = `
+      SELECT 
+        c.*,
+        cat.name as category_name,
+        cat.title as category_title,
+        cat.display_name as category_display_name,
+        cat.description as category_description,
+        cat.color_theme as category_color,
+        dl.name as difficulty_name,
+        dl.description as difficulty_description,
+        u.name as instructor_name,
+        u.email as instructor_email,
+        COUNT(e.id) as enrollment_count
+      FROM courses c
+      LEFT JOIN categories cat ON c.category_id = cat.id
+      LEFT JOIN difficulty_levels dl ON c.difficulty_id = dl.id
+      LEFT JOIN users u ON c.instructor_id = u.id
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      WHERE c.status = 'published'
+      GROUP BY c.id
+      ORDER BY c.created_at DESC
+    `;
+
+    const [results] = await db.execute(query);
+    
+    res.render("courses", { 
+      courses: results || [],
+      layout: false
+    });
+  } catch (error) {
+    console.error('Error loading courses:', error);
+    res.render("courses", { 
+      courses: [],
+      layout: false
+    });
+  }
 });
 
 app.use("/admin", adminRoutes);

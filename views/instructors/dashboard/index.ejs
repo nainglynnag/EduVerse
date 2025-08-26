@@ -6,7 +6,7 @@
       <span
         class="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
       >
-        Welcome back <span id="instructorName">Instructor</span>! 👩‍🏫
+        Welcome back <span><%= instructor.name || 'Instructor' %></span>!
       </span>
     </h2>
     <p class="text-lg text-gray-600">
@@ -24,7 +24,7 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-600 text-sm">Total Courses</p>
-          <p class="text-3xl font-bold text-purple-600" id="totalCourses">0</p>
+          <p class="text-3xl font-bold text-purple-600" id="totalCourses"><%= stats.totalCourses %></p>
         </div>
         <div class="bg-purple-100 p-3 rounded-full">
           <svg
@@ -48,7 +48,7 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-600 text-sm">Total Students</p>
-          <p class="text-3xl font-bold text-blue-600" id="totalStudents">0</p>
+          <p class="text-3xl font-bold text-blue-600" id="totalStudents"><%= stats.totalStudents %></p>
         </div>
         <div class="bg-blue-100 p-3 rounded-full">
           <svg
@@ -70,7 +70,7 @@
       <div class="flex items-center justify-between">
         <div>
           <p class="text-gray-600 text-sm">Avg. Rating</p>
-          <p class="text-3xl font-bold text-yellow-600" id="avgRating">0.0</p>
+          <p class="text-3xl font-bold text-yellow-600" id="avgRating"><%= (parseFloat(stats.avgRating) || 0).toFixed(1) %></p>
         </div>
         <div class="bg-yellow-100 p-3 rounded-full">
           <svg
@@ -102,7 +102,40 @@
         </div>
 
         <div class="space-y-4" id="coursesList">
-          <!-- Course items will be populated by JavaScript -->
+          <% if (courses && courses.length > 0) { %>
+            <% const recentCourses = courses.slice(0, 3); %>
+            <% recentCourses.forEach(course => { %>
+              <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/instructor/courses/<%= course.id %>'">
+                <div class="flex items-center space-x-4">
+                  <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class="font-semibold text-gray-800"><%= course.title %></h4>
+                    <p class="text-sm text-gray-600"><%= course.enrollment_count || 0 %> students • <%= course.status %></p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="font-semibold text-gray-800">$<%= course.price || 0 %></p>
+                  <p class="text-sm text-gray-600">0.0/5 ⭐</p>
+                </div>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <!-- Show empty state -->
+            <div class="text-center py-8">
+              <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+              </svg>
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">No Courses Yet</h3>
+              <p class="text-gray-600 mb-4">You haven't created any courses yet.</p>
+              <a href="/instructor/courses/create" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
+                Create Your First Course
+              </a>
+            </div>
+          <% } %>
         </div>
       </div>
     </div>
@@ -114,127 +147,4 @@
   </div>
 </div>
 
-<script>
-  // Fetch instructor information
-  async function loadInstructorInfo() {
-    try {
-      const response = await fetch('/api/courses/instructor/4/info');
-      const result = await response.json();
-      
-      if (result.success) {
-        const instructor = result.data;
-        document.getElementById('instructorName').textContent = instructor.name || 'Instructor';
-        console.log('Instructor loaded:', instructor.name);
-      } else {
-        console.error('Failed to fetch instructor info:', result.message);
-        document.getElementById('instructorName').textContent = 'Instructor';
-      }
-    } catch (error) {
-      console.error('Error loading instructor info:', error);
-      document.getElementById('instructorName').textContent = 'Instructor';
-    }
-  }
 
-  // Update dashboard stats with real data
-  async function updateDashboardStats() {
-    try {
-      // Get courses data from database
-      const coursesResponse = await fetch('/api/courses/instructor/4');
-      const coursesResult = await coursesResponse.json();
-      
-      if (coursesResult.success) {
-        const courses = coursesResult.data;
-        const totalCourses = courses.length;
-        const totalStudents = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
-        
-        // Update stats in the dashboard
-        document.getElementById('totalCourses').textContent = totalCourses;
-        document.getElementById('totalStudents').textContent = totalStudents;
-        document.getElementById('avgRating').textContent = '0.0'; // Default rating
-        
-        console.log(`Dashboard updated: ${totalCourses} courses, ${totalStudents} students`);
-      } else {
-        console.error('Failed to fetch courses:', coursesResult.message);
-        // Set default values
-        document.getElementById('totalCourses').textContent = '0';
-        document.getElementById('totalStudents').textContent = '0';
-        document.getElementById('avgRating').textContent = '0.0';
-      }
-    } catch (error) {
-      console.error('Error updating dashboard stats:', error);
-      // Set default values if there's an error
-      document.getElementById('totalCourses').textContent = '0';
-      document.getElementById('totalStudents').textContent = '0';
-      document.getElementById('avgRating').textContent = '0.0';
-    }
-  }
-
-  // Populate recent courses
-  async function populateRecentCourses() {
-    const coursesList = document.getElementById("coursesList");
-    
-    try {
-      // Fetch courses from API
-      const response = await fetch('/api/courses/instructor/4'); // Default instructor ID
-      const result = await response.json();
-      
-      if (result.success && result.data.length > 0) {
-        const recentCourses = result.data.slice(0, 3);
-        
-        coursesList.innerHTML = recentCourses
-          .map(
-            (course) => `
-                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow cursor-pointer" onclick="window.location.href='/instructor/courses/${course.id}'">
-                    <div class="flex items-center space-x-4">
-                        <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-gray-800">${
-                              course.title
-                            }</h4>
-                            <p class="text-sm text-gray-600">${course.enrollment_count || 0} students • ${course.status}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="font-semibold text-gray-800">$${course.price || 0}</p>
-                        <p class="text-sm text-gray-600">0.0/5 ⭐</p>
-                    </div>
-                </div>
-            `
-          )
-          .join("");
-      } else {
-        // Show empty state
-        coursesList.innerHTML = `
-          <div class="text-center py-8">
-            <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
-            </svg>
-            <h3 class="text-lg font-semibold text-gray-800 mb-2">No Courses Yet</h3>
-            <p class="text-gray-600 mb-4">You haven't created any courses yet.</p>
-            <a href="/instructor/courses/create" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
-              Create Your First Course
-            </a>
-          </div>
-        `;
-      }
-    } catch (error) {
-      console.error('Error fetching recent courses:', error);
-      coursesList.innerHTML = `
-        <div class="text-center py-8">
-          <p class="text-gray-600">Error loading courses. Please try again.</p>
-        </div>
-      `;
-    }
-  }
-
-  // Initialize dashboard
-  document.addEventListener('DOMContentLoaded', function() {
-    loadInstructorInfo();
-    updateDashboardStats();
-    populateRecentCourses();
-  });
-</script>
