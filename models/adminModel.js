@@ -1,4 +1,5 @@
 import db from "../config/db.js";
+import bcrypt from "bcrypt";
 
 // Queries of Courses
 export const getAllCourses = async () => {
@@ -61,6 +62,33 @@ export const getAllInstructorsDetails = async () => {
     GROUP BY ip.user_id;
     `);
   return instructors;
+};
+
+export const createInstructor = async (data) => {
+  try {
+    const { name, email, password, specialization, bio } = data;
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // console.log(name, email, hashedPassword, specialization, bio);
+
+    const [result] = await db.promise().query(
+      `INSERT INTO users (name, email, password_hash, role_id)
+      VALUES (?, ?, ?, ?)`,
+      [name, email, hashedPassword, 2]
+    );
+
+    const userId = result.insertId;
+
+    await db.promise().query(
+      `
+      INSERT INTO instructor_profiles (user_id, specialization, bio)
+      VALUES (?, ?, ?)`,
+      [userId, specialization, bio]
+    );
+  } catch (error) {
+    console.log("Database operation failed in createInstructor :", error);
+    throw new Error("Could not create instructor data.");
+  }
 };
 
 // Queries for Categories
