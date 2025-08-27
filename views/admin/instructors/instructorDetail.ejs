@@ -69,13 +69,19 @@
     <div>
         <h3 class="text-lg font-semibold text-gray-800 mb-2">Actions</h3>
         <div class="space-y-2">
-            <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            <div class="w-full">
+                <a href="/admin/edit-instructor/<%= currentInstructor.user_id %>" class="block w-full bg-blue-600 text-white text-center px-4 py-2 rounded-lg hover:bg-blue-700">
                 Edit Instructor
-            </button>
+                </a>
+            </div>
 
-            <button class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+            <div class="w-full">
+                <a class="block w-full bg-red-600 text-white text-center px-4 py-2 rounded-lg hover:bg-red-700 btn-delete" data-action="/admin/delete-instructor/<%= currentInstructor.user_id %>"
+                data-method="POST"
+                data-confirm-message="Delete instructor <%= currentInstructor.name %>? This cannot be undone.">
                 Delete Instructor
-            </button>
+                </a>
+            </div>
         </div>
     </div>
 </div>

@@ -91,6 +91,76 @@ export const createInstructor = async (data) => {
   }
 };
 
+export const updateInstructor = async (user_id, updates) => {
+  try {
+    // const { name, email, password, specialization, bio } = updates;
+    if (updates.password_hash) {
+      const password_hash = await bcrypt.hash(updates.password_hash, 10);
+
+      updates.password_hash = password_hash;
+    }
+
+    // console.log("Updates :", updates);
+
+    const userFields = {};
+    const instructorFields = {};
+
+    const userColumns = ["name", "email", "password_hash"];
+    const instructorColumns = ["specialization", "bio"];
+
+    Object.entries(updates).map(([key, value]) => {
+      if (userColumns.includes(key)) {
+        userFields[key] = value;
+      } else if (instructorColumns.includes(key)) {
+        instructorFields[key] = value;
+      }
+
+      // console.log(userFields, instructorFields);
+    });
+
+    // Build dynamic SET clauses
+    const userSetClause = Object.keys(userFields)
+      .map((key) => `u.${key} = ?`)
+      .join(", ");
+    const instructorSetClause = Object.keys(instructorFields)
+      .map((key) => `i.${key} = ?`)
+      .join(", ");
+
+    // Combine SET clauses
+    const setClauses = [userSetClause, instructorSetClause]
+      .filter((clause) => clause)
+      .join(", ");
+
+    // Build values array
+    const values = [
+      ...Object.values(userFields),
+      ...Object.values(instructorFields),
+      user_id,
+    ];
+
+    const query = `
+      UPDATE users u
+      JOIN instructor_profiles i ON u.id = i.user_id
+      SET ${setClauses}
+      WHERE u.id = ?
+    `;
+
+    return await db.promise().query(query, values);
+  } catch (error) {
+    console.log("Database operation failed in createInstructor :", error);
+    throw new Error("Could not create instructor data.");
+  }
+};
+
+export const deleteInstructor = async (user_id) => {
+  try {
+    await db.promise().query("DELETE FROM users WHERE id = ?", [user_id]);
+  } catch (error) {
+    console.log("Database operation failed in deleteInstructor :", error);
+    throw new Error("Could not delete instructor data.");
+  }
+};
+
 // Queries for Categories
 export const getAllCategories = async () => {
   const [categories] = await db.promise().query("SELECT * FROM categories");

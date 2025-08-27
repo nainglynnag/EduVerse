@@ -1,8 +1,5 @@
 <div class="p-6 bg-white rounded-lg">
-  <form action="/admin/instructors/create" method="POST">
-    <% if (typeof error !== 'undefined' && error) { %>
-    <div class="mb-4 text-sm text-red-600"><%= error %></div>
-    <% } %>
+  <form action="/admin/edit-instructor/<%= form.user_id %>" method="POST">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -50,7 +47,6 @@
         <input
           type="password"
           name="password"
-          required
           value="<%= typeof form !== 'undefined' && form.password ? form.password : '' %>"
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
         />
@@ -66,10 +62,14 @@
           required
           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
         >
-<%= typeof form !== 'undefined' && form.bio ? form.bio : '' %></textarea
+<%= typeof form !== 'undefined' && form.bio ? form.bio.trim() : '' %></textarea
         >
       </div>
     </div>
+
+    <% if (typeof error !=='undefined' && error) { %>
+    <div id="flashError" class="mb-4 text-sm text-red-600"><%= error %></div>
+    <% } %>
 
     <div class="mt-4 flex justify-end space-x-2">
       <button
@@ -88,3 +88,10 @@
     </div>
   </form>
 </div>
+
+<script>
+  setTimeout(() => {
+    const el = document.getElementById("flashError");
+    if (el) el.remove();
+  }, 3000);
+</script>

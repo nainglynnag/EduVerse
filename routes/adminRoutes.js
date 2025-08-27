@@ -5,13 +5,16 @@ import {
   createCourseHandler,
   createInstructorHandler,
   createUser,
+  deleteInstructorHandler,
   listCategories,
   listCourses,
   listInstructors,
   listUsers,
   showcreateCourseForm,
   showCreateInstructorForm,
+  showEditInstructorForm,
   showInstructorDetail,
+  updateInstructorHandler,
 } from "../controllers/adminController.js";
 import { createInstructor } from "../models/adminModel.js";
 
@@ -32,9 +35,13 @@ router.post("/courses/create", createCourseHandler);
 
 // Routes for Instructors
 router.get("/instructors", listInstructors);
-router.get("/instructors/create", showCreateInstructorForm);
-router.post("/instructors/create", createInstructorHandler);
+router.get("/create-instructor", showCreateInstructorForm);
+router.post("/create-instructor", createInstructorHandler);
 router.get("/instructors/:id", showInstructorDetail);
+router.get("/edit-instructor/:id", showEditInstructorForm);
+router.post("/edit-instructor/:id", updateInstructorHandler);
+router.get("/delete-instructor/:id", deleteInstructorHandler);
+router.post("/delete-instructor/:id", deleteInstructorHandler);
 
 // Routes for Users
 router.get("/users", listUsers);
