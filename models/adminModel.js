@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 
 // Queries of Courses
 export const getAllCourses = async () => {
-  const [courses] = await db.promise().query(`
+  try {
+    const [courses] = await db.promise().query(`
     SELECT cr.*, u.name AS instructor_name, c.name AS category_name, COUNT(e.student_id) AS students, d.name AS difficulty_level
     FROM courses cr
     LEFT JOIN users u ON cr.instructor_id = u.id
@@ -13,35 +14,44 @@ export const getAllCourses = async () => {
     GROUP BY cr.id, u.name, c.name, d.name
     `);
 
-  return courses;
+    return courses;
+  } catch (error) {
+    console.log("Database operation failed in getAllCourses :", error);
+    throw new Error("Could not get course data.");
+  }
 };
 
 export const createCourse = async (data) => {
-  const {
-    title,
-    instructor_id,
-    category_id,
-    difficulty_id,
-    price,
-    description,
-    status,
-  } = data;
-
-  // console.log(data);
-
-  await db.promise().query(
-    `INSERT INTO courses (title, instructor_id, category_id, difficulty_id, price, description, status)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [
+  try {
+    const {
       title,
-      instructor_id || null,
+      instructor_id,
       category_id,
       difficulty_id,
       price,
       description,
       status,
-    ]
-  );
+    } = data;
+
+    // console.log(data);
+
+    await db.promise().query(
+      `INSERT INTO courses (title, instructor_id, category_id, difficulty_id, price, description, status)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [
+        title,
+        instructor_id || null,
+        category_id,
+        difficulty_id,
+        price,
+        description,
+        status,
+      ]
+    );
+  } catch (error) {
+    console.log("Database operation failed in createCourse :", error);
+    throw new Error("Could not create course data.");
+  }
 };
 
 // Queries for Instructors
@@ -53,7 +63,8 @@ export const getAllInstructors = async () => {
 };
 
 export const getAllInstructorsDetails = async () => {
-  const [instructors] = await db.promise().query(`
+  try {
+    const [instructors] = await db.promise().query(`
     SELECT ip.*, u.name, u.email, u.status, u.joined_date, JSON_ARRAYAGG(c.title) AS courses, COUNT(DISTINCT e.student_id) AS total_students
     FROM instructor_profiles ip
     LEFT JOIN users u ON ip.user_id = u.id
@@ -61,7 +72,14 @@ export const getAllInstructorsDetails = async () => {
     LEFT JOIN enrollments e ON c.id = e.course_id
     GROUP BY ip.user_id;
     `);
-  return instructors;
+    return instructors;
+  } catch (error) {
+    console.log(
+      "Database operation failed in getAllInstructorsDetails :",
+      error
+    );
+    throw new Error("Could not get instructor details data.");
+  }
 };
 
 export const createInstructor = async (data) => {
@@ -163,14 +181,24 @@ export const deleteInstructor = async (user_id) => {
 
 // Queries for Categories
 export const getAllCategories = async () => {
-  const [categories] = await db.promise().query("SELECT * FROM categories");
-  return categories;
+  try {
+    const [categories] = await db.promise().query("SELECT * FROM categories");
+    return categories;
+  } catch (error) {
+    console.log("Database operation failed in getAllCategories :", error);
+    throw new Error("Could not get category data.");
+  }
 };
 
 // Queries for Difficulty Levels
 export const getAllDifficulties = async () => {
-  const [difficulties] = await db
-    .promise()
-    .query("SELECT * FROM difficulty_levels");
-  return difficulties;
+  try {
+    const [difficulties] = await db
+      .promise()
+      .query("SELECT * FROM difficulty_levels");
+    return difficulties;
+  } catch (error) {
+    console.log("Database operation failed in getAllDifficulties :", error);
+    throw new Error("Could not get difficulty data.");
+  }
 };
