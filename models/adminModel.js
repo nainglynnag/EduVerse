@@ -1,6 +1,12 @@
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
 
+// Error Handler
+const errorHandler = (error, operation, dataFailed) => {
+  console.log(`Database operation failed in ${operation}:`, error);
+  throw new Error(`Could not ${dataFailed} data.`);
+};
+
 // Queries of Courses
 export const getAllCourses = async () => {
   try {
@@ -16,8 +22,7 @@ export const getAllCourses = async () => {
 
     return courses;
   } catch (error) {
-    console.log("Database operation failed in getAllCourses :", error);
-    throw new Error("Could not get course data.");
+    errorHandler(error, "getAllCourses", "get course");
   }
 };
 
@@ -49,17 +54,20 @@ export const createCourse = async (data) => {
       ]
     );
   } catch (error) {
-    console.log("Database operation failed in createCourse :", error);
-    throw new Error("Could not create course data.");
+    errorHandler(error, "createCourse", "create course");
   }
 };
 
 // Queries for Instructors
 export const getAllInstructors = async () => {
-  const [instructors] = await db.promise().query(`SELECT u.* FROM users u
+  try {
+    const [instructors] = await db.promise().query(`SELECT u.* FROM users u
     LEFT JOIN roles r ON u.role_id = r.id
     WHERE r.name = "instructor"`);
-  return instructors;
+    return instructors;
+  } catch (error) {
+    errorHandler(error, "getAllInstructors", "get instructors");
+  }
 };
 
 export const getAllInstructorsDetails = async () => {
@@ -74,11 +82,7 @@ export const getAllInstructorsDetails = async () => {
     `);
     return instructors;
   } catch (error) {
-    console.log(
-      "Database operation failed in getAllInstructorsDetails :",
-      error
-    );
-    throw new Error("Could not get instructor details data.");
+    errorHandler(error, "getAllInstructorsDetails", "get instructors details");
   }
 };
 
@@ -104,8 +108,11 @@ export const createInstructor = async (data) => {
       [userId, specialization, bio]
     );
   } catch (error) {
-    console.log("Database operation failed in createInstructor :", error);
-    throw new Error("Could not create instructor data.");
+    errorHandler(
+      error,
+      "createInstructor",
+      "create instructor account and profile"
+    );
   }
 };
 
@@ -165,8 +172,7 @@ export const updateInstructor = async (user_id, updates) => {
 
     return await db.promise().query(query, values);
   } catch (error) {
-    console.log("Database operation failed in updateInstructor :", error);
-    throw new Error("Could not update instructor data.");
+    errorHandler(error, "updateInstructor", "update instructor");
   }
 };
 
@@ -174,8 +180,7 @@ export const deleteInstructor = async (user_id) => {
   try {
     await db.promise().query("DELETE FROM users WHERE id = ?", [user_id]);
   } catch (error) {
-    console.log("Database operation failed in deleteInstructor :", error);
-    throw new Error("Could not delete instructor data.");
+    errorHandler(error, "deleteInstructor", "delete instructor");
   }
 };
 
@@ -191,8 +196,7 @@ export const getAllCategories = async () => {
 
     return categories;
   } catch (error) {
-    console.log("Database operation failed in getAllCategories :", error);
-    throw new Error("Could not get category data.");
+    errorHandler(error, "getAllCategories", "get categories");
   }
 };
 
@@ -205,8 +209,7 @@ export const createCategory = async ({ name, color, description }) => {
         [name, color, description]
       );
   } catch (error) {
-    console.log("Database operation failed in createCategory :", error);
-    throw new Error("Could not create category data.");
+    errorHandler(error, "createCategory", "create category");
   }
 };
 
@@ -231,8 +234,7 @@ export const updateCategory = async (id, updates) => {
 
     return await db.promise().query(query, values);
   } catch (error) {
-    console.log("Database operation failed in updateCategory :", error);
-    throw new Error("Could not update category data.");
+    errorHandler(error, "updateCategory", "update category");
   }
 };
 
@@ -240,8 +242,7 @@ export const deleteCategory = async (id) => {
   try {
     await db.promise().query("DELETE FROM categories WHERE id = ?", [id]);
   } catch (error) {
-    console.log("Database operation failed in deleteCategory :", error);
-    throw new Error("Could not delete category data.");
+    errorHandler(error, "deleteCategory", "delete category");
   }
 };
 
@@ -253,8 +254,7 @@ export const getAllDifficulties = async () => {
       .query("SELECT * FROM difficulty_levels");
     return difficulties;
   } catch (error) {
-    console.log("Database operation failed in getAllDifficulties :", error);
-    throw new Error("Could not get difficulty data.");
+    errorHandler(error, "getAllDifficulties", "get difficulties levels");
   }
 };
 
@@ -266,8 +266,7 @@ export const getAllAdmins = async () => {
     WHERE r.name = "admin"`);
     return admins;
   } catch (error) {
-    console.log("Database operation failed in getAllAdmins :", error);
-    throw new Error("Could not get admin data.");
+    errorHandler(error, "getAllAdmins", "get admins");
   }
 };
 
@@ -281,8 +280,7 @@ export const createAdmin = async ({ name, email, password }) => {
         [name, email, hashedPassword, 3]
       );
   } catch (error) {
-    console.log("Database operation failed in createAdmin :", error);
-    throw new Error("Could not create admin account.");
+    errorHandler(error, "createAdmin", "create admin account");
   }
 };
 
@@ -311,8 +309,7 @@ export const updateAdmin = async (id, updates) => {
 
     return await db.promise().query(query, values);
   } catch (error) {
-    console.log("Database operation failed in updateAdmin :", error);
-    throw new Error("Could not update admin data.");
+    errorHandler(error, "updateAdmin", "update admin");
   }
 };
 
@@ -320,7 +317,6 @@ export const deleteAdmin = async (id) => {
   try {
     await db.promise().query("DELETE FROM users WHERE id = ?", [id]);
   } catch (error) {
-    console.log("Database operation failed in deleteAdmin :", error);
-    throw new Error("Could not delete admin data.");
+    errorHandler(error, "deleteAdmin", "delete admin");
   }
 };
