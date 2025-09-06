@@ -8,6 +8,9 @@ import {
   createInstructor,
   updateInstructor,
   deleteInstructor,
+  createCategory,
+  updateCategory,
+  deleteCategory,
 } from "../models/adminModel.js";
 
 export const adminDashboard = (req, res) => {
@@ -201,18 +204,96 @@ export const createUser = (req, res) => {
 };
 
 // Routes for Categories
-export const listCategories = (req, res) => {
+export const listCategories = async (req, res) => {
+  const categories = await getAllCategories();
+  // console.log(categories);
+
+  const colorClasses = {
+    blue: "from-blue-500 to-blue-600",
+    purple: "from-purple-500 to-purple-600",
+    green: "from-green-500 to-green-600",
+    yellow: "from-yellow-500 to-yellow-600",
+  };
+
   res.render("admin/categories/index", {
+    layout: "admin/layouts/layout",
+    active: "categories",
+    title: "Categories",
+    categories,
+    colorClasses,
+  });
+};
+
+export const showCreateCategoryForm = (req, res) => {
+  res.render("admin/categories/create", {
     layout: "admin/layouts/layout",
     active: "categories",
     title: "Categories",
   });
 };
 
-export const createCategories = (req, res) => {
-  res.render("admin/categories/create", {
+export const createCategoryHandler = async (req, res) => {
+  // const newCategory = req.body;
+  // console.log(newCategory);
+
+  await createCategory(req.body);
+  res.redirect("/admin/categories");
+};
+
+export const showEditCategoryForm = async (req, res) => {
+  const categories = await getAllCategories();
+  const { id, name, color_theme, description } = categories.find((category) => {
+    return category.id == req.params.id;
+  });
+  // console.log(name, color_theme, description);
+
+  const colorOptions = ["Blue", "Purple", "Green", "Yellow"];
+
+  res.render("admin/categories/update", {
     layout: "admin/layouts/layout",
     active: "categories",
     title: "Categories",
+    form: { id, name, color_theme, description },
+    colorOptions,
   });
+};
+
+export const updateCategoryHandler = async (req, res) => {
+  const updatedCategory = req.body;
+
+  const categories = await getAllCategories();
+  const { id, name, color_theme, description } = categories.find((category) => {
+    return category.id == req.params.id;
+  });
+
+  const colorOptions = ["Blue", "Purple", "Green", "Yellow"];
+  const updates = {};
+
+  if (updatedCategory.name !== name) updates.name = updatedCategory.name;
+  if (updatedCategory.color.toLowerCase() !== color_theme.toLowerCase())
+    updates.color_theme = updatedCategory.color.toLowerCase();
+  if (updatedCategory.description !== description)
+    updates.description = updatedCategory.description;
+
+  if (Object.keys(updates).length > 0) {
+    await updateCategory(id, updates);
+  } else {
+    return res.render("admin/categories/update", {
+      layout: "admin/layouts/layout",
+      active: "categories",
+      title: "Categories",
+      error: "No changes are detected",
+      form: { id, name, color_theme, description },
+      colorOptions,
+    });
+  }
+
+  res.redirect("/admin/categories");
+};
+
+export const deleteCategoryHandler = async (req, res) => {
+  const id = req.params.id;
+
+  await deleteCategory(id);
+  res.redirect("/admin/categories");
 };

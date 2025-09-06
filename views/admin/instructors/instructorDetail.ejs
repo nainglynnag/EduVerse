@@ -77,8 +77,7 @@
 
             <div class="w-full">
                 <a class="block w-full bg-red-600 text-white text-center px-4 py-2 rounded-lg hover:bg-red-700 btn-delete" data-action="/admin/delete-instructor/<%= currentInstructor.user_id %>"
-                data-method="POST"
-                data-confirm-message="Delete instructor <%= currentInstructor.name %>? This cannot be undone.">
+                data-confirm-message="Are you sure you want to delete instructor <%= currentInstructor.name %>? This action cannot be undone.">
                 Delete Instructor
                 </a>
             </div>

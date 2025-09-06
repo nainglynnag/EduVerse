@@ -108,8 +108,7 @@
             <a
               
               class="px-3 py-2 text-red-600 hover:bg-red-50 hover:text-red-400 active:scale-90 duration-300 rounded-lg transition-all btn-delete" data-action="/admin/delete-instructor/<%= instructor.user_id %>"
-              data-method="POST"
-              data-confirm-message="Delete instructor <%= instructor.name %>? This cannot be undone.">
+              data-confirm-message="Are you sure you want to delete instructor <%= instructor.name %>? This action cannot be undone.">
               <div>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                   stroke="currentColor" class="size-6">

@@ -1,22 +1,25 @@
 import express from "express";
 import {
   adminDashboard,
-  createCategories,
+  createCategoryHandler,
   createCourseHandler,
   createInstructorHandler,
   createUser,
+  deleteCategoryHandler,
   deleteInstructorHandler,
   listCategories,
   listCourses,
   listInstructors,
   listUsers,
+  showCreateCategoryForm,
   showcreateCourseForm,
   showCreateInstructorForm,
+  showEditCategoryForm,
   showEditInstructorForm,
   showInstructorDetail,
+  updateCategoryHandler,
   updateInstructorHandler,
 } from "../controllers/adminController.js";
-import { createInstructor } from "../models/adminModel.js";
 
 const router = express.Router();
 
@@ -49,6 +52,11 @@ router.get("/users/create", createUser);
 
 // Routes for Categories
 router.get("/categories", listCategories);
-router.get("/categories/create", createCategories);
+router.get("/create-category", showCreateCategoryForm);
+router.post("/create-category", createCategoryHandler);
+router.get("/edit-category/:id", showEditCategoryForm);
+router.post("/edit-category/:id", updateCategoryHandler);
+router.get("/delete-category/:id", deleteCategoryHandler);
+router.post("/delete-category/:id", deleteCategoryHandler);
 
 export default router;

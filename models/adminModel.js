@@ -165,8 +165,8 @@ export const updateInstructor = async (user_id, updates) => {
 
     return await db.promise().query(query, values);
   } catch (error) {
-    console.log("Database operation failed in createInstructor :", error);
-    throw new Error("Could not create instructor data.");
+    console.log("Database operation failed in updateInstructor :", error);
+    throw new Error("Could not update instructor data.");
   }
 };
 
@@ -182,11 +182,66 @@ export const deleteInstructor = async (user_id) => {
 // Queries for Categories
 export const getAllCategories = async () => {
   try {
-    const [categories] = await db.promise().query("SELECT * FROM categories");
+    const [categories] = await db.promise().query(`
+      SELECT cat.*, COUNT(c.id) AS total_courses
+      FROM categories cat
+      LEFT JOIN courses c ON cat.id = c.category_id
+      GROUP BY cat.id
+    `);
+
     return categories;
   } catch (error) {
     console.log("Database operation failed in getAllCategories :", error);
     throw new Error("Could not get category data.");
+  }
+};
+
+export const createCategory = async ({ name, color, description }) => {
+  try {
+    await db
+      .promise()
+      .query(
+        `INSERT INTO categories (name, color_theme, description) VALUES (?, ?, ?)`,
+        [name, color, description]
+      );
+  } catch (error) {
+    console.log("Database operation failed in createCategory :", error);
+    throw new Error("Could not create category data.");
+  }
+};
+
+export const updateCategory = async (id, updates) => {
+  try {
+    // console.log("From updateCategory model :", id, updates);
+
+    // Dynamic SET clauses
+    const setClauses = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    // console.log("setClauses :", setClauses);
+
+    const values = [...Object.values(updates), id];
+    // console.log("values :", values);
+
+    const query = `
+      UPDATE categories
+      SET ${setClauses}
+      WHERE id = ?
+    `;
+
+    return await db.promise().query(query, values);
+  } catch (error) {
+    console.log("Database operation failed in updateCategory :", error);
+    throw new Error("Could not update category data.");
+  }
+};
+
+export const deleteCategory = async (id) => {
+  try {
+    await db.promise().query("DELETE FROM categories WHERE id = ?", [id]);
+  } catch (error) {
+    console.log("Database operation failed in deleteCategory :", error);
+    throw new Error("Could not delete category data.");
   }
 };
 
