@@ -257,3 +257,70 @@ export const getAllDifficulties = async () => {
     throw new Error("Could not get difficulty data.");
   }
 };
+
+// Queries for Admins
+export const getAllAdmins = async () => {
+  try {
+    const [admins] = await db.promise().query(`SELECT u.* FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    WHERE r.name = "admin"`);
+    return admins;
+  } catch (error) {
+    console.log("Database operation failed in getAllAdmins :", error);
+    throw new Error("Could not get admin data.");
+  }
+};
+
+export const createAdmin = async ({ name, email, password }) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db
+      .promise()
+      .query(
+        "INSERT INTO users (name, email, password_hash, role_id) VALUES (?, ?, ?, ?)",
+        [name, email, hashedPassword, 3]
+      );
+  } catch (error) {
+    console.log("Database operation failed in createAdmin :", error);
+    throw new Error("Could not create admin account.");
+  }
+};
+
+export const updateAdmin = async (id, updates) => {
+  try {
+    if (updates.password_hash) {
+      const password_hash = await bcrypt.hash(updates.password_hash, 10);
+
+      updates.password_hash = password_hash;
+    }
+
+    // Dynamic SET clauses
+    const setClauses = Object.keys(updates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    // console.log("setClauses :", setClauses);
+
+    const values = [...Object.values(updates), id];
+    // console.log("values :", values);
+
+    const query = `
+      UPDATE users
+      SET ${setClauses}
+      WHERE id = ?
+    `;
+
+    return await db.promise().query(query, values);
+  } catch (error) {
+    console.log("Database operation failed in updateAdmin :", error);
+    throw new Error("Could not update admin data.");
+  }
+};
+
+export const deleteAdmin = async (id) => {
+  try {
+    await db.promise().query("DELETE FROM users WHERE id = ?", [id]);
+  } catch (error) {
+    console.log("Database operation failed in deleteAdmin :", error);
+    throw new Error("Could not delete admin data.");
+  }
+};

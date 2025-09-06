@@ -1,22 +1,28 @@
 import express from "express";
 import {
   adminDashboard,
+  createAdminHandler,
   createCategoryHandler,
   createCourseHandler,
   createInstructorHandler,
-  createUser,
+  createStudent,
+  deleteAdminHandler,
   deleteCategoryHandler,
   deleteInstructorHandler,
+  listAdmins,
   listCategories,
   listCourses,
   listInstructors,
-  listUsers,
+  listStudents,
+  showCreateAdminForm,
   showCreateCategoryForm,
   showcreateCourseForm,
   showCreateInstructorForm,
+  showEditAdminForm,
   showEditCategoryForm,
   showEditInstructorForm,
   showInstructorDetail,
+  updateAdminHandler,
   updateCategoryHandler,
   updateInstructorHandler,
 } from "../controllers/adminController.js";
@@ -46,9 +52,9 @@ router.post("/edit-instructor/:id", updateInstructorHandler);
 router.get("/delete-instructor/:id", deleteInstructorHandler);
 router.post("/delete-instructor/:id", deleteInstructorHandler);
 
-// Routes for Users
-router.get("/users", listUsers);
-router.get("/users/create", createUser);
+// Routes for Students
+router.get("/students", listStudents);
+router.get("/create-student", createStudent);
 
 // Routes for Categories
 router.get("/categories", listCategories);
@@ -58,5 +64,14 @@ router.get("/edit-category/:id", showEditCategoryForm);
 router.post("/edit-category/:id", updateCategoryHandler);
 router.get("/delete-category/:id", deleteCategoryHandler);
 router.post("/delete-category/:id", deleteCategoryHandler);
+
+// Routes for Admins
+router.get("/admins", listAdmins);
+router.get("/create-admin", showCreateAdminForm);
+router.post("/create-admin", createAdminHandler);
+router.get("/edit-admin/:id", showEditAdminForm);
+router.post("/edit-admin/:id", updateAdminHandler);
+router.get("/delete-admin/:id", deleteAdminHandler);
+router.post("/delete-admin/:id", deleteAdminHandler);
 
 export default router;

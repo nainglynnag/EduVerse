@@ -11,6 +11,10 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  getAllAdmins,
+  createAdmin,
+  updateAdmin,
+  deleteAdmin,
 } from "../models/adminModel.js";
 
 export const adminDashboard = (req, res) => {
@@ -21,7 +25,7 @@ export const adminDashboard = (req, res) => {
   });
 };
 
-// Routes for Courses
+// Controllers for Courses
 export const listCourses = async (req, res) => {
   const courses = await getAllCourses();
   res.render("admin/courses/index", {
@@ -55,7 +59,7 @@ export const createCourseHandler = async (req, res) => {
   res.redirect("/admin/courses");
 };
 
-// Routes for Instructors
+// Controllers for Instructors
 export const listInstructors = async (req, res) => {
   const instructors = await getAllInstructorsDetails();
   // console.log(instructors);
@@ -186,24 +190,24 @@ export const deleteInstructorHandler = async (req, res) => {
   res.redirect("/admin/instructors");
 };
 
-// Routes for Users
-export const listUsers = (req, res) => {
-  res.render("admin/users/index", {
+// Controllers for Users
+export const listStudents = (req, res) => {
+  res.render("admin/students/index", {
     layout: "admin/layouts/layout",
-    active: "users",
-    title: "Users",
+    active: "students",
+    title: "Students",
   });
 };
 
-export const createUser = (req, res) => {
-  res.render("admin/users/create", {
+export const createStudent = (req, res) => {
+  res.render("admin/students/create", {
     layout: "admin/layouts/layout",
-    active: "users",
-    title: "Users",
+    active: "students",
+    title: "Students",
   });
 };
 
-// Routes for Categories
+// Controllers for Categories
 export const listCategories = async (req, res) => {
   const categories = await getAllCategories();
   // console.log(categories);
@@ -296,4 +300,92 @@ export const deleteCategoryHandler = async (req, res) => {
 
   await deleteCategory(id);
   res.redirect("/admin/categories");
+};
+
+// Controllers for Admins
+export const listAdmins = async (req, res) => {
+  const users = await getAllAdmins();
+
+  res.render("admin/adminUsers/index", {
+    layout: "admin/layouts/layout",
+    active: "admins",
+    title: "Admins",
+    users,
+  });
+};
+
+export const showCreateAdminForm = (req, res) => {
+  res.render("admin/adminUsers/create", {
+    layout: "admin/layouts/layout",
+    active: "admins",
+    title: "Admins",
+  });
+};
+
+export const createAdminHandler = async (req, res) => {
+  const { name, email } = req.body;
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !emailRegex.test(email)) {
+    return res.render("admin/adminUsers/create", {
+      layout: "admin/layouts/layout",
+      active: "admins",
+      title: "Admins",
+      error: "Invalid email address",
+      form: { name, email },
+    });
+  }
+
+  await createAdmin(req.body);
+  res.redirect("/admin/admins");
+};
+
+export const showEditAdminForm = async (req, res) => {
+  const users = await getAllAdmins();
+  const { id, name, email } = users.find((user) => {
+    return user.id == req.params.id;
+  });
+
+  res.render("admin/adminUsers/update", {
+    layout: "admin/layouts/layout",
+    active: "admins",
+    title: "Admins",
+    form: { id, name, email },
+  });
+};
+
+export const updateAdminHandler = async (req, res) => {
+  const { name, email, password } = req.body;
+  const id = req.params.id;
+
+  const users = await getAllAdmins();
+  const currentAdmin = users.find((user) => {
+    return user.id == id;
+  });
+
+  const updates = {};
+  if (currentAdmin.name !== name) updates.name = name;
+  if (currentAdmin.email !== email) updates.email = email;
+  if (password !== "") updates.password_hash = password;
+
+  if (Object.keys(updates).length > 0) {
+    await updateAdmin(id, updates);
+  } else {
+    return res.render("admin/adminUsers/update", {
+      layout: "admin/layouts/layout",
+      active: "admins",
+      title: "Admins",
+      error: "No changes are detected",
+      form: { id, name, email },
+    });
+  }
+
+  res.redirect("/admin/admins");
+};
+
+export const deleteAdminHandler = async (req, res) => {
+  const id = req.params.id;
+
+  await deleteAdmin(id);
+  res.redirect("/admin/admins");
 };
