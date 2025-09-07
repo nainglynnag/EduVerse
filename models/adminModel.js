@@ -240,7 +240,7 @@ export const createStudent = async ({ name, email, password, plan }) => {
 
 export const updateStudent = async (user_id, updates) => {
   try {
-    console.log("update student model", user_id, updates);
+    // console.log("update student model", user_id, updates);
 
     if (updates.password_hash) {
       const password_hash = await bcrypt.hash(updates.password_hash, 10);
