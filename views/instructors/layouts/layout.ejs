@@ -477,7 +477,7 @@
       }
 
       // Update active navigation based on current page
-      function updateActiveNav() {
+      function updateActiveNav(activeSection = null) {
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('#sidebar nav a');
         const pageTitle = document.getElementById('pageTitle');
@@ -487,8 +487,12 @@
           link.classList.add('text-gray-700', 'hover:bg-purple-50', 'hover:text-purple-600');
         });
 
-        // Set active based on current path and update page title
-        if (currentPath.includes('/instructor/dashboard')) {
+        // Set active based on current path or active section and update page title
+        if (activeSection === 'students' || currentPath.includes('/instructor/students')) {
+          document.querySelector('a[href="/instructor/students"]').classList.add('bg-gradient-to-r', 'from-purple-600', 'to-pink-600', 'text-white');
+          document.querySelector('a[href="/instructor/students"]').classList.remove('text-gray-700', 'hover:bg-purple-50', 'hover:text-purple-600');
+          pageTitle.textContent = 'Students';
+        } else if (currentPath.includes('/instructor/dashboard')) {
           document.querySelector('a[href="/instructor/dashboard"]').classList.add('bg-gradient-to-r', 'from-purple-600', 'to-pink-600', 'text-white');
           document.querySelector('a[href="/instructor/dashboard"]').classList.remove('text-gray-700', 'hover:bg-purple-50', 'hover:text-purple-600');
           pageTitle.textContent = 'Dashboard';
@@ -503,10 +507,22 @@
         }
       }
 
-      // Initialize active navigation and instructor info
+      // Add click event listener for Students link
       document.addEventListener('DOMContentLoaded', function() {
         updateActiveNav();
         loadInstructorInfo();
+        
+        // Add click handler for Students link
+        const studentsLink = document.querySelector('a[href="/instructor/students"]');
+        if (studentsLink) {
+          studentsLink.addEventListener('click', function(e) {
+            // Close mobile menu if open
+            if (window.innerWidth < 1024) {
+              sidebar.classList.add("-translate-x-full");
+              sidebarOverlay.classList.add("hidden");
+            }
+          });
+        }
       });
     </script>
   </body>

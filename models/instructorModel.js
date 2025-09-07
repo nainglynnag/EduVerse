@@ -185,13 +185,18 @@ export const getInstructorStudents = async (instructorId) => {
         u.name,
         u.email,
         u.joined_date,
-        COUNT(e.course_id) as courses_enrolled,
-        GROUP_CONCAT(c.title SEPARATOR ', ') as enrolled_courses
+        COUNT(DISTINCT e.course_id) as courses_enrolled,
+        GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as enrolled_courses,
+        COALESCE(SUM(DISTINCT cl.duration_minutes), 0) as total_study_time_minutes,
+        COUNT(DISTINCT lp.id) as lessons_completed,
+        COALESCE(SUM(CASE WHEN lp.completed = 1 THEN cl.duration_minutes ELSE 0 END), 0) as completed_lessons_time
       FROM users u
       JOIN enrollments e ON u.id = e.student_id
       JOIN courses c ON e.course_id = c.id
+      LEFT JOIN course_lessons cl ON c.id = cl.course_id
+      LEFT JOIN lesson_progress lp ON u.id = lp.student_id AND cl.id = lp.lesson_id
       WHERE c.instructor_id = ? AND u.role_id = (SELECT id FROM roles WHERE name = 'student')
-      GROUP BY u.id
+      GROUP BY u.id, u.name, u.email, u.joined_date
       ORDER BY courses_enrolled DESC, u.name
     `;
 
