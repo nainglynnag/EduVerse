@@ -1,3 +1,4 @@
+import { parse } from "dotenv";
 import {
   getAllCategories,
   getAllCourses,
@@ -15,6 +16,12 @@ import {
   createAdmin,
   updateAdmin,
   deleteAdmin,
+  getAllStudents,
+  getStudentDetails,
+  getAllStudentPlans,
+  createStudent,
+  updateStudent,
+  deleteStudent,
 } from "../models/adminModel.js";
 
 // Error Handler
@@ -245,28 +252,162 @@ export const deleteInstructorHandler = async (req, res) => {
   }
 };
 
-// Controllers for Users
-export const listStudents = (req, res) => {
+// Controllers for Students
+export const listStudents = async (req, res) => {
   try {
+    const students = await getAllStudents();
+    // console.log(students);
+
     res.render("admin/students/index", {
       layout: "admin/layouts/layout",
       active: "students",
       title: "Students",
+      students,
     });
   } catch (error) {
     errorHandler(res, error, "listStudents", "Students not found.");
   }
 };
 
-export const createStudent = (req, res) => {
+export const showStudentDetails = async (req, res) => {
   try {
+    const [student] = await getStudentDetails(req.params.id);
+    // console.log(student);
+
+    res.render("admin/students/studentDetail", {
+      layout: "admin/layouts/layout",
+      active: "students",
+      title: "Students",
+      student,
+    });
+  } catch (error) {
+    errorHandler(res, error, "showStudentDetails", "Student data not found.");
+  }
+};
+
+export const showCreateStudentForm = async (req, res) => {
+  try {
+    const studentPlans = await getAllStudentPlans();
+
     res.render("admin/students/create", {
       layout: "admin/layouts/layout",
       active: "students",
       title: "Students",
+      studentPlans,
     });
   } catch (error) {
-    errorHandler(res, error, "createStudent");
+    errorHandler(res, error, "showCreateStudentForm");
+  }
+};
+
+export const createStudentHandler = async (req, res) => {
+  try {
+    const { name, email, plan } = req.body;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      const studentPlans = await getAllStudentPlans();
+
+      return res.render("admin/students/create", {
+        layout: "admin/layouts/layout",
+        active: "students",
+        title: "Students",
+        studentPlans,
+        error: "Please provide a valid email address.",
+        form: { name, email, plan },
+      });
+    }
+
+    await createStudent(req.body);
+    res.redirect("/admin/students");
+  } catch (error) {
+    errorHandler(res, error, "createStudentHandler");
+  }
+};
+
+export const showEditStudentForm = async (req, res) => {
+  try {
+    const [student] = await getStudentDetails(req.params.id);
+    const studentPlans = await getAllStudentPlans();
+    const statuses = ["active", "inactive", "suspended"];
+
+    res.render("admin/students/update", {
+      layout: "admin/layouts/layout",
+      active: "students",
+      title: "Students",
+      studentPlans,
+      statuses,
+      form: { ...student },
+    });
+  } catch (error) {
+    errorHandler(res, error, "showEditStudentForm");
+  }
+};
+
+export const updateStudentHandler = async (req, res) => {
+  try {
+    const { name, email, password, plan, status } = req.body;
+    const id = req.params.id;
+
+    const studentPlans = await getAllStudentPlans();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      const statuses = ["active", "inactive", "suspended"];
+
+      return res.render("admin/students/create", {
+        layout: "admin/layouts/layout",
+        active: "students",
+        title: "Students",
+        studentPlans,
+        statuses,
+        error: "Please provide a valid email address.",
+        form: { id, name, email, plan, status },
+      });
+    }
+
+    const [student] = await getStudentDetails(req.params.id);
+
+    const currentPlanId = studentPlans.find(
+      (plan) => plan.name.toLowerCase() === student.plan.toLowerCase()
+    ).id;
+
+    const updates = {};
+    if (student.name !== name) updates.name = name;
+    if (student.email !== email) updates.email = email;
+    if (password !== "") updates.password_hash = password;
+    if (currentPlanId !== Number(plan)) updates.plan_id = Number(plan);
+    if (student.status !== status) updates.status = status;
+
+    if (Object.keys(updates).length > 0) {
+      await updateStudent(id, updates);
+    } else {
+      const statuses = ["active", "inactive", "suspended"];
+
+      return res.render("admin/students/update", {
+        layout: "admin/layouts/layout",
+        active: "students",
+        title: "Students",
+        studentPlans,
+        statuses,
+        error: "No changes are detected.",
+        form: { id, name, email, plan, status },
+      });
+    }
+
+    res.redirect("/admin/students");
+  } catch (error) {
+    errorHandler(res, error, "updateStudentHandler");
+  }
+};
+
+export const deleteStudentHandler = async (req, res) => {
+  try {
+    const id = req.params.id;
+    await deleteStudent(id);
+    res.redirect("/admin/students");
+  } catch (error) {
+    errorHandler(res, error, "deleteStudentHandler");
   }
 };
 

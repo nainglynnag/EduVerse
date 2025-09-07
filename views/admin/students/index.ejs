@@ -1,9 +1,12 @@
 <!-- Users index view -->
 <div id="usersFragment">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">User Management</h2>
+    <h2 class="text-2xl font-bold text-gray-800">
+      Student Management
+      <span class="text-lg text-blue-600">(<%= students.length %>)</span>
+    </h2>
     <a
-      href="/admin/users/create"
+      href="/admin/create-student"
       class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 md:px-6 py-2 rounded-lg hover:from-red-700 hover:to-orange-700 transition-all flex items-center space-x-2"
     >
       <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -13,42 +16,53 @@
           clip-rule="evenodd"
         />
       </svg>
-      <span class="text-sm md:text-base">Add New User</span>
+      <span class="text-sm md:text-base">Add New Student</span>
     </a>
   </div>
 
-  <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+  <% if (students && students.length > 0) { %>
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead class="bg-gray-50">
           <tr>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500">
+              #
+            </th>
+
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase"
             >
-              User
+              Student ID
+            </th>
+
+            <th
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
+            >
+              Student Name
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
             >
-              Email
+              Email address
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
             >
-              Joined
+              Joined Date
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
             >
               Courses
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
             >
               Status
             </th>
             <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+              class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase"
             >
               Actions
             </th>
@@ -56,111 +70,154 @@
         </thead>
         <tbody id="usersTableBody" class="bg-white divide-y divide-gray-200">
           <!-- server rendered rows -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
+          <% students.map((student,index) => { %>
+            <a href="/admin/students/<%= student.id %>">
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-end">
+                  <%= index + 1 %>
+                </td>
 
-<script>
-  let users = [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john.doe@email.com",
-      joined: "2024-01-15",
-      courses: 5,
-      status: "active",
-      type: "premium",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane.smith@email.com",
-      joined: "2024-01-20",
-      courses: 3,
-      status: "active",
-      type: "free",
-    },
-    {
-      id: 3,
-      name: "Bob Johnson",
-      email: "bob.johnson@email.com",
-      joined: "2024-02-01",
-      courses: 8,
-      status: "inactive",
-      type: "premium",
-    },
-  ];
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-end">
+                  <%= student.student_code %>
+                </td>
 
-  function showUsers() {
-    // hideAllContent();
-    // document.getElementById("usersContent").classList.remove("hidden");
-    // updateActiveNav("users");
-    // document.querySelector("header h1").textContent = "User Management";
-    populateUsersTable();
-  }
-
-  function populateUsersTable() {
-    const tbody = document.getElementById("usersTableBody");
-    tbody.innerHTML = users
-      .map(
-        (user) => `
-                <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10">
                                 <div class="h-10 w-10 rounded-full bg-gradient-to-r from-green-500 to-blue-500 flex items-center justify-center">
-                                    <span class="text-sm font-bold text-white">${user.name
-                                      .split(" ")
-                                      .map((n) => n[0])
-                                      .join("")}</span>
+                                    <span class="text-sm font-bold text-white"><%= student.name.split(" ").map((n) => n[0]).join("") %></span>
                                 </div>
                             </div>
                             <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">${
-                                  user.name
-                                }</div>
-                                <div class="text-sm text-gray-500">${
-                                  user.type
-                                } user</div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    <%= student.name %>
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                  <%= student.plan %> user</div>
                             </div>
                         </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
-                      user.email
-                    }</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
-                      user.joined
-                    }</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${
-                      user.courses
-                    }</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.status === "active"
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <%= student.email %>
+                    </td>
+
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-end">
+                      <%= student.joined_date.toLocaleDateString() %>
+                    </td>
+
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-end">
+                      <%= student.total_courses %>
+                    </td>
+
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full <%= student.status === "active"
                             ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }">${user.status}</span>
+                            : "bg-red-100 text-red-800" %>"><%= student.status %></span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <div class="flex space-x-2">
-                            <button onclick="viewItem('user', ${
-                              user.id
-                            })" class="text-blue-600 hover:text-blue-900">View</button>
-                            <button onclick="editItem('user', ${
-                              user.id
-                            })" class="text-indigo-600 hover:text-indigo-900">Edit</button>
-                            <button onclick="deleteItem('user', ${
-                              user.id
-                            })" class="text-red-600 hover:text-red-900">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-            `
-      )
-      .join("");
-  }
 
-  showUsers();
-</script>
+              <div class="flex space-x-3 items-center">
+                <a
+                  href="/admin/students/<%= student.id %>"
+                  class="text-blue-400 hover:text-blue-800 active:scale-90 duration-300"
+                >
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                      />
+                    </svg>
+                  </div>
+                </a>
+
+                <a
+                  href="/admin/edit-student/<%= student.id %>"
+                  class="text-indigo-500 hover:text-indigo-900 active:scale-90 duration-300"
+                >
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                      />
+                    </svg>
+                  </div>
+                </a>
+                <a
+                  class="text-red-600 hover:text-red-400 active:scale-90 duration-300 btn-delete"
+                  data-action="/admin/delete-student/<%= student.id %>"
+                  data-confirm-message="Are you sure you want to delete Student <%= student.name %>? This action cannot be undone."
+                >
+                  <div>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-6"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                      />
+                    </svg>
+                  </div>
+                </a>
+              </div>
+            </td>
+            </tr>
+            </a>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% }else{ %>
+    <div class="col-span-full text-center py-4">
+    <div class="bg-white rounded-2xl p-8 shadow-lg">
+      <svg
+        class="w-16 h-16 text-gray-400 mx-auto mb-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
+        />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">No Students Yet</h3>
+      <p class="text-gray-600 mb-4">
+        Students will appear here once they register on the platform.
+      </p>
+      <a
+        href="/admin/courses"
+        class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-lg hover:from-red-700 hover:to-orange-700 transition-all"
+      >
+        View All Courses
+      </a>
+    </div>
+  </div>
+  <% } %>
+
+  
+
+  
+</div>

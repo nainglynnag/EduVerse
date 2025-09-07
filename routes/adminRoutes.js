@@ -5,10 +5,11 @@ import {
   createCategoryHandler,
   createCourseHandler,
   createInstructorHandler,
-  createStudent,
+  createStudentHandler,
   deleteAdminHandler,
   deleteCategoryHandler,
   deleteInstructorHandler,
+  deleteStudentHandler,
   listAdmins,
   listCategories,
   listCourses,
@@ -18,13 +19,17 @@ import {
   showCreateCategoryForm,
   showcreateCourseForm,
   showCreateInstructorForm,
+  showCreateStudentForm,
   showEditAdminForm,
   showEditCategoryForm,
   showEditInstructorForm,
+  showEditStudentForm,
   showInstructorDetail,
+  showStudentDetails,
   updateAdminHandler,
   updateCategoryHandler,
   updateInstructorHandler,
+  updateStudentHandler,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -54,7 +59,13 @@ router.post("/delete-instructor/:id", deleteInstructorHandler);
 
 // Routes for Students
 router.get("/students", listStudents);
-router.get("/create-student", createStudent);
+router.get("/create-student", showCreateStudentForm);
+router.post("/create-student", createStudentHandler);
+router.get("/students/:id", showStudentDetails);
+router.get("/edit-student/:id", showEditStudentForm);
+router.post("/edit-student/:id", updateStudentHandler);
+router.get("/delete-student/:id", deleteStudentHandler);
+router.post("/delete-student/:id", deleteStudentHandler);
 
 // Routes for Categories
 router.get("/categories", listCategories);

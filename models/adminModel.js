@@ -184,6 +184,136 @@ export const deleteInstructor = async (user_id) => {
   }
 };
 
+// Queries for Students
+export const getAllStudents = async () => {
+  try {
+    const [students] = await db.promise().query(`
+      SELECT id, student_code, name, email, status, joined_date, plan, total_courses
+      FROM student_profiles_view;
+    `);
+
+    return students;
+  } catch (error) {
+    errorHandler(error, "getAllStudents", "get students");
+  }
+};
+
+export const getStudentDetails = async (studentId) => {
+  try {
+    const [students] = await db.promise().query(
+      `
+      SELECT *
+      FROM student_profiles_view
+      WHERE id = ?
+    `,
+      [studentId]
+    );
+
+    return students;
+  } catch (error) {
+    errorHandler(error, "getStudentDetails", "get student details");
+  }
+};
+
+export const createStudent = async ({ name, email, password, plan }) => {
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const [result] = await db.promise().query(
+      `INSERT INTO users (name, email, password_hash, role_id)
+      VALUES (?, ?, ?, ?)`,
+      [name, email, hashedPassword, 1]
+    );
+
+    const userId = result.insertId;
+
+    await db.promise().query(
+      `
+      INSERT INTO student_profiles (user_id, plan_id)
+      VALUES (?, ?)`,
+      [userId, plan]
+    );
+  } catch (error) {
+    errorHandler(error, "createStudent", "create student account");
+  }
+};
+
+export const updateStudent = async (user_id, updates) => {
+  try {
+    console.log("update student model", user_id, updates);
+
+    if (updates.password_hash) {
+      const password_hash = await bcrypt.hash(updates.password_hash, 10);
+
+      updates.password_hash = password_hash;
+    }
+
+    const userFields = {};
+    const studentProfileFields = {};
+
+    const userColumns = ["name", "email", "password_hash", "status"];
+    const studentProfileColumns = ["plan_id"];
+
+    Object.entries(updates).map(([key, value]) => {
+      if (userColumns.includes(key)) {
+        userFields[key] = value;
+      } else if (studentProfileColumns.includes(key)) {
+        studentProfileFields[key] = value;
+      }
+    });
+
+    const userSetClause = Object.keys(userFields)
+      .map((key) => `u.${key} = ?`)
+      .join(", ");
+
+    const studentProfileSetClause = Object.keys(studentProfileFields)
+      .map((key) => `sp.${key} = ?`)
+      .join(", ");
+
+    const setClauses = [userSetClause, studentProfileSetClause]
+      .filter((clause) => clause)
+      .join(", ");
+
+    const values = [
+      ...Object.values(userFields),
+      ...Object.values(studentProfileFields),
+      user_id,
+    ];
+
+    const query = `
+      UPDATE users u
+      JOIN student_profiles sp ON u.id = sp.user_id
+      SET ${setClauses}
+      WHERE u.id = ?
+    `;
+
+    return await db.promise().query(query, values);
+  } catch (error) {
+    errorHandler(error, "updateStudent", "update student");
+  }
+};
+
+export const deleteStudent = async (user_id) => {
+  try {
+    await db.promise().query("DELETE FROM users WHERE id = ?", [user_id]);
+  } catch (error) {
+    errorHandler(error, "deleteStudent", "delete student");
+  }
+};
+
+// Queries for student plans
+export const getAllStudentPlans = async () => {
+  try {
+    const [studentPlans] = await db.promise().query(`
+      SELECT * FROM student_plans;
+    `);
+
+    return studentPlans;
+  } catch (error) {
+    errorHandler(error, "getAllStudentPlans", "get student plans");
+  }
+};
+
 // Queries for Categories
 export const getAllCategories = async () => {
   try {
