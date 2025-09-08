@@ -19,6 +19,40 @@
     >
   </div>
 
+  <!-- Category Filters -->
+  <div class="bg-white opacity-80 backdrop-blur-lg rounded-lg p-4 mb-4 shadow-sm">
+    <div
+      class="flex flex-wrap md:gap-4 justify-between items-center"
+    >
+      <div class="flex text-sm overflow-x-auto">
+        
+      </div>
+
+      <div class="flex-1"></div>
+      <div class="relative w-full md:w-auto">
+        <input
+          type="text"
+          placeholder="Search category..."
+          class="pl-10 pr-4 py-1.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-text-sm md:placeholder-text-base"
+        />
+        <svg
+          class="w-4 h-4 text-gray-400 absolute left-3 top-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+
   <% if(categories && categories.length > 0) { %>
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
