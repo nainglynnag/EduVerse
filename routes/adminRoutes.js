@@ -15,6 +15,7 @@ import {
   listCourses,
   listInstructors,
   listStudents,
+  showCourseDetail,
   showCreateAdminForm,
   showCreateCategoryForm,
   showcreateCourseForm,
@@ -46,6 +47,7 @@ router.get("/", adminDashboard);
 router.get("/courses", listCourses);
 router.get("/courses/create", showcreateCourseForm);
 router.post("/courses/create", createCourseHandler);
+router.get("/courses/:id", showCourseDetail);
 
 // Routes for Instructors
 router.get("/instructors", listInstructors);

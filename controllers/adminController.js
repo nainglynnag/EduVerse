@@ -22,6 +22,7 @@ import {
   createStudent,
   updateStudent,
   deleteStudent,
+  getCourseDetails,
 } from "../models/adminModel.js";
 
 // Error Handler
@@ -80,6 +81,24 @@ export const showcreateCourseForm = async (req, res) => {
     });
   } catch (error) {
     errorHandler(res, error, "showcreateCourseForm");
+  }
+};
+
+export const showCourseDetail = async (req, res) => {
+  const [course] = await getCourseDetails(req.params.id);
+
+  // console.log(course);
+
+  try {
+    // const course = await getCourseDetails(req.params.id);
+    res.render("admin/courses/courseDetail", {
+      layout: "admin/layouts/layout",
+      active: "courses",
+      title: "Courses",
+      course,
+    });
+  } catch (error) {
+    errorHandler(res, error, "showCourseDetail");
   }
 };
 

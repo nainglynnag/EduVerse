@@ -26,6 +26,62 @@ export const getAllCourses = async () => {
   }
 };
 
+export const getCourseDetails = async (courseId) => {
+  try {
+    // Get course basic details
+    const [courseData] = await db.promise().query(
+      `
+      SELECT c.*, u.id AS instructor_id, u.name AS instructor_name, cat.name AS category_name, d.name AS difficulty_level,
+             COUNT(e.student_id) AS total_students
+      FROM courses c
+      LEFT JOIN users u ON c.instructor_id = u.id
+      LEFT JOIN categories cat ON c.category_id = cat.id
+      LEFT JOIN difficulty_levels d ON c.difficulty_id = d.id
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      WHERE c.id = ?
+      GROUP BY c.id
+    `,
+      [courseId]
+    );
+
+    // Get course objectives
+    const [objectives] = await db
+      .promise()
+      .query(`SELECT objective FROM course_objectives WHERE course_id = ?`, [
+        courseId,
+      ]);
+
+    const [prerequisites] = await db
+      .promise()
+      .query(
+        `SELECT prerequisite FROM course_prerequisites WHERE course_id = ?`,
+        [courseId]
+      );
+
+    // Get course lessons with video URLs
+    const [lessons] = await db.promise().query(
+      `SELECT id, lesson_no, title, duration_hours, description, video_url 
+       FROM course_lessons 
+       WHERE course_id = ? 
+       ORDER BY lesson_no`,
+      [courseId]
+    );
+
+    const course = courseData[0];
+    if (course) {
+      course.objectives = objectives.map((obj) => obj.objective).join(" | ");
+      course.prerequisites = prerequisites
+        .map((prerequisite) => prerequisite.objective)
+        .join(" | ");
+      course.lessons = lessons;
+    }
+
+    return [course];
+  } catch (error) {
+    errorHandler(error, "getCourseDetails", "get course details");
+  }
+};
+
 export const createCourse = async (data) => {
   try {
     const {
