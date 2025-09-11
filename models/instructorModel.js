@@ -46,9 +46,6 @@ export const getInstructorCourses = async (instructorId) => {
       SELECT 
         c.*,
         cat.name as category_name,
-        cat.title as category_title,
-        cat.display_name as category_display_name,
-        cat.description as category_description,
         cat.color_theme as category_color,
         dl.name as difficulty_name,
         dl.description as difficulty_description,
@@ -75,7 +72,6 @@ export const getCourseByIdAndInstructor = async (courseId, instructorId) => {
       SELECT 
         c.*,
         cat.name as category_name,
-        cat.display_name as category_display_name,
         dl.name as difficulty_name,
         COUNT(e.id) as enrollment_count
       FROM courses c
@@ -106,8 +102,8 @@ export const createCourse = async (courseData) => {
     } = courseData;
 
     const query = `
-      INSERT INTO courses (title, category_id, difficulty_id, price, description, status, instructor_id, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      INSERT INTO courses (title, category_id, difficulty_id, price, description, status, instructor_id, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     `;
 
     const [result] = await db.execute(query, [
@@ -137,9 +133,11 @@ export const updateCourse = async (courseId, instructorId, courseData) => {
       status
     } = courseData;
 
+    console.log('Updating course with data:', { courseId, instructorId, courseData });
+
     const query = `
       UPDATE courses 
-      SET title = ?, category_id = ?, difficulty_id = ?, price = ?, description = ?, status = ?, updated_at = NOW()
+      SET title = ?, category_id = ?, difficulty_id = ?, price = ?, description = ?, status = ?
       WHERE id = ? AND instructor_id = ?
     `;
 
@@ -154,9 +152,12 @@ export const updateCourse = async (courseId, instructorId, courseData) => {
       instructorId
     ]);
 
+    console.log('Update result:', result);
     return result.affectedRows > 0;
   } catch (error) {
+    console.error('Error in updateCourse:', error);
     handleDbError(error, 'updateCourse');
+    return false;
   }
 };
 
@@ -187,9 +188,9 @@ export const getInstructorStudents = async (instructorId) => {
         u.joined_date,
         COUNT(DISTINCT e.course_id) as courses_enrolled,
         GROUP_CONCAT(DISTINCT c.title SEPARATOR ', ') as enrolled_courses,
-        COALESCE(SUM(DISTINCT cl.duration_minutes), 0) as total_study_time_minutes,
+        COALESCE(SUM(DISTINCT cl.duration_mins), 0) as total_study_time_minutes,
         COUNT(DISTINCT lp.id) as lessons_completed,
-        COALESCE(SUM(CASE WHEN lp.completed = 1 THEN cl.duration_minutes ELSE 0 END), 0) as completed_lessons_time
+        COALESCE(SUM(CASE WHEN lp.completed = 1 THEN cl.duration_mins ELSE 0 END), 0) as completed_lessons_time
       FROM users u
       JOIN enrollments e ON u.id = e.student_id
       JOIN courses c ON e.course_id = c.id
@@ -211,9 +212,9 @@ export const getInstructorStudents = async (instructorId) => {
 export const getAllCategories = async () => {
   try {
     const query = `
-      SELECT id, name, title, display_name, description, color_theme
+      SELECT id, name, description, color_theme
       FROM categories
-      ORDER BY display_name
+      ORDER BY name
     `;
 
     const [results] = await db.execute(query);
@@ -237,3 +238,56 @@ export const getAllDifficultyLevels = async () => {
     handleDbError(error, 'getAllDifficultyLevels');
   }
 };
+
+// Course Lessons and Objectives Functions
+export const getCourseLessons = async (courseId) => {
+  try {
+    const query = `
+      SELECT id, lesson_no, title, duration_mins, description, video_url
+      FROM course_lessons
+      WHERE course_id = ?
+      ORDER BY lesson_no
+    `;
+
+    const [results] = await db.execute(query, [courseId]);
+    return results || [];
+  } catch (error) {
+    console.error('Error in getCourseLessons:', error);
+    return [];
+  }
+};
+
+export const getCourseObjectives = async (courseId) => {
+  try {
+    const query = `
+      SELECT id, objective
+      FROM course_objectives
+      WHERE course_id = ?
+      ORDER BY id
+    `;
+
+    const [results] = await db.execute(query, [courseId]);
+    return results || [];
+  } catch (error) {
+    console.error('Error in getCourseObjectives:', error);
+    return [];
+  }
+};
+
+export const getCoursePrerequisites = async (courseId) => {
+  try {
+    const query = `
+      SELECT id, prerequisite
+      FROM course_prerequisites
+      WHERE course_id = ?
+      ORDER BY id
+    `;
+
+    const [results] = await db.execute(query, [courseId]);
+    return results || [];
+  } catch (error) {
+    console.error('Error in getCoursePrerequisites:', error);
+    return [];
+  }
+};
+

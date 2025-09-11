@@ -1321,29 +1321,9 @@
       }
 
       // Course management functions
-      async function editCourse(courseId) {
-        try {
-          // Fetch course data from API
-          const response = await fetch(`/api/courses/${courseId}`);
-          const result = await response.json();
-          
-          if (result.success) {
-            const course = result.data;
-            // Populate edit form with course data
-            populateEditForm(course);
-            hideAllContent();
-            document
-              .getElementById("editCourseContent")
-              .classList.remove("hidden");
-            document.querySelector("header h1").textContent = "Edit Course";
-          } else {
-            alert("Error loading course data: " + result.message);
-          }
-        } catch (error) {
-          console.error('Error loading course:', error);
-          alert("Error loading course data. Please try again.");
-        }
-        closeCourseDetail();
+      function editCourse(courseId) {
+        // Redirect to the edit page
+        window.location.href = `/instructor/courses/${courseId}/edit`;
       }
 
       function duplicateCourse() {
@@ -1365,7 +1345,7 @@
           )
         ) {
           try {
-            const response = await fetch(`/api/courses/${courseId}`, {
+            const response = await fetch(`/instructor/courses/${courseId}`, {
               method: 'DELETE',
               headers: {
                 'Content-Type': 'application/json',

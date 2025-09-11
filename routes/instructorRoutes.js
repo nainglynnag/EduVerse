@@ -5,9 +5,11 @@ import {
   getInstructorCoursesList,
   getCreateCoursePage,
   createCourse,
+  getCourseDetail,
   getEditCoursePage,
   updateCourse,
   deleteCourse,
+  deleteLesson,
   getInstructorStudentsPage
 } from '../controllers/instructorController.js';
 
@@ -24,9 +26,13 @@ router.get('/dashboard', getInstructorDashboard);
 router.get('/courses', getInstructorCoursesList);
 router.get('/courses/create', getCreateCoursePage);
 router.post('/courses/create', createCourse);
+router.get('/courses/:courseId', getCourseDetail);
 router.get('/courses/:courseId/edit', getEditCoursePage);
 router.post('/courses/:courseId/edit', updateCourse);
 router.delete('/courses/:courseId', deleteCourse);
+
+// Lesson Management Routes
+router.delete('/courses/:courseId/lessons/:lessonId', deleteLesson);
 
 // Student Management Routes
 router.get('/students', getInstructorStudentsPage);

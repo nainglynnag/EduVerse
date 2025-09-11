@@ -127,12 +127,12 @@
                    data-course-id="<%= course.id %>"
                    data-course-title="<%= course.title %>"
                    data-course-description="<%= course.description || 'No description available' %>"
-                   data-course-category="<%= course.category_display_name || course.category_name || 'Uncategorized' %>"
+                   data-course-category="<%= course.category_name || 'Uncategorized' %>"
                    data-course-price="<%= course.price || 0 %>"
                    data-course-difficulty="<%= course.difficulty_name || 'Unknown' %>"
                    data-course-status="<%= course.status %>"
                    data-course-enrollments="<%= course.enrollment_count || 0 %>"
-                   onclick="openDashboardCourseDetail('<%= course.id %>')">
+                   onclick="window.location.href='/instructor/courses/<%= course.id %>'">
                 <div class="flex items-center space-x-4">
                   <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">

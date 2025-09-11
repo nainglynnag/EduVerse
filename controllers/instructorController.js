@@ -7,11 +7,15 @@ import {
   getAllDifficultyLevels,
   createCourse as createCourseModel,
   getCourseByIdAndInstructor,
-  updateCourse as updateCourseModel
+  updateCourse as updateCourseModel,
+  getCourseLessons,
+  getCourseObjectives,
+  getCoursePrerequisites
 } from "../models/instructorModel.js";
+import db from "../config/db.js";
 
 // Constants
-const DEFAULT_INSTRUCTOR_ID = 4; // TODO: Replace with session-based authentication
+const DEFAULT_INSTRUCTOR_ID = 2; // John Smith - React instructor from seeded data
 const DEFAULT_LAYOUT = "instructors/layouts/layout";
 
 // Helper function for error handling
@@ -122,10 +126,19 @@ export const createCourse = async (req, res) => {
       courseDifficulty: difficulty_id,
       coursePrice: price,
       courseDescription: description,
-      status = 'draft'
+      courseObjectives: objectives,
+      coursePrerequisites: prerequisites,
+      lessonTitles = [],
+      lessonDurations = [],
+      lessonDescriptions = [],
+      lessonVideoUrls = [],
+      courseStatus: status = 'draft'
     } = req.body;
 
     const instructorId = DEFAULT_INSTRUCTOR_ID;
+
+    console.log('Course status received:', status);
+    console.log('Course status type:', typeof status);
 
     // Validate required fields
     if (!title || !category_id || !difficulty_id) {
@@ -145,9 +158,51 @@ export const createCourse = async (req, res) => {
       instructor_id: instructorId
     };
 
-    const newCourse = await createCourseModel(courseData);
+    const newCourseId = await createCourseModel(courseData);
 
-    if (newCourse) {
+    if (newCourseId) {
+      // Create course objectives if provided
+      if (objectives && objectives.trim()) {
+        const objectiveLines = objectives.split('\n').filter(line => line.trim());
+        for (const objective of objectiveLines) {
+          await db.execute(
+            'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
+            [newCourseId, objective.trim()]
+          );
+        }
+      }
+
+      // Create course prerequisites if provided
+      if (prerequisites && prerequisites.trim()) {
+        const prerequisiteLines = prerequisites.split('\n').filter(line => line.trim());
+        for (const prerequisite of prerequisiteLines) {
+          await db.execute(
+            'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
+            [newCourseId, prerequisite.trim()]
+          );
+        }
+      }
+
+      // Create course lessons if provided
+      if (lessonTitles && lessonTitles.length > 0) {
+        for (let i = 0; i < lessonTitles.length; i++) {
+          if (lessonTitles[i] && lessonTitles[i].trim()) {
+            const lessonNumber = i + 1; // Automatically generate sequential lesson numbers
+            await db.execute(
+              'INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES (?, ?, ?, ?, ?, ?)',
+              [
+                newCourseId,
+                lessonNumber,
+                lessonTitles[i].trim(),
+                lessonDurations[i] ? parseInt(lessonDurations[i]) : null,
+                lessonDescriptions[i] ? lessonDescriptions[i].trim() : null,
+                lessonVideoUrls[i] ? lessonVideoUrls[i].trim() : null
+              ]
+            );
+          }
+        }
+      }
+
       res.redirect('/instructor/courses');
     } else {
       handleError(res, new Error('Failed to create course'), 'Failed to create course');
@@ -158,15 +213,16 @@ export const createCourse = async (req, res) => {
   }
 };
 
-export const getEditCoursePage = async (req, res) => {
+export const getCourseDetail = async (req, res) => {
   try {
     const { courseId } = req.params;
     const instructorId = DEFAULT_INSTRUCTOR_ID;
 
-    const [course, categories, difficultyLevels] = await Promise.all([
+    const [course, lessons, objectives, prerequisites] = await Promise.all([
       getCourseByIdAndInstructor(courseId, instructorId),
-      getAllCategories(),
-      getAllDifficultyLevels()
+      getCourseLessons(courseId),
+      getCourseObjectives(courseId),
+      getCoursePrerequisites(courseId)
     ]);
 
     if (!course) {
@@ -176,13 +232,56 @@ export const getEditCoursePage = async (req, res) => {
       });
     }
 
-    renderSuccess(res, "instructors/courses/edit", {
+    renderSuccess(res, "instructors/courses/detail", {
       course,
-      categories,
-      difficultyLevels
+      lessons,
+      objectives,
+      prerequisites
     });
 
   } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getEditCoursePage = async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+
+    console.log('Getting edit page for course:', courseId);
+
+    const [course, categories, difficultyLevels, lessons, objectives, prerequisites] = await Promise.all([
+      getCourseByIdAndInstructor(courseId, instructorId),
+      getAllCategories(),
+      getAllDifficultyLevels(),
+      getCourseLessons(courseId),
+      getCourseObjectives(courseId),
+      getCoursePrerequisites(courseId)
+    ]);
+
+
+    if (!course) {
+      return res.status(404).render('error', {
+        message: 'Course not found',
+        layout: DEFAULT_LAYOUT
+      });
+    }
+
+    const templateData = {
+      course,
+      categories,
+      difficultyLevels,
+      lessons: lessons || [],
+      objectives: objectives || [],
+      prerequisites: prerequisites || []
+    };
+
+
+    renderSuccess(res, "instructors/courses/edit", templateData);
+
+  } catch (error) {
+    console.error('Error in getEditCoursePage:', error);
     handleError(res, error);
   }
 };
@@ -198,7 +297,14 @@ export const updateCourse = async (req, res) => {
       courseDifficulty: difficulty_id,
       coursePrice: price,
       courseDescription: description,
-      status
+      status,
+      lessonTitles = [],
+      lessonDurations = [],
+      lessonDescriptions = [],
+      lessonVideoUrls = [],
+      lessonIds = [],
+      courseObjectives: objectivesText,
+      coursePrerequisites: prerequisitesText
     } = req.body;
 
     // Validate required fields
@@ -218,16 +324,122 @@ export const updateCourse = async (req, res) => {
       status
     };
 
+    console.log('Course data to update:', courseData);
+
     const updatedCourse = await updateCourseModel(courseId, instructorId, courseData);
 
     if (updatedCourse) {
+      // Handle lesson updates
+      await updateCourseLessons(courseId, {
+        lessonTitles,
+        lessonDurations,
+        lessonDescriptions,
+        lessonVideoUrls,
+        lessonIds
+      });
+
+      // Handle objectives updates
+      await updateCourseObjectivesFromText(courseId, objectivesText);
+
+      // Handle prerequisites updates
+      await updateCoursePrerequisitesFromText(courseId, prerequisitesText);
+
       res.redirect('/instructor/courses');
     } else {
-      handleError(res, new Error('Failed to update course'), 'Failed to update course');
+      console.log('Update failed - no rows affected');
+      handleError(res, new Error('Failed to update course - course not found or no changes made'), 'Failed to update course');
     }
 
   } catch (error) {
+    console.error('Error in updateCourse controller:', error);
     handleError(res, error, 'Error updating course');
+  }
+};
+
+// Helper function to update course lessons
+const updateCourseLessons = async (courseId, lessonData) => {
+  try {
+    const { lessonTitles, lessonDurations, lessonDescriptions, lessonVideoUrls, lessonIds } = lessonData;
+
+    // First, delete all existing lessons for this course
+    await db.execute('DELETE FROM course_lessons WHERE course_id = ?', [courseId]);
+
+    // Then, insert the new/updated lessons
+    if (lessonTitles && lessonTitles.length > 0) {
+      for (let i = 0; i < lessonTitles.length; i++) {
+        if (lessonTitles[i] && lessonTitles[i].trim()) {
+          const lessonNumber = i + 1; // Automatically generate sequential lesson numbers
+          await db.execute(
+            'INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES (?, ?, ?, ?, ?, ?)',
+            [
+              courseId,
+              lessonNumber,
+              lessonTitles[i].trim(),
+              lessonDurations[i] ? parseInt(lessonDurations[i]) : null,
+              lessonDescriptions[i] ? lessonDescriptions[i].trim() : null,
+              lessonVideoUrls[i] ? lessonVideoUrls[i].trim() : null
+            ]
+          );
+        }
+      }
+    }
+
+    console.log('Lessons updated successfully for course:', courseId);
+  } catch (error) {
+    console.error('Error updating course lessons:', error);
+    throw error;
+  }
+};
+
+// Helper function to update course objectives from text
+const updateCourseObjectivesFromText = async (courseId, objectivesText) => {
+  try {
+    // First, delete all existing objectives for this course
+    await db.execute('DELETE FROM course_objectives WHERE course_id = ?', [courseId]);
+
+    // Then, insert the new objectives from text (split by newlines)
+    if (objectivesText && objectivesText.trim()) {
+      const objectives = objectivesText.split('\n').filter(line => line.trim());
+      for (const objective of objectives) {
+        if (objective.trim()) {
+          await db.execute(
+            'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
+            [courseId, objective.trim()]
+          );
+        }
+      }
+    }
+
+    console.log('Objectives updated successfully for course:', courseId);
+  } catch (error) {
+    console.error('Error updating course objectives:', error);
+    throw error;
+  }
+};
+
+// Helper function to update course prerequisites from text
+const updateCoursePrerequisitesFromText = async (courseId, prerequisitesText) => {
+  try {
+    // First, delete all existing prerequisites for this course
+    await db.execute('DELETE FROM course_prerequisites WHERE course_id = ?', [courseId]);
+
+    // Then, insert the new prerequisites from text (split by newlines)
+    if (prerequisitesText && prerequisitesText.trim()) {
+      const prerequisites = prerequisitesText.split('\n').filter(line => line.trim());
+      for (const prerequisite of prerequisites) {
+        if (prerequisite.trim()) {
+          await db.execute(
+            'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
+            [courseId, prerequisite.trim()]
+          );
+        }
+      }
+    }
+
+    console.log('Prerequisites updated successfully for course:', courseId);
+  } catch (error) {
+    console.error('Error updating course prerequisites:', error);
+    throw error;
   }
 };
 
@@ -236,12 +448,87 @@ export const deleteCourse = async (req, res) => {
     const { courseId } = req.params;
     const instructorId = DEFAULT_INSTRUCTOR_ID;
 
-    // TODO: Implement delete course functionality
-    // For now, return success
-    res.json({ success: true, message: 'Course deleted successfully' });
+    console.log('Delete course request:', { courseId, instructorId });
+
+    // First check if course exists and belongs to the instructor
+    const course = await getCourseByIdAndInstructor(courseId, instructorId);
+    
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found or you do not have permission to delete it'
+      });
+    }
+
+    // Delete related data first (foreign key constraints)
+    await db.execute('DELETE FROM course_lessons WHERE course_id = ?', [courseId]);
+    await db.execute('DELETE FROM course_objectives WHERE course_id = ?', [courseId]);
+    await db.execute('DELETE FROM course_prerequisites WHERE course_id = ?', [courseId]);
+    await db.execute('DELETE FROM enrollments WHERE course_id = ?', [courseId]);
+    await db.execute('DELETE FROM lesson_progress WHERE course_id = ?', [courseId]);
+
+    // Finally delete the course
+    const [result] = await db.execute('DELETE FROM courses WHERE id = ? AND instructor_id = ?', [courseId, instructorId]);
+
+    if (result.affectedRows > 0) {
+      console.log('Course deleted successfully:', courseId);
+      res.json({ success: true, message: 'Course deleted successfully' });
+    } else {
+      console.log('Failed to delete course - no rows affected');
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete course'
+      });
+    }
 
   } catch (error) {
-    handleError(res, error, 'Error deleting course');
+    console.error('Error in deleteCourse controller:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting course',
+      error: error.message
+    });
+  }
+};
+
+export const deleteLesson = async (req, res) => {
+  try {
+    const { courseId, lessonId } = req.params;
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+
+    console.log('Delete lesson request:', { courseId, lessonId, instructorId });
+
+    // First check if course exists and belongs to the instructor
+    const course = await getCourseByIdAndInstructor(courseId, instructorId);
+    
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: 'Course not found or you do not have permission to delete lessons from it'
+      });
+    }
+
+    // Delete the lesson
+    const [result] = await db.execute('DELETE FROM course_lessons WHERE id = ? AND course_id = ?', [lessonId, courseId]);
+
+    if (result.affectedRows > 0) {
+      console.log('Lesson deleted successfully:', lessonId);
+      res.json({ success: true, message: 'Lesson deleted successfully' });
+    } else {
+      console.log('Failed to delete lesson - no rows affected');
+      res.status(404).json({
+        success: false,
+        message: 'Lesson not found'
+      });
+    }
+
+  } catch (error) {
+    console.error('Error in deleteLesson controller:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting lesson',
+      error: error.message
+    });
   }
 };
 
