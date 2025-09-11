@@ -66,24 +66,26 @@ export const listCourses = async (req, res) => {
 export const showCourseDetail = async (req, res) => {
   const [course] = await getCourseDetails(req.params.id);
 
-  console.log(course);
-
-  // const lessons = course.lessons;
+  // console.log(course);
 
   // preprocess embed URL
-  course.lessons.map((lesson,index) => {
+  course.lessons.map((lesson, index) => {
     if (lesson.video_url.includes("youtube.com/watch?v=")) {
       const videoId = lesson.video_url.split("v=")[1];
-      course.lessons[index].embed_url = `https://www.youtube.com/embed/${videoId}`;
+      course.lessons[
+        index
+      ].embed_url = `https://www.youtube.com/embed/${videoId}`;
     } else if (lesson.video_url.includes("youtu.be/")) {
       const videoId = lesson.video_url.split("youtu.be/")[1];
-      course.lessons[index].embed_url = `https://www.youtube.com/embed/${videoId}`;
+      course.lessons[
+        index
+      ].embed_url = `https://www.youtube.com/embed/${videoId}`;
     } else {
       course.lessons[index].video_url;
     }
   });
-  // console.log("lessons",lessons);
-  console.log("course : ", course);
+
+  // console.log("course : ", course);
 
   try {
     // const course = await getCourseDetails(req.params.id);
@@ -120,7 +122,7 @@ export const showcreateCourseForm = async (req, res) => {
 
 export const createCourseHandler = async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
 
     const {
       courseTitle,
@@ -133,6 +135,17 @@ export const createCourseHandler = async (req, res) => {
       courseObjectives,
       coursePrerequisites,
     } = req.body;
+
+    // Helper to normalize multi-line Objectives and Prerequisites text into array items
+    const parseList = (value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value !== "string") return [];
+      return value
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0)
+        .map((line) => line.replace(/^[-•]\s*/, ""));
+    };
     if (!courseTitle || !courseCategory || !courseDescription) {
       const instructors = await getAllInstructors();
       const categories = await getAllCategories();
@@ -159,6 +172,11 @@ export const createCourseHandler = async (req, res) => {
         },
       });
     }
+
+    // Normalize fields to arrays so drafts match publish format
+    req.body.courseObjectives = parseList(courseObjectives);
+    req.body.coursePrerequisites = parseList(coursePrerequisites);
+
     await createCourse(req.body);
     res.redirect("/admin/courses");
   } catch (error) {

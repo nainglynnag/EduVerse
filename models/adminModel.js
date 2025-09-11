@@ -159,9 +159,9 @@ export const createCourse = async (data) => {
       const values = prerequisites.flatMap((p) => [courseId, p]);
       const placeholders = prerequisites.map(() => "(?, ?)").join(", ");
 
-      console.log("prerequisites", prerequisites);
-      console.log("values:", values);
-      console.log(placeholders);
+      // console.log("prerequisites", prerequisites);
+      // console.log("values:", values);
+      // console.log(placeholders);
 
       await db
         .promise()
