@@ -176,10 +176,10 @@
               <%= course.students %>
             </td>
             <td
-              class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 <%= course.price > 0 ? 'flex justify-between items-center' : 'text-center' %>"
+              class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 <%= course.price > 0 ? 'mt-2.5 flex justify-between items-center' : 'text-center' %>"
             >
               <% if (course.price > 0) { %>
-              <div class="">$</div>
+              <div>$</div>
               <div class="text-end"><%= course.price %></div>
               <% } else { %>
               <div class="text-teal-500 font-medium">Free</div>
