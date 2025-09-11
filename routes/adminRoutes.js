@@ -45,8 +45,8 @@ router.get("/", adminDashboard);
 
 // Routes for Courses
 router.get("/courses", listCourses);
-router.get("/courses/create", showcreateCourseForm);
-router.post("/courses/create", createCourseHandler);
+router.get("/create-course", showcreateCourseForm);
+router.post("/create-course", createCourseHandler);
 router.get("/courses/:id", showCourseDetail);
 
 // Routes for Instructors

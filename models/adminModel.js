@@ -60,7 +60,7 @@ export const getCourseDetails = async (courseId) => {
 
     // Get course lessons with video URLs
     const [lessons] = await db.promise().query(
-      `SELECT id, lesson_no, title, duration_hours, description, video_url 
+      `SELECT id, lesson_no, title, duration_mins, description, video_url 
        FROM course_lessons 
        WHERE course_id = ? 
        ORDER BY lesson_no`,
@@ -71,7 +71,7 @@ export const getCourseDetails = async (courseId) => {
     if (course) {
       course.objectives = objectives.map((obj) => obj.objective).join(" | ");
       course.prerequisites = prerequisites
-        .map((prerequisite) => prerequisite.objective)
+        .map((prereq) => prereq.prerequisite)
         .join(" | ");
       course.lessons = lessons;
     }
@@ -85,31 +85,133 @@ export const getCourseDetails = async (courseId) => {
 export const createCourse = async (data) => {
   try {
     const {
-      title,
-      instructor_id,
-      category_id,
-      difficulty_id,
-      price,
-      description,
+      courseTitle,
+      instructorId,
+      courseCategory,
+      courseDifficulty,
+      coursePrice,
+      courseDescription,
       status,
+      courseObjectives,
+      coursePrerequisites,
+      lessonTitle,
+      lessonDuration,
+      lessonDescription,
+      videoUrl,
     } = data;
+    // Normalize helpers
+    const toArray = (value) => {
+      if (value === undefined || value === null) return [];
+      if (Array.isArray(value)) return value;
+      return [value];
+    };
 
-    // console.log(data);
+    const objectives = toArray(courseObjectives)
+      .map((s) => (typeof s === "string" ? s.trim() : s))
+      .filter((s) => s && s.length > 0);
 
-    await db.promise().query(
+    const prerequisites = toArray(coursePrerequisites)
+      .map((s) => (typeof s === "string" ? s.trim() : s))
+      .filter((s) => s && s.length > 0);
+
+    const lessonTitles = toArray(lessonTitle);
+    const lessonDurations = toArray(lessonDuration);
+    const lessonDescriptions = toArray(lessonDescription);
+    const videoUrls = toArray(videoUrl);
+
+    await db.promise().beginTransaction();
+
+    // Insert into courses
+    const [courseInsert] = await db.promise().query(
       `INSERT INTO courses (title, instructor_id, category_id, difficulty_id, price, description, status)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [
-        title,
-        instructor_id || null,
-        category_id,
-        difficulty_id,
-        price,
-        description,
-        status,
+        courseTitle,
+        instructorId ? Number(instructorId) : null,
+        courseCategory ? Number(courseCategory) : null,
+        courseDifficulty ? Number(courseDifficulty) : null,
+        coursePrice !== undefined &&
+        coursePrice !== null &&
+        `${coursePrice}` !== ""
+          ? Number(coursePrice)
+          : 0,
+        courseDescription || null,
+        status === "published" ? "published" : "draft",
       ]
     );
+
+    const courseId = courseInsert.insertId;
+
+    // Insert objectives
+    if (objectives.length > 0) {
+      const values = objectives.flatMap((o) => [courseId, o]);
+      const placeholders = objectives.map(() => "(?, ?)").join(", ");
+      await db
+        .promise()
+        .query(
+          `INSERT INTO course_objectives (course_id, objective) VALUES ${placeholders}`,
+          values
+        );
+    }
+
+    // Insert prerequisites
+    if (prerequisites.length > 0) {
+      const values = prerequisites.flatMap((p) => [courseId, p]);
+      const placeholders = prerequisites.map(() => "(?, ?)").join(", ");
+
+      console.log("prerequisites", prerequisites);
+      console.log("values:", values);
+      console.log(placeholders);
+
+      await db
+        .promise()
+        .query(
+          `INSERT INTO course_prerequisites (course_id, prerequisite) VALUES ${placeholders}`,
+          values
+        );
+    }
+
+    // Prepare lessons rows (skip empty titles)
+    const lessonRows = [];
+    const maxLen = Math.max(
+      lessonTitles.length,
+      lessonDurations.length,
+      lessonDescriptions.length,
+      videoUrls.length
+    );
+    for (let i = 0; i < maxLen; i++) {
+      const title = (lessonTitles[i] || "").toString().trim();
+      if (!title) continue; // require title
+      const durationRaw = lessonDurations[i];
+      const duration =
+        durationRaw === undefined ||
+        durationRaw === null ||
+        `${durationRaw}`.trim() === ""
+          ? null
+          : Number(durationRaw);
+      const desc = lessonDescriptions[i] || null || null;
+      const vurl = videoUrls[i] || null || null;
+      lessonRows.push([courseId, i + 1, title, duration, desc, vurl]);
+    }
+
+    if (lessonRows.length > 0) {
+      const placeholders = lessonRows
+        .map(() => "(?, ?, ?, ?, ?, ?)")
+        .join(", ");
+      const flatValues = lessonRows.flat();
+      await db.promise().query(
+        `INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url)
+           VALUES ${placeholders}`,
+        flatValues
+      );
+    }
+
+    await db.promise().commit();
+    return courseId;
   } catch (error) {
+    try {
+      await db.promise().rollback();
+    } catch (_) {}
     errorHandler(error, "createCourse", "create course");
   }
 };

@@ -63,31 +63,27 @@ export const listCourses = async (req, res) => {
   }
 };
 
-export const showcreateCourseForm = async (req, res) => {
-  try {
-    const instructors = await getAllInstructors();
-    const categories = await getAllCategories();
-    const difficulties = await getAllDifficulties();
-    const statuses = ["published", "draft"];
-
-    res.render("admin/courses/create", {
-      layout: "admin/layouts/layout",
-      active: "courses",
-      title: "Courses",
-      instructors,
-      categories,
-      difficulties,
-      statuses,
-    });
-  } catch (error) {
-    errorHandler(res, error, "showcreateCourseForm");
-  }
-};
-
 export const showCourseDetail = async (req, res) => {
   const [course] = await getCourseDetails(req.params.id);
 
-  // console.log(course);
+  console.log(course);
+
+  // const lessons = course.lessons;
+
+  // preprocess embed URL
+  course.lessons.map((lesson,index) => {
+    if (lesson.video_url.includes("youtube.com/watch?v=")) {
+      const videoId = lesson.video_url.split("v=")[1];
+      course.lessons[index].embed_url = `https://www.youtube.com/embed/${videoId}`;
+    } else if (lesson.video_url.includes("youtu.be/")) {
+      const videoId = lesson.video_url.split("youtu.be/")[1];
+      course.lessons[index].embed_url = `https://www.youtube.com/embed/${videoId}`;
+    } else {
+      course.lessons[index].video_url;
+    }
+  });
+  // console.log("lessons",lessons);
+  console.log("course : ", course);
 
   try {
     // const course = await getCourseDetails(req.params.id);
@@ -102,9 +98,67 @@ export const showCourseDetail = async (req, res) => {
   }
 };
 
+export const showcreateCourseForm = async (req, res) => {
+  try {
+    const instructors = await getAllInstructors();
+    const categories = await getAllCategories();
+    const difficulties = await getAllDifficulties();
+    // const statuses = ["published", "draft"];
+
+    res.render("admin/courses/create", {
+      layout: "admin/layouts/layout",
+      active: "courses",
+      title: "Courses",
+      instructors,
+      categories,
+      difficulties,
+    });
+  } catch (error) {
+    errorHandler(res, error, "showcreateCourseForm");
+  }
+};
+
 export const createCourseHandler = async (req, res) => {
   try {
-    // console.log(req.body);
+    console.log(req.body);
+
+    const {
+      courseTitle,
+      instructorId,
+      courseCategory,
+      courseDifficulty,
+      coursePrice,
+      courseDescription,
+      status,
+      courseObjectives,
+      coursePrerequisites,
+    } = req.body;
+    if (!courseTitle || !courseCategory || !courseDescription) {
+      const instructors = await getAllInstructors();
+      const categories = await getAllCategories();
+      const difficulties = await getAllDifficulties();
+
+      return res.render("admin/courses/create", {
+        layout: "admin/layouts/layout",
+        active: "courses",
+        title: "Courses",
+        instructors,
+        categories,
+        difficulties,
+        error: "Please provide Basic Information of the course!",
+        form: {
+          courseTitle,
+          instructorId,
+          courseCategory,
+          courseDifficulty,
+          coursePrice,
+          courseDescription,
+          status,
+          courseObjectives,
+          coursePrerequisites,
+        },
+      });
+    }
     await createCourse(req.body);
     res.redirect("/admin/courses");
   } catch (error) {

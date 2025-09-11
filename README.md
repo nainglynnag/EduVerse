@@ -121,7 +121,7 @@
    course_id INT NOT NULL,
    lesson_no INT NOT NULL, -- Chapter / Lesson order
    title VARCHAR(150) NOT NULL,
-   duration_hours DECIMAL(5,2), -- e.g. 1.50 = 1.5 hours
+   duration_mins INT,
    description TEXT,
    video_url VARCHAR(255), -- embed link
    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
