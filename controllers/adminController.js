@@ -23,6 +23,8 @@ import {
   updateStudent,
   deleteStudent,
   getCourseDetails,
+  updateCourse,
+  deleteCourse,
 } from "../models/adminModel.js";
 
 // Error Handler
@@ -181,6 +183,242 @@ export const createCourseHandler = async (req, res) => {
     res.redirect("/admin/courses");
   } catch (error) {
     errorHandler(res, error, "createCourseHandler");
+  }
+};
+
+export const showEditCourseForm = async (req, res) => {
+  try {
+    const instructors = await getAllInstructors();
+    const categories = await getAllCategories();
+    const difficulties = await getAllDifficulties();
+    const [course] = await getCourseDetails(req.params.id);
+
+    // console.log(course);
+
+    res.render("admin/courses/update", {
+      layout: "admin/layouts/layout",
+      active: "courses",
+      title: "Courses",
+      instructors,
+      categories,
+      difficulties,
+      form: { ...course },
+    });
+  } catch (error) {
+    errorHandler(res, error, "showEditCourseForm");
+  }
+};
+
+export const updateCourseHandler = async (req, res) => {
+  try {
+    const courseId = req.params.id;
+
+    // Fetch select lists for potential re-render
+    const [instructors, categories, difficulties, [current]] =
+      await Promise.all([
+        getAllInstructors(),
+        getAllCategories(),
+        getAllDifficulties(),
+        getCourseDetails(courseId),
+      ]);
+
+    if (!current) {
+      return res.status(404).send({ message: "Course not found" });
+    }
+
+    const {
+      courseTitle,
+      instructorId,
+      courseCategory,
+      courseDifficulty,
+      coursePrice,
+      courseDescription,
+      status,
+      courseObjectives,
+      coursePrerequisites,
+      lessonTitle,
+      lessonDuration,
+      lessonDescription,
+      videoUrl,
+    } = req.body;
+
+    // Normalize helpers
+    const toArray = (value) => {
+      if (value === undefined || value === null) return [];
+      if (Array.isArray(value)) return value;
+      return [value];
+    };
+    const cleanString = (s) => (s == null ? "" : `${s}`.trim());
+    const toNumberOrNull = (v) => {
+      if (v === undefined || v === null || `${v}`.trim() === "") return null;
+      const n = Number(v);
+      return Number.isNaN(n) ? null : n;
+    };
+
+    // Submitted normalized
+    const submitted = {
+      title: cleanString(courseTitle),
+      instructor_id: instructorId ? Number(instructorId) : null,
+      category_id: courseCategory ? Number(courseCategory) : null,
+      difficulty_id: courseDifficulty ? Number(courseDifficulty) : null,
+      price:
+        coursePrice !== undefined &&
+        coursePrice !== null &&
+        `${coursePrice}` !== ""
+          ? Number(coursePrice)
+          : 0,
+      description: cleanString(courseDescription),
+      status: status === "published" ? "published" : "draft",
+      objectives: toArray(courseObjectives)
+        .map((s) => cleanString(s))
+        .filter((s) => s.length > 0),
+      prerequisites: toArray(coursePrerequisites)
+        .map((s) => cleanString(s))
+        .filter((s) => s.length > 0),
+      lessons: (() => {
+        const titles = toArray(lessonTitle);
+        const durations = toArray(lessonDuration);
+        const descriptions = toArray(lessonDescription);
+        const videos = toArray(videoUrl);
+        const maxLen = Math.max(
+          titles.length,
+          durations.length,
+          descriptions.length,
+          videos.length
+        );
+        const rows = [];
+        for (let i = 0; i < maxLen; i++) {
+          const t = cleanString(titles[i] || "");
+          if (!t) continue; // require title to consider a lesson row
+          rows.push({
+            lesson_no: i + 1,
+            title: t,
+            duration_mins: toNumberOrNull(durations[i]),
+            description: cleanString(descriptions[i] || ""),
+            video_url: cleanString(videos[i] || ""),
+          });
+        }
+        return rows;
+      })(),
+    };
+
+    // Current normalized
+    const currentNormalized = {
+      title: cleanString(current.title),
+      instructor_id: current.instructor_id
+        ? Number(current.instructor_id)
+        : null,
+      category_id: current.category_id ? Number(current.category_id) : null,
+      difficulty_id: current.difficulty_id
+        ? Number(current.difficulty_id)
+        : null,
+      price:
+        current.price !== undefined &&
+        current.price !== null &&
+        `${current.price}` !== ""
+          ? Number(current.price)
+          : 0,
+      description: cleanString(current.description),
+      status:
+        cleanString(current.status) === "published" ? "published" : "draft",
+      objectives: cleanString(current.objectives)
+        .split("|")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
+      prerequisites: cleanString(current.prerequisites)
+        .split("|")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0),
+      lessons: Array.isArray(current.lessons)
+        ? current.lessons
+            .slice()
+            .sort((a, b) => a.lesson_no - b.lesson_no)
+            .map((l, idx) => ({
+              lesson_no: idx + 1,
+              title: cleanString(l.title),
+              duration_mins: toNumberOrNull(l.duration_mins),
+              description: cleanString(l.description),
+              video_url: cleanString(l.video_url),
+            }))
+        : [],
+    };
+
+    const arraysEqual = (a, b) => {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        if (a[i] !== b[i]) return false;
+      }
+      return true;
+    };
+
+    const lessonsEqual = (a, b) => {
+      if (a.length !== b.length) return false;
+      for (let i = 0; i < a.length; i++) {
+        const la = a[i];
+        const lb = b[i];
+        if (
+          la.title !== lb.title ||
+          (la.duration_mins || null) !== (lb.duration_mins || null) ||
+          la.description !== lb.description ||
+          la.video_url !== lb.video_url
+        ) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const hasChanges =
+      currentNormalized.title !== submitted.title ||
+      currentNormalized.instructor_id !== submitted.instructor_id ||
+      currentNormalized.category_id !== submitted.category_id ||
+      currentNormalized.difficulty_id !== submitted.difficulty_id ||
+      currentNormalized.price !== submitted.price ||
+      currentNormalized.description !== submitted.description ||
+      currentNormalized.status !== submitted.status ||
+      !arraysEqual(currentNormalized.objectives, submitted.objectives) ||
+      !arraysEqual(currentNormalized.prerequisites, submitted.prerequisites) ||
+      !lessonsEqual(currentNormalized.lessons, submitted.lessons);
+
+    if (!hasChanges) {
+      return res.render("admin/courses/update", {
+        layout: "admin/layouts/layout",
+        active: "courses",
+        title: "Courses",
+        instructors,
+        categories,
+        difficulties,
+        error: "No changes are detected.",
+        form: {
+          ...current,
+          title: submitted.title,
+          instructor_id: submitted.instructor_id,
+          category_id: submitted.category_id,
+          difficulty_id: submitted.difficulty_id,
+          price: submitted.price,
+          description: submitted.description,
+          status: submitted.status,
+          objectives: submitted.objectives.join(" | "),
+          prerequisites: submitted.prerequisites.join(" | "),
+          lessons:
+            submitted.lessons.length > 0 ? submitted.lessons : current.lessons,
+        },
+      });
+    }
+
+    await updateCourse(courseId, submitted);
+    res.redirect("/admin/courses");
+  } catch (error) {
+    errorHandler(res, error, "updateCourseHandler");
+  }
+};
+
+export const deleteCourseHandler = async (req, res) => {
+  try {
+    await deleteCourse(req.params.id);
+    res.redirect("/admin/courses");
+  } catch (error) {
+    errorHandler(res, error, "deleteCourseHandler");
   }
 };
 

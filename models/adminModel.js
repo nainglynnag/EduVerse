@@ -216,6 +216,121 @@ export const createCourse = async (data) => {
   }
 };
 
+export const updateCourse = async (courseId, data) => {
+  try {
+    const {
+      title,
+      instructor_id,
+      category_id,
+      difficulty_id,
+      price,
+      description,
+      status,
+      objectives,
+      prerequisites,
+      lessons,
+    } = data;
+
+    await db.promise().beginTransaction();
+
+    // Update main course fields
+    const courseUpdates = {
+      title,
+      instructor_id,
+      category_id,
+      difficulty_id,
+      price,
+      description,
+      status,
+    };
+
+    const setClauses = Object.keys(courseUpdates)
+      .map((key) => `${key} = ?`)
+      .join(", ");
+    const values = [...Object.values(courseUpdates), courseId];
+
+    await db
+      .promise()
+      .query(`UPDATE courses SET ${setClauses} WHERE id = ?`, values);
+
+    // Replace objectives
+    await db
+      .promise()
+      .query(`DELETE FROM course_objectives WHERE course_id = ?`, [courseId]);
+    if (objectives && objectives.length > 0) {
+      const objValues = objectives.flatMap((o) => [courseId, o]);
+      const objPlaceholders = objectives.map(() => `(?, ?)`).join(", ");
+      await db
+        .promise()
+        .query(
+          `INSERT INTO course_objectives (course_id, objective) VALUES ${objPlaceholders}`,
+          objValues
+        );
+    }
+
+    // Replace prerequisites
+    await db
+      .promise()
+      .query(`DELETE FROM course_prerequisites WHERE course_id = ?`, [
+        courseId,
+      ]);
+    if (prerequisites && prerequisites.length > 0) {
+      const preValues = prerequisites.flatMap((p) => [courseId, p]);
+      const prePlaceholders = prerequisites.map(() => `(?, ?)`).join(", ");
+      await db
+        .promise()
+        .query(
+          `INSERT INTO course_prerequisites (course_id, prerequisite) VALUES ${prePlaceholders}`,
+          preValues
+        );
+    }
+
+    // Replace lessons
+    await db
+      .promise()
+      .query(`DELETE FROM course_lessons WHERE course_id = ?`, [courseId]);
+    if (lessons && lessons.length > 0) {
+      const lessonRows = lessons.map((l, idx) => [
+        courseId,
+        idx + 1,
+        l.title,
+        l.duration_mins === null ||
+        l.duration_mins === undefined ||
+        `${l.duration_mins}` === ""
+          ? null
+          : Number(l.duration_mins),
+        l.description || null,
+        l.video_url || null,
+      ]);
+      const placeholders = lessonRows
+        .map(() => `(?, ?, ?, ?, ?, ?)`)
+        .join(", ");
+      const flat = lessonRows.flat();
+      await db
+        .promise()
+        .query(
+          `INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES ${placeholders}`,
+          flat
+        );
+    }
+
+    await db.promise().commit();
+  } catch (error) {
+    try {
+      await db.promise().rollback();
+    } catch (_) {}
+    errorHandler(error, "updateCourse", "update course");
+  }
+};
+
+export const deleteCourse = async (id) => {
+  try {
+    await db.promise().query(`DELETE FROM courses WHERE id = ?`, [id]);
+  } catch (error) {
+    errorHandler(error, "deleteCourse", "delete course");
+  }
+};
+
 // Queries for Instructors
 export const getAllInstructors = async () => {
   try {

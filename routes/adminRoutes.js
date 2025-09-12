@@ -8,6 +8,7 @@ import {
   createStudentHandler,
   deleteAdminHandler,
   deleteCategoryHandler,
+  deleteCourseHandler,
   deleteInstructorHandler,
   deleteStudentHandler,
   listAdmins,
@@ -23,12 +24,14 @@ import {
   showCreateStudentForm,
   showEditAdminForm,
   showEditCategoryForm,
+  showEditCourseForm,
   showEditInstructorForm,
   showEditStudentForm,
   showInstructorDetail,
   showStudentDetails,
   updateAdminHandler,
   updateCategoryHandler,
+  updateCourseHandler,
   updateInstructorHandler,
   updateStudentHandler,
 } from "../controllers/adminController.js";
@@ -48,6 +51,10 @@ router.get("/courses", listCourses);
 router.get("/create-course", showcreateCourseForm);
 router.post("/create-course", createCourseHandler);
 router.get("/courses/:id", showCourseDetail);
+router.get("/edit-course/:id", showEditCourseForm);
+router.post("/edit-course/:id", updateCourseHandler);
+router.get("/delete-course/:id", deleteCourseHandler);
+router.post("/delete-course/:id", deleteCourseHandler);
 
 // Routes for Instructors
 router.get("/instructors", listInstructors);
