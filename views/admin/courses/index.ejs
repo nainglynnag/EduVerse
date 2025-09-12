@@ -198,6 +198,7 @@
                 <a
                   href="/admin/courses/<%= course.id %>"
                   class="text-blue-400 hover:text-blue-800 active:scale-90 duration-300"
+                  onclick="event.stopPropagation()"
                 >
                   <div>
                     <svg
@@ -220,6 +221,7 @@
                 <a
                   href="/admin/edit-course/<%= course.id %>"
                   class="text-indigo-500 hover:text-indigo-900 active:scale-90 duration-300"
+                  onclick="event.stopPropagation()"
                 >
                   <div>
                     <svg
@@ -239,8 +241,10 @@
                   </div>
                 </a>
                 <a
-                  href="/admin/delete-course/<%= course.id %>"
-                  class="text-red-600 hover:text-red-400 active:scale-90 duration-300"
+                  class="text-red-600 hover:text-red-400 active:scale-90 duration-300 btn-delete"
+                  data-action="/admin/delete-course/<%= course.id %>"
+                  data-confirm-message="Are you sure you want to delete course <%= course.title %>? This action cannot be undone."
+                  onclick="event.stopPropagation(); window.showConfirmDelete({ action: this.getAttribute('data-action'), method: this.getAttribute('data-method') || 'POST', message: this.getAttribute('data-confirm-message') }); return false;"
                 >
                   <div>
                     <svg

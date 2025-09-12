@@ -292,8 +292,9 @@
             Duplicate Course
           </button> -->
           <button
-            onclick="window.location.href='/admin/delete-course/<%= course.id %>' "
-            class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors btn-delete"
+            data-action="/admin/delete-course/<%= course.id %>"
+            data-confirm-message="Are you sure you want to delete <%= course.title %> course? This action cannot be undone."
           >
             Delete Course
           </button>
