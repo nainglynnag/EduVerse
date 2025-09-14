@@ -27,10 +27,14 @@
       <div class="flex text-sm overflow-x-auto"></div>
 
       <div class="flex-1"></div>
-      <div class="relative w-full md:w-auto">
+      
+      <form action="/admin/categories" method="GET">
+        <div class="relative w-full md:w-auto">
         <input
           type="text"
+          name="search"
           placeholder="Search category..."
+          value="<%= search %>"
           class="pl-10 pr-4 py-1.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-text-sm md:placeholder-text-base"
         />
         <svg
@@ -46,7 +50,9 @@
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
           />
         </svg>
+        <button type="submit" class="hidden"></button>
       </div>
+      </form>
     </div>
   </div>
 
@@ -184,7 +190,7 @@
       <div class="flex items-center space-x-1">
         <% for (let i = 1; i <= totalPages; i++) { %>
           <button
-            onclick="location.href='?page=<%= i %>&limit=<%= limit %>'"
+            onclick="location.href='?page=<%= i %>&limit=<%= limit %>&search=<%= search %>'"
             class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
               <%= currentPage === i ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600' %>">
             <%= i %>

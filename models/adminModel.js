@@ -8,12 +8,10 @@ const errorHandler = (error, operation, dataFailed) => {
 };
 
 // Queries of Courses
-export const getAllCourses = async (page = 1, limit = 10) => {
+export const getAllCourses = async (page = 1, limit = 10, search) => {
   try {
     // Pagination params
     const offset = (page - 1) * limit;
-
-    console.log(limit, offset);
 
     // Get all courses with pagination
     const [courses] = await db.promise().query(
@@ -24,15 +22,38 @@ export const getAllCourses = async (page = 1, limit = 10) => {
     LEFT JOIN categories c ON cr.category_id = c.id
     LEFT JOIN difficulty_levels d ON cr.difficulty_id = d.id
     LEFT JOIN enrollments e ON cr.id = e.course_id
+    WHERE cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?
     GROUP BY cr.id, u.name, c.name, d.name
     LIMIT ? OFFSET ?
     `,
-      [limit, offset]
+      [
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        limit,
+        offset,
+      ]
     );
 
-    const [totalCourses] = await db
-      .promise()
-      .query(`SELECT COUNT(*) AS total FROM courses`);
+    const [totalCourses] = await db.promise().query(
+      `SELECT COUNT(DISTINCT cr.id) AS total
+        FROM courses cr
+        LEFT JOIN users u ON cr.instructor_id = u.id
+        LEFT JOIN categories c ON cr.category_id = c.id
+        LEFT JOIN difficulty_levels d ON cr.difficulty_id = d.id
+        LEFT JOIN enrollments e ON cr.id = e.course_id
+        WHERE cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?
+      `,
+      [
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+      ]
+    );
 
     return { courses, totalCourses: totalCourses[0].total };
   } catch (error) {
@@ -346,7 +367,7 @@ export const deleteCourse = async (id) => {
 };
 
 // Queries for Instructors
-export const getAllInstructors = async (page = 1, limit = 10) => {
+export const getAllInstructors = async (page = 1, limit = 10, search) => {
   try {
     const offset = (page - 1) * limit;
 
@@ -356,15 +377,22 @@ export const getAllInstructors = async (page = 1, limit = 10) => {
       LEFT JOIN users u ON ip.user_id = u.id
       LEFT JOIN courses c ON ip.user_id = c.instructor_id
       LEFT JOIN enrollments e ON c.id = e.course_id
+      WHERE u.name LIKE ? OR u.email LIKE ? OR ip.specialization LIKE ?
       GROUP BY ip.user_id
       LIMIT ? OFFSET ?
     `,
-      [limit, offset]
+      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
     );
 
-    const [totalInstructors] = await db
-      .promise()
-      .query(`SELECT COUNT(*) AS total FROM users WHERE role_id = 2`);
+    const [totalInstructors] = await db.promise().query(
+      `SELECT COUNT(i.id) AS total
+        FROM users i
+        LEFT JOIN instructor_profiles ip ON i.id = ip.user_id
+        WHERE role_id = 2 AND
+         (i.name LIKE ? OR i.email LIKE ? OR ip.specialization LIKE ?)
+        `,
+      [`%${search}%`, `%${search}%`, `%${search}%`]
+    );
 
     return { instructors, totalInstructors: totalInstructors[0].total };
   } catch (error) {
@@ -487,7 +515,7 @@ export const deleteInstructor = async (user_id) => {
 };
 
 // Queries for Students
-export const getAllStudents = async (page = 1, limit = 10) => {
+export const getAllStudents = async (page = 1, limit = 10, search) => {
   try {
     const offset = (page - 1) * limit;
 
@@ -495,14 +523,22 @@ export const getAllStudents = async (page = 1, limit = 10) => {
       `
       SELECT id, student_code, name, email, status, joined_date, plan, total_courses
       FROM student_profiles_view
+      WHERE name LIKE ? OR email LIKE ? OR plan LIKE ?
       LIMIT ? OFFSET ?
     `,
-      [limit, offset]
+      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
     );
 
-    const [totalStudents] = await db
-      .promise()
-      .query(`SELECT COUNT(*) AS total FROM users WHERE role_id = 1`);
+    const [totalStudents] = await db.promise().query(
+      `SELECT COUNT(u.id) AS total
+        FROM users u
+        JOIN student_profiles sp ON sp.user_id = u.id
+        LEFT JOIN student_plans pl ON sp.plan_id = pl.id
+        WHERE role_id = 1 AND
+        ( u.name LIKE ? OR u.email LIKE ? OR pl.name LIKE ?)
+        `,
+      [`%${search}%`, `%${search}%`, `%${search}%`]
+    );
 
     return { students, totalStudents: totalStudents[0].total };
   } catch (error) {
@@ -627,7 +663,7 @@ export const getAllStudentPlans = async () => {
 };
 
 // Queries for Categories
-export const getAllCategories = async (page, limit) => {
+export const getAllCategories = async (page, limit, search) => {
   try {
     const offset = (page - 1) * limit;
 
@@ -636,15 +672,21 @@ export const getAllCategories = async (page, limit) => {
       SELECT cat.*, COUNT(c.id) AS total_courses
       FROM categories cat
       LEFT JOIN courses c ON cat.id = c.category_id
+      WHERE cat.name LIKE ?
       GROUP BY cat.id
       LIMIT ? OFFSET ?
     `,
-      [limit, offset]
+      [`%${search}%`, limit, offset]
     );
 
-    const [totalCategories] = await db.promise().query(`
-      SELECT COUNT(*) AS total FROM categories
-    `);
+    const [totalCategories] = await db.promise().query(
+      `
+      SELECT COUNT(*) AS total
+      FROM categories
+      WHERE name LIKE ?
+    `,
+      [`%${search}%`]
+    );
 
     return { categories, totalCategories: totalCategories[0].total };
   } catch (error) {
