@@ -8,9 +8,16 @@ const errorHandler = (error, operation, dataFailed) => {
 };
 
 // Queries of Courses
-export const getAllCourses = async () => {
+export const getAllCourses = async (page = 1, limit = 10) => {
   try {
-    const [courses] = await db.promise().query(`
+    // Pagination params
+    const offset = (page - 1) * limit;
+
+    console.log(limit, offset);
+
+    // Get all courses with pagination
+    const [courses] = await db.promise().query(
+      `
     SELECT cr.*, u.name AS instructor_name, c.name AS category_name, COUNT(e.student_id) AS students, d.name AS difficulty_level
     FROM courses cr
     LEFT JOIN users u ON cr.instructor_id = u.id
@@ -18,9 +25,16 @@ export const getAllCourses = async () => {
     LEFT JOIN difficulty_levels d ON cr.difficulty_id = d.id
     LEFT JOIN enrollments e ON cr.id = e.course_id
     GROUP BY cr.id, u.name, c.name, d.name
-    `);
+    LIMIT ? OFFSET ?
+    `,
+      [limit, offset]
+    );
 
-    return courses;
+    const [totalCourses] = await db
+      .promise()
+      .query(`SELECT COUNT(*) AS total FROM courses`);
+
+    return { courses, totalCourses: totalCourses[0].total };
   } catch (error) {
     errorHandler(error, "getAllCourses", "get course");
   }
@@ -332,12 +346,27 @@ export const deleteCourse = async (id) => {
 };
 
 // Queries for Instructors
-export const getAllInstructors = async () => {
+export const getAllInstructors = async (page = 1, limit = 10) => {
   try {
-    const [instructors] = await db.promise().query(`SELECT u.* FROM users u
-    LEFT JOIN roles r ON u.role_id = r.id
-    WHERE r.name = "instructor"`);
-    return instructors;
+    const offset = (page - 1) * limit;
+
+    const [instructors] = await db.promise().query(
+      `SELECT ip.*, u.name, u.email, u.status, u.joined_date, JSON_ARRAYAGG(c.title) AS courses, COUNT(DISTINCT e.student_id) AS total_students
+      FROM instructor_profiles ip
+      LEFT JOIN users u ON ip.user_id = u.id
+      LEFT JOIN courses c ON ip.user_id = c.instructor_id
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      GROUP BY ip.user_id
+      LIMIT ? OFFSET ?
+    `,
+      [limit, offset]
+    );
+
+    const [totalInstructors] = await db
+      .promise()
+      .query(`SELECT COUNT(*) AS total FROM users WHERE role_id = 2`);
+
+    return { instructors, totalInstructors: totalInstructors[0].total };
   } catch (error) {
     errorHandler(error, "getAllInstructors", "get instructors");
   }
@@ -458,14 +487,24 @@ export const deleteInstructor = async (user_id) => {
 };
 
 // Queries for Students
-export const getAllStudents = async () => {
+export const getAllStudents = async (page = 1, limit = 10) => {
   try {
-    const [students] = await db.promise().query(`
-      SELECT id, student_code, name, email, status, joined_date, plan, total_courses
-      FROM student_profiles_view;
-    `);
+    const offset = (page - 1) * limit;
 
-    return students;
+    const [students] = await db.promise().query(
+      `
+      SELECT id, student_code, name, email, status, joined_date, plan, total_courses
+      FROM student_profiles_view
+      LIMIT ? OFFSET ?
+    `,
+      [limit, offset]
+    );
+
+    const [totalStudents] = await db
+      .promise()
+      .query(`SELECT COUNT(*) AS total FROM users WHERE role_id = 1`);
+
+    return { students, totalStudents: totalStudents[0].total };
   } catch (error) {
     errorHandler(error, "getAllStudents", "get students");
   }
@@ -588,16 +627,26 @@ export const getAllStudentPlans = async () => {
 };
 
 // Queries for Categories
-export const getAllCategories = async () => {
+export const getAllCategories = async (page, limit) => {
   try {
-    const [categories] = await db.promise().query(`
+    const offset = (page - 1) * limit;
+
+    const [categories] = await db.promise().query(
+      `
       SELECT cat.*, COUNT(c.id) AS total_courses
       FROM categories cat
       LEFT JOIN courses c ON cat.id = c.category_id
       GROUP BY cat.id
+      LIMIT ? OFFSET ?
+    `,
+      [limit, offset]
+    );
+
+    const [totalCategories] = await db.promise().query(`
+      SELECT COUNT(*) AS total FROM categories
     `);
 
-    return categories;
+    return { categories, totalCategories: totalCategories[0].total };
   } catch (error) {
     errorHandler(error, "getAllCategories", "get categories");
   }

@@ -13,7 +13,7 @@ const errorHandler = (
 export const adminDashboard = async (req, res) => {
   try {
     const data = await getDashboardData();
-    console.log("getDashboardData", data);
+    // console.log("getDashboardData", data);
 
     const total_revenue = data.course_prices.reduce(
       (pv, { price, total_students }) =>

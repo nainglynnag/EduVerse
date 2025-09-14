@@ -40,12 +40,27 @@ const errorHandler = (
 // Controllers for Courses
 export const listCourses = async (req, res) => {
   try {
-    const courses = await getAllCourses();
+    // Pagination params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const { courses, totalCourses } = await getAllCourses(page, limit);
+
+    // Calculate total number of pages
+    const totalPages = Math.ceil(totalCourses / limit);
+
+    // console.log("totalCourses", totalCourses);
+    // console.log("totalPages", totalPages);
+
     res.render("admin/courses/index", {
       layout: "admin/layouts/layout",
       active: "courses",
       title: "Courses",
       courses,
+      totalCourses,
+      currentPage: page,
+      limit,
+      totalPages,
     });
   } catch (error) {
     errorHandler(res, error, "listCourses", "Courses not found.");
@@ -412,7 +427,17 @@ export const deleteCourseHandler = async (req, res) => {
 // Controllers for Instructors
 export const listInstructors = async (req, res) => {
   try {
-    const instructors = await getAllInstructorsDetails();
+    // Pagination params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const { instructors, totalInstructors } = await getAllInstructors(
+      page,
+      limit
+    );
+
+    // Calculate total number of pages
+    const totalPages = Math.ceil(totalInstructors / limit);
     // console.log(instructors);
 
     res.render("admin/instructors/index", {
@@ -420,6 +445,10 @@ export const listInstructors = async (req, res) => {
       active: "instructors",
       title: "Instructors",
       instructors,
+      totalInstructors,
+      currentPage: page,
+      limit,
+      totalPages,
     });
   } catch (error) {
     errorHandler(res, error, "listInstructors", "Instructors not found.");
@@ -571,7 +600,15 @@ export const deleteInstructorHandler = async (req, res) => {
 // Controllers for Students
 export const listStudents = async (req, res) => {
   try {
-    const students = await getAllStudents();
+    // Pagination params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const { students, totalStudents } = await getAllStudents(page, limit);
+
+    // Calculate total number of pages
+    const totalPages = Math.ceil(totalStudents / limit);
+
     // console.log(students);
 
     res.render("admin/students/index", {
@@ -579,6 +616,10 @@ export const listStudents = async (req, res) => {
       active: "students",
       title: "Students",
       students,
+      totalStudents,
+      currentPage: page,
+      limit,
+      totalPages,
     });
   } catch (error) {
     errorHandler(res, error, "listStudents", "Students not found.");
@@ -730,7 +771,13 @@ export const deleteStudentHandler = async (req, res) => {
 // Controllers for Categories
 export const listCategories = async (req, res) => {
   try {
-    const categories = await getAllCategories();
+    // Pagination params
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const { categories, totalCategories } = await getAllCategories(page, limit);
+
+    const totalPages = Math.ceil(totalCategories / limit);
     // console.log(categories);
 
     const colorClasses = {
@@ -746,6 +793,10 @@ export const listCategories = async (req, res) => {
       title: "Categories",
       categories,
       colorClasses,
+      totalCategories,
+      currentPage: page,
+      limit,
+      totalPages,
     });
   } catch (error) {
     errorHandler(res, error, "listCategories", "Categories not found.");
