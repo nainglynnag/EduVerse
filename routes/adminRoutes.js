@@ -1,6 +1,8 @@
 import express from "express";
+
+import { adminDashboard } from "../controllers/adminDashboardController.js";
+
 import {
-  adminDashboard,
   createAdminHandler,
   createCategoryHandler,
   createCourseHandler,

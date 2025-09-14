@@ -1,4 +1,3 @@
-import { parse } from "dotenv";
 import {
   getAllCategories,
   getAllCourses,
@@ -36,18 +35,6 @@ const errorHandler = (
 ) => {
   console.log(`Controller error in ${operation}: `, error);
   res.status(500).send({ error, message });
-};
-
-export const adminDashboard = (req, res) => {
-  try {
-    res.render("admin/dashboard/index", {
-      layout: "admin/layouts/layout",
-      active: "dashboard",
-      title: "Dashboard",
-    });
-  } catch (error) {
-    errorHandler(res, error, "adminDashboard");
-  }
 };
 
 // Controllers for Courses
