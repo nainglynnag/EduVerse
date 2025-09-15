@@ -94,7 +94,10 @@ export const getInstructorCoursesList = async (req, res) => {
     const instructorId = DEFAULT_INSTRUCTOR_ID;
     const courses = await getInstructorCourses(instructorId);
 
-    renderSuccess(res, "instructors/courses/index", { courses });
+    renderSuccess(res, "instructors/courses/index", { 
+      courses,
+      req: req // Pass request object to access query parameters
+    });
 
   } catch (error) {
     handleError(res, error);
@@ -140,18 +143,23 @@ export const createCourse = async (req, res) => {
     console.log('Course status received:', status);
     console.log('Course status type:', typeof status);
 
-    // Validate required fields
-    if (!title || !category_id || !difficulty_id) {
+    // Validate required fields - only enforce for published courses
+    if (status !== 'draft' && (!title || !category_id || !difficulty_id)) {
       return res.status(400).render('error', {
         message: 'Missing required fields: title, category, difficulty level',
         layout: DEFAULT_LAYOUT
       });
     }
+    
+    // For draft courses, provide default values for empty required fields
+    const finalTitle = title || 'Untitled Course';
+    const finalCategoryId = category_id || 1; // Default to first category
+    const finalDifficultyId = difficulty_id || 1; // Default to first difficulty level
 
     const courseData = {
-      title,
-      category_id: parseInt(category_id),
-      difficulty_id: parseInt(difficulty_id),
+      title: finalTitle,
+      category_id: parseInt(finalCategoryId),
+      difficulty_id: parseInt(finalDifficultyId),
       price: parseFloat(price) || 0,
       description: description || '',
       status,
@@ -203,7 +211,12 @@ export const createCourse = async (req, res) => {
         }
       }
 
-      res.redirect('/instructor/courses');
+      // Redirect with success message
+      if (status === 'draft') {
+        res.redirect('/instructor/courses?draft_saved=true');
+      } else {
+        res.redirect('/instructor/courses?course_published=true');
+      }
     } else {
       handleError(res, new Error('Failed to create course'), 'Failed to create course');
     }

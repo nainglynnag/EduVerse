@@ -223,10 +223,15 @@
           const lessonsContainer = document.getElementById("lessonsContainer");
           const lessonDiv = document.createElement("div");
           lessonDiv.className = "border border-gray-200 rounded-lg p-4";
-          const isFirstLesson = lessonCounter === 1;
+          
+          // Calculate the lesson number based on current lessons count
+          const currentLessonCount = lessonsContainer.children.length;
+          const lessonNumber = currentLessonCount + 1;
+          const isFirstLesson = lessonNumber === 1;
+          
           lessonDiv.innerHTML = `
             <div class="flex items-center justify-between mb-4">
-                <h4 class="font-medium text-gray-800">Lesson ${lessonCounter}</h4>
+                <h4 class="font-medium text-gray-800">Lesson ${lessonNumber}</h4>
                 <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700 remove-lesson-btn" style="display: ${isFirstLesson ? 'none' : 'block'};">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -254,7 +259,7 @@
             </div>
         `;
           lessonsContainer.appendChild(lessonDiv);
-          updateLessonNumbers();
+          updateDeleteButtonVisibility();
         }
 
         function addLessonToContainer(lesson, index) {
@@ -263,9 +268,10 @@
           const lessonDiv = document.createElement("div");
           lessonDiv.className = "border border-gray-200 rounded-lg p-4";
           const isFirstLesson = index === 0;
+          const lessonNumber = index + 1; // Use index + 1 for correct numbering
           lessonDiv.innerHTML = `
             <div class="flex items-center justify-between mb-4">
-                <h4 class="font-medium text-gray-800">Lesson ${lessonCounter}</h4>
+                <h4 class="font-medium text-gray-800">Lesson ${lessonNumber}</h4>
                 <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700 remove-lesson-btn" style="display: ${isFirstLesson ? 'none' : 'block'};">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
@@ -303,7 +309,7 @@
         }
 
         function updateDeleteButtonVisibility() {
-          const lessonDivs = document.querySelectorAll('#lessonsContainer .border');
+          const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
           lessonDivs.forEach((lessonDiv, index) => {
             const deleteBtn = lessonDiv.querySelector('.remove-lesson-btn');
             if (deleteBtn) {
@@ -313,8 +319,13 @@
         }
 
         function updateLessonNumbers() {
-          // Lesson numbers are now handled automatically in the headers
-          // No need to update input fields since they don't exist
+          const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
+          lessonDivs.forEach((lessonDiv, index) => {
+            const lessonHeader = lessonDiv.querySelector('h4');
+            if (lessonHeader) {
+              lessonHeader.textContent = `Lesson ${index + 1}`;
+            }
+          });
         }
 
        </script>
