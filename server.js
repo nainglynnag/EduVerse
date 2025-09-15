@@ -18,6 +18,11 @@ app.use(
   })
 );
 
+app.use((req, res, next) => {
+  res.locals.admin = req.session.admin || null;
+  next();
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

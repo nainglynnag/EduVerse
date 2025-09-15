@@ -28,15 +28,23 @@ export const adminLoginHandler = async (req, res) => {
     const { email, password } = req.body;
     // console.log(email, password);
     const logInAdmin = await getLogInAdmin(email);
-    console.log(logInAdmin);
+    // console.log(logInAdmin);
 
     if (
       logInAdmin &&
       (await bcrypt.compare(password, logInAdmin[0].password_hash))
     ) {
-      req.session.user = logInAdmin[0].email;
-      console.log("req.session.user", req.session.user);
+      req.session.admin = {
+        id: logInAdmin[0].id,
+        name: logInAdmin[0].name,
+        email: logInAdmin[0].email,
+      };
+
       res.redirect("/admin/dashboard");
+    } else {
+      res.render("admin/login", {
+        error: "Invalid email or password",
+      });
     }
   } catch (error) {
     errorHandler(res, error, "adminLoginHandler");

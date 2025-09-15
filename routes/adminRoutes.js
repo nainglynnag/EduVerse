@@ -46,7 +46,7 @@ import {
 const router = express.Router();
 
 const isLoggedIn = (req, res, next) => {
-  if (req.session.user) {
+  if (req.session.admin) {
     return next();
   } else {
     res.redirect("/admin");

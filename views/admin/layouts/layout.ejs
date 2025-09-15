@@ -163,10 +163,12 @@
           <div
             class="w-10 h-10 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center"
           >
-            <span class="text-sm font-bold text-white">AD</span>
+            <span class="text-sm font-bold text-white"
+              ><%= admin.name.split(" ").map((n) => n[0]).join("") %></span
+            >
           </div>
           <div class="flex-1">
-            <p class="text-sm font-medium text-gray-800">Admin User</p>
+            <p class="text-sm font-medium text-gray-800"><%= admin.name %></p>
             <p class="text-xs text-gray-600">System Administrator</p>
           </div>
           <svg
