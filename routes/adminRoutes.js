@@ -1,6 +1,11 @@
 import express from "express";
 
-import { adminDashboard } from "../controllers/adminDashboardController.js";
+import {
+  adminDashboard,
+  adminLogin,
+  adminLoginHandler,
+  adminLogout,
+} from "../controllers/adminDashboardController.js";
 
 import {
   createAdminHandler,
@@ -40,60 +45,72 @@ import {
 
 const router = express.Router();
 
+const isLoggedIn = (req, res, next) => {
+  if (req.session.user) {
+    return next();
+  } else {
+    res.redirect("/admin");
+  }
+};
+
 // Use admin-specific layout for all routes in this router
 router.use((req, res, next) => {
   res.locals.layout = "admin/layouts/layout";
   next();
 });
 
-router.get("/", adminDashboard);
+router.get("/", adminLogin);
+router.post("/", adminLoginHandler);
+router.get("/logout", adminLogout);
+
+router.get("/dashboard", isLoggedIn, adminDashboard);
 
 // Routes for Courses
-router.get("/courses", listCourses);
-router.get("/create-course", showcreateCourseForm);
-router.post("/create-course", createCourseHandler);
-router.get("/courses/:id", showCourseDetail);
-router.get("/edit-course/:id", showEditCourseForm);
-router.post("/edit-course/:id", updateCourseHandler);
-router.get("/delete-course/:id", deleteCourseHandler);
-router.post("/delete-course/:id", deleteCourseHandler);
+router.get("/courses", isLoggedIn, listCourses);
+router.get("/create-course", isLoggedIn, showcreateCourseForm);
+router.post("/create-course", isLoggedIn, createCourseHandler);
+router.get("/courses/:id", isLoggedIn, showCourseDetail);
+router.get("/edit-course/:id", isLoggedIn, showEditCourseForm);
+router.post("/edit-course/:id", isLoggedIn, updateCourseHandler);
+router.get("/delete-course/:id", isLoggedIn, deleteCourseHandler);
+router.post("/delete-course/:id", isLoggedIn, deleteCourseHandler);
 
 // Routes for Instructors
-router.get("/instructors", listInstructors);
-router.get("/create-instructor", showCreateInstructorForm);
-router.post("/create-instructor", createInstructorHandler);
-router.get("/instructors/:id", showInstructorDetail);
-router.get("/edit-instructor/:id", showEditInstructorForm);
-router.post("/edit-instructor/:id", updateInstructorHandler);
-router.get("/delete-instructor/:id", deleteInstructorHandler);
-router.post("/delete-instructor/:id", deleteInstructorHandler);
+router.get("/instructors", isLoggedIn, listInstructors);
+router.get("/create-instructor", isLoggedIn, showCreateInstructorForm);
+router.post("/create-instructor", isLoggedIn, createInstructorHandler);
+router.get("/instructors/:id", isLoggedIn, showInstructorDetail);
+router.get("/edit-instructor/:id", isLoggedIn, showEditInstructorForm);
+router.post("/edit-instructor/:id", isLoggedIn, updateInstructorHandler);
+router.get("/delete-instructor/:id", isLoggedIn, deleteInstructorHandler);
+router.post("/delete-instructor/:id", isLoggedIn, deleteInstructorHandler);
 
 // Routes for Students
-router.get("/students", listStudents);
-router.get("/create-student", showCreateStudentForm);
-router.post("/create-student", createStudentHandler);
-router.get("/students/:id", showStudentDetails);
-router.get("/edit-student/:id", showEditStudentForm);
-router.post("/edit-student/:id", updateStudentHandler);
-router.get("/delete-student/:id", deleteStudentHandler);
-router.post("/delete-student/:id", deleteStudentHandler);
+router.get("/students", isLoggedIn, listStudents);
+router.get("/create-student", isLoggedIn, showCreateStudentForm);
+router.post("/create-student", isLoggedIn, createStudentHandler);
+router.get("/students/:id", isLoggedIn, showStudentDetails);
+router.get("/edit-student/:id", isLoggedIn, showEditStudentForm);
+router.post("/edit-student/:id", isLoggedIn, updateStudentHandler);
+router.get("/delete-student/:id", isLoggedIn, deleteStudentHandler);
+router.post("/delete-student/:id", isLoggedIn, deleteStudentHandler);
 
 // Routes for Categories
-router.get("/categories", listCategories);
-router.get("/create-category", showCreateCategoryForm);
-router.post("/create-category", createCategoryHandler);
-router.get("/edit-category/:id", showEditCategoryForm);
-router.post("/edit-category/:id", updateCategoryHandler);
-router.get("/delete-category/:id", deleteCategoryHandler);
-router.post("/delete-category/:id", deleteCategoryHandler);
+router.get("/categories", isLoggedIn, listCategories);
+router.get("/create-category", isLoggedIn, showCreateCategoryForm);
+router.post("/create-category", isLoggedIn, createCategoryHandler);
+router.get("/edit-category/:id", isLoggedIn, showEditCategoryForm);
+router.post("/edit-category/:id", isLoggedIn, updateCategoryHandler);
+router.get("/delete-category/:id", isLoggedIn, deleteCategoryHandler);
+router.post("/delete-category/:id", isLoggedIn, deleteCategoryHandler);
 
 // Routes for Admins
-router.get("/admins", listAdmins);
-router.get("/create-admin", showCreateAdminForm);
-router.post("/create-admin", createAdminHandler);
-router.get("/edit-admin/:id", showEditAdminForm);
-router.post("/edit-admin/:id", updateAdminHandler);
-router.get("/delete-admin/:id", deleteAdminHandler);
-router.post("/delete-admin/:id", deleteAdminHandler);
+router.get("/admins", isLoggedIn, listAdmins);
+router.get("/create-admin", isLoggedIn, showCreateAdminForm);
+router.post("/create-admin", isLoggedIn, createAdminHandler);
+router.get("/edit-admin/:id", isLoggedIn, showEditAdminForm);
+router.post("/edit-admin/:id", isLoggedIn, updateAdminHandler);
+router.get("/delete-admin/:id", isLoggedIn, deleteAdminHandler);
+router.post("/delete-admin/:id", isLoggedIn, deleteAdminHandler);
 
 export default router;

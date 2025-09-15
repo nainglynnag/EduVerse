@@ -1,4 +1,9 @@
-import { getDashboardData } from "../models/adminDashboardModel.js";
+import bcrypt from "bcrypt";
+
+import {
+  getDashboardData,
+  getLogInAdmin,
+} from "../models/adminDashboardModel.js";
 
 const errorHandler = (
   res,
@@ -8,6 +13,43 @@ const errorHandler = (
 ) => {
   console.log(`Controller error in ${operation}: `, error);
   res.status(500).send({ error, message });
+};
+
+export const adminLogin = (req, res) => {
+  try {
+    res.render("admin/login");
+  } catch (error) {
+    errorHandler(res, error, "login");
+  }
+};
+
+export const adminLoginHandler = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // console.log(email, password);
+    const logInAdmin = await getLogInAdmin(email);
+    console.log(logInAdmin);
+
+    if (
+      logInAdmin &&
+      (await bcrypt.compare(password, logInAdmin[0].password_hash))
+    ) {
+      req.session.user = logInAdmin[0].email;
+      console.log("req.session.user", req.session.user);
+      res.redirect("/admin/dashboard");
+    }
+  } catch (error) {
+    errorHandler(res, error, "adminLoginHandler");
+  }
+};
+
+export const adminLogout = (req, res) => {
+  try {
+    req.session.destroy();
+    res.redirect("/admin");
+  } catch (error) {
+    errorHandler(res, error, "adminLogout");
+  }
 };
 
 export const adminDashboard = async (req, res) => {

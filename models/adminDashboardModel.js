@@ -6,6 +6,23 @@ const errorHandler = (error, operation, dataFailed) => {
   throw new Error(`Could not ${dataFailed} data.`);
 };
 
+// Queries for Admin Login
+export const getLogInAdmin = async (email) => {
+  try {
+    const [admins] = await db.promise().query(
+      `
+      SELECT u.* FROM users u
+      LEFT JOIN roles r ON u.role_id = r.id
+      WHERE r.name = "admin" AND u.email = ?`,
+      [email]
+    );
+
+    return admins;
+  } catch (error) {
+    errorHandler(error, "getLogInAdmin", "get login admin");
+  }
+};
+
 // Overall Queries for Dashboard
 export const getDashboardData = async () => {
   try {
