@@ -576,6 +576,7 @@ export const getAllStudents = async (page = 1, limit = 10, status, search) => {
         LEFT JOIN enrollments e ON u.id = e.student_id
         ${whereSql}
         GROUP BY u.id, pl.name
+        ORDER BY student_code ASC
         LIMIT ? OFFSET ?
     `,
       [...params, limit, offset]

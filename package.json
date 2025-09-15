@@ -6,9 +6,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
+    "dev": "nodemon server.js",
     "dev:server": "nodemon server.js",
     "dev:css": "tailwindcss -i ./src/index.css -o ./public/css/main.css --watch",
-    "dev": "npm-run-all --parallel dev:server dev:css"
+    "dev:all": "npm-run-all --parallel dev:server dev:css"
   },
   "keywords": [],
   "author": "",
