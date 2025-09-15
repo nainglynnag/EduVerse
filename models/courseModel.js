@@ -10,8 +10,6 @@ export const getAllPublishedCourses = async () => {
       SELECT 
         c.*,
         cat.name as category_name,
-        cat.title as category_title,
-        cat.display_name as category_display_name,
         cat.description as category_description,
         cat.color_theme as category_color,
         dl.name as difficulty_name,
