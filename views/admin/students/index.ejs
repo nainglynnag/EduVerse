@@ -26,34 +26,39 @@
       class="flex flex-wrap gap-2 md:gap-4 justify-between items-center"
     >
       <div class="flex text-sm overflow-x-auto">
-        <button
-          class="px-2 md:px-4 py-2 bg-red-100 text-red-600 rounded-lg font-medium"
+        <a
+        href="/admin/students?status=all&search=<%= search %>"
+          class="px-2 md:px-4 py-2 rounded-lg font-medium <%= status === 'all' ? 'bg-red-100 text-red-600' : 'text-gray-600 hover:bg-gray-100' %>"
         >
           All
-        </button>
-        <button
-          class="px-2 md:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        </a>
+        <a
+        href="/admin/students?status=active&search=<%= search %>"
+          class="px-2 md:px-4 py-2 rounded-lg <%= status === 'active' ? 'bg-red-100 text-red-600' : 'text-gray-600 hover:bg-gray-100' %>"
         >
           Active
-        </button>
+        </a>
 
-        <button
-          class="px-2 md:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        <a
+        href="/admin/students?status=inactive&search=<%= search %>"
+          class="px-2 md:px-4 py-2 rounded-lg <%= status === 'inactive' ? 'bg-red-100 text-red-600' : 'text-gray-600 hover:bg-gray-100' %>"
         >
           Inactive
-        </button>
+        </a>
 
-        <button
-          class="px-2 md:px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        <a
+        href="/admin/students?status=suspended&search=<%= search %>"
+          class="px-2 md:px-4 py-2 rounded-lg <%= status === 'suspended' ? 'bg-red-100 text-red-600' : 'text-gray-600 hover:bg-gray-100' %>"
         >
           Suspended
-        </button>
+        </a>
 
       </div>
       <div class="flex-1"></div>
       
       <form action="/admin/students" method="GET">
         <div class="relative w-full md:w-auto">
+        <input type="hidden" name="status" value="<%= status %>">
         <input
           type="text"
           name="search"
@@ -255,6 +260,75 @@
       </table>
     </div>
   </div>
+
+  <!-- Pagination -->
+<div class="mt-auto px-4 pt-4">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+    <!-- Items per page -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-600">Show</span>
+      <select
+        onchange="location.href='?page=1&limit='+this.value+'&status=<%= status %>&search=<%= search %>'"
+        class="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="10" <%= limit == 10 ? 'selected' : '' %>>10</option>
+        <option value="25" <%= limit == 25 ? 'selected' : '' %>>25</option>
+        <option value="50" <%= limit == 50 ? 'selected' : '' %>>50</option>
+        <option value="100" <%= limit == 100 ? 'selected' : '' %>>100</option>
+      </select>
+      <span class="text-sm text-gray-600">per page</span>
+    </div>
+
+    <!-- Pagination Numbers -->
+    <div class="flex items-center space-x-2">
+      <!-- Prev Button -->
+      <button
+        onclick="location.href='?page=<%= currentPage - 1 %>&limit=<%= limit %>&status=<%= status %>&search=<%= search %>'"
+        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+          <%= currentPage <= 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
+        <%= currentPage <= 1 ? 'disabled' : '' %>>
+        Prev
+      </button>
+
+      <!-- Page Numbers -->
+      <div class="flex items-center space-x-1">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <button
+            onclick="location.href='?page=<%= i %>&limit=<%= limit %>&status=<%= status %>&search=<%= search %>'"
+            class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
+              <%= currentPage === i ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600' %>">
+            <%= i %>
+          </button>
+        <% } %>
+      </div>
+
+      <!-- Next Button -->
+      <button
+        onclick="location.href='?page=<%= currentPage + 1 %>&limit=<%= limit %>&status=<%= status %>&search=<%= search %>'"
+        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+          <%= currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
+        <%= currentPage >= totalPages ? 'disabled' : '' %>>
+        Next
+      </button>
+      
+    </div>
+
+    <!-- Jump to Page -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-600">Go to</span>
+      <input
+        type="number"
+        min="1"
+        max="<%= totalPages %>"
+        value="<%= currentPage %>"
+        onchange="location.href='?page='+this.value+'&limit=<%= limit %>&status=<%= status %>&search=<%= search %>'"
+        class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+    </div>
+
+  </div>
+</div>
   <% }else{ %>
     <div class="col-span-full text-center py-4">
     <div class="bg-white rounded-2xl p-8 shadow-lg">
@@ -281,76 +355,5 @@
   </div>
   <% } %>
 
-  
-
-  
 </div>
 
-<!-- Pagination -->
-<div class="mt-auto px-4 pt-4">
-  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-
-    <!-- Items per page -->
-    <div class="flex items-center space-x-2">
-      <span class="text-sm text-gray-600">Show</span>
-      <select
-        onchange="location.href='?page=1&limit='+this.value"
-        class="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      >
-        <option value="10" <%= limit == 10 ? 'selected' : '' %>>10</option>
-        <option value="25" <%= limit == 25 ? 'selected' : '' %>>25</option>
-        <option value="50" <%= limit == 50 ? 'selected' : '' %>>50</option>
-        <option value="100" <%= limit == 100 ? 'selected' : '' %>>100</option>
-      </select>
-      <span class="text-sm text-gray-600">per page</span>
-    </div>
-
-    <!-- Pagination Numbers -->
-    <div class="flex items-center space-x-2">
-      <!-- Prev Button -->
-      <button
-        onclick="location.href='?page=<%= currentPage - 1 %>&limit=<%= limit %>&search=<%= search %>'"
-        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
-          <%= currentPage <= 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
-        <%= currentPage <= 1 ? 'disabled' : '' %>>
-        Prev
-      </button>
-
-      <!-- Page Numbers -->
-      <div class="flex items-center space-x-1">
-        <% for (let i = 1; i <= totalPages; i++) { %>
-          <button
-            onclick="location.href='?page=<%= i %>&limit=<%= limit %>'"
-            class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
-              <%= currentPage === i ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600' %>">
-            <%= i %>
-          </button>
-        <% } %>
-      </div>
-
-      <!-- Next Button -->
-      <button
-        onclick="location.href='?page=<%= currentPage + 1 %>&limit=<%= limit %>'"
-        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
-          <%= currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
-        <%= currentPage >= totalPages ? 'disabled' : '' %>>
-        Next
-      </button>
-      
-    </div>
-
-    <!-- Jump to Page -->
-    <div class="flex items-center space-x-2">
-      <span class="text-sm text-gray-600">Go to</span>
-      <input
-        type="number"
-        min="1"
-        max="<%= totalPages %>"
-        value="<%= currentPage %>"
-        onchange="location.href='?page='+this.value+'&limit=<%= limit %>'"
-        class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
-    </div>
-
-  </div>
-</div>

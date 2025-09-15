@@ -24,6 +24,8 @@ import {
   getCourseDetails,
   updateCourse,
   deleteCourse,
+  getAllInstructorsByParams,
+  getAllCategoriesByParams,
 } from "../models/adminModel.js";
 
 // Error Handler
@@ -43,9 +45,15 @@ export const listCourses = async (req, res) => {
     // Pagination and search params
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const status = req.query.status || "all";
     const search = req.query.search || "";
 
-    const { courses, totalCourses } = await getAllCourses(page, limit, search);
+    const { courses, totalCourses } = await getAllCourses(
+      page,
+      limit,
+      status,
+      search
+    );
 
     // Calculate total number of pages
     const totalPages = Math.ceil(totalCourses / limit);
@@ -62,6 +70,7 @@ export const listCourses = async (req, res) => {
       currentPage: page,
       limit,
       totalPages,
+      status,
       search,
     });
   } catch (error) {
@@ -434,7 +443,7 @@ export const listInstructors = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || "";
 
-    const { instructors, totalInstructors } = await getAllInstructors(
+    const { instructors, totalInstructors } = await getAllInstructorsByParams(
       page,
       limit,
       search
@@ -608,11 +617,13 @@ export const listStudents = async (req, res) => {
     // Pagination and search params
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
+    const status = req.query.status || "all";
     const search = req.query.search || "";
 
     const { students, totalStudents } = await getAllStudents(
       page,
       limit,
+      status,
       search
     );
 
@@ -630,6 +641,7 @@ export const listStudents = async (req, res) => {
       currentPage: page,
       limit,
       totalPages,
+      status,
       search,
     });
   } catch (error) {
@@ -787,7 +799,7 @@ export const listCategories = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
     const search = req.query.search || "";
 
-    const { categories, totalCategories } = await getAllCategories(
+    const { categories, totalCategories } = await getAllCategoriesByParams(
       page,
       limit,
       search

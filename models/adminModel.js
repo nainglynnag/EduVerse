@@ -8,10 +8,34 @@ const errorHandler = (error, operation, dataFailed) => {
 };
 
 // Queries of Courses
-export const getAllCourses = async (page = 1, limit = 10, search) => {
+export const getAllCourses = async (page = 1, limit = 10, status, search) => {
   try {
     // Pagination params
     const offset = (page - 1) * limit;
+
+    let whereClauses = [];
+    let params = [];
+
+    if (status && status !== "all") {
+      whereClauses.push(`cr.status = ?`);
+      params.push(status);
+    }
+
+    if (search) {
+      whereClauses.push(
+        `(cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?)`
+      );
+      params.push(
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`,
+        `%${search}%`
+      );
+    }
+
+    const whereSql =
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
 
     // Get all courses with pagination
     const [courses] = await db.promise().query(
@@ -22,19 +46,11 @@ export const getAllCourses = async (page = 1, limit = 10, search) => {
     LEFT JOIN categories c ON cr.category_id = c.id
     LEFT JOIN difficulty_levels d ON cr.difficulty_id = d.id
     LEFT JOIN enrollments e ON cr.id = e.course_id
-    WHERE cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?
+    ${whereSql}
     GROUP BY cr.id, u.name, c.name, d.name
     LIMIT ? OFFSET ?
     `,
-      [
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-        limit,
-        offset,
-      ]
+      [...params, limit, offset]
     );
 
     const [totalCourses] = await db.promise().query(
@@ -44,15 +60,9 @@ export const getAllCourses = async (page = 1, limit = 10, search) => {
         LEFT JOIN categories c ON cr.category_id = c.id
         LEFT JOIN difficulty_levels d ON cr.difficulty_id = d.id
         LEFT JOIN enrollments e ON cr.id = e.course_id
-        WHERE cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?
+        ${whereSql}
       `,
-      [
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-        `%${search}%`,
-      ]
+      [...params]
     );
 
     return { courses, totalCourses: totalCourses[0].total };
@@ -367,7 +377,22 @@ export const deleteCourse = async (id) => {
 };
 
 // Queries for Instructors
-export const getAllInstructors = async (page = 1, limit = 10, search) => {
+export const getAllInstructors = async () => {
+  try {
+    const [instructors] = await db.promise().query(`SELECT u.* FROM users u
+    LEFT JOIN roles r ON u.role_id = r.id
+    WHERE r.name = "instructor"`);
+    return instructors;
+  } catch (error) {
+    errorHandler(error, "getAllInstructors", "get instructors");
+  }
+};
+
+export const getAllInstructorsByParams = async (
+  page = 1,
+  limit = 10,
+  search
+) => {
   try {
     const offset = (page - 1) * limit;
 
@@ -396,7 +421,7 @@ export const getAllInstructors = async (page = 1, limit = 10, search) => {
 
     return { instructors, totalInstructors: totalInstructors[0].total };
   } catch (error) {
-    errorHandler(error, "getAllInstructors", "get instructors");
+    errorHandler(error, "getAllInstructors", "get instructors by params");
   }
 };
 
@@ -515,18 +540,45 @@ export const deleteInstructor = async (user_id) => {
 };
 
 // Queries for Students
-export const getAllStudents = async (page = 1, limit = 10, search) => {
+export const getAllStudents = async (page = 1, limit = 10, status, search) => {
   try {
     const offset = (page - 1) * limit;
 
+    const whereClauses = ["u.role_id = 1"];
+    let params = [];
+
+    if (status && status !== "all") {
+      whereClauses.push(`u.status = ?`);
+      params.push(status);
+    }
+
+    if (search) {
+      whereClauses.push(`(u.name LIKE ? OR u.email LIKE ? OR pl.name LIKE ?)`);
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    const whereSql =
+      whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+
     const [students] = await db.promise().query(
       `
-      SELECT id, student_code, name, email, status, joined_date, plan, total_courses
-      FROM student_profiles_view
-      WHERE name LIKE ? OR email LIKE ? OR plan LIKE ?
-      LIMIT ? OFFSET ?
+       SELECT u.id, 
+             CONCAT('s', LPAD(u.id, 7, '0')) AS student_code,
+             u.name, 
+             u.email, 
+             u.status, 
+             u.joined_date, 
+             pl.name AS plan,
+             COUNT(e.course_id) AS total_courses
+        FROM users u
+        JOIN student_profiles sp ON sp.user_id = u.id
+        LEFT JOIN student_plans pl ON sp.plan_id = pl.id
+        LEFT JOIN enrollments e ON u.id = e.student_id
+        ${whereSql}
+        GROUP BY u.id, pl.name
+        LIMIT ? OFFSET ?
     `,
-      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
+      [...params, limit, offset]
     );
 
     const [totalStudents] = await db.promise().query(
@@ -534,10 +586,9 @@ export const getAllStudents = async (page = 1, limit = 10, search) => {
         FROM users u
         JOIN student_profiles sp ON sp.user_id = u.id
         LEFT JOIN student_plans pl ON sp.plan_id = pl.id
-        WHERE role_id = 1 AND
-        ( u.name LIKE ? OR u.email LIKE ? OR pl.name LIKE ?)
+        ${whereSql}
         `,
-      [`%${search}%`, `%${search}%`, `%${search}%`]
+      [...params]
     );
 
     return { students, totalStudents: totalStudents[0].total };
@@ -663,7 +714,22 @@ export const getAllStudentPlans = async () => {
 };
 
 // Queries for Categories
-export const getAllCategories = async (page, limit, search) => {
+export const getAllCategories = async () => {
+  try {
+    const [categories] = await db.promise().query(`
+      SELECT cat.*, COUNT(c.id) AS total_courses
+      FROM categories cat
+      LEFT JOIN courses c ON cat.id = c.category_id
+      GROUP BY cat.id
+    `);
+
+    return categories;
+  } catch (error) {
+    errorHandler(error, "getAllCategories", "get categories");
+  }
+};
+
+export const getAllCategoriesByParams = async (page, limit, search) => {
   try {
     const offset = (page - 1) * limit;
 
@@ -690,7 +756,7 @@ export const getAllCategories = async (page, limit, search) => {
 
     return { categories, totalCategories: totalCategories[0].total };
   } catch (error) {
-    errorHandler(error, "getAllCategories", "get categories");
+    errorHandler(error, "getAllCategories", "get categories by params");
   }
 };
 
