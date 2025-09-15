@@ -1,24 +1,30 @@
 <!-- Update category form -->
 <div class="p-6 bg-white rounded-lg">
   <h3 class="text-xl font-bold mb-4">Update Category</h3>
-  <form action="/admin/categories/<%= category.id %>?_method=PUT" method="POST">
+  <form action="/admin/edit-category/<%= form.id %>" method="POST">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm mb-1">Name</label>
         <input
           name="name"
-          value="<%= category.name %>"
+          value="<%= typeof form !== 'undefined' && form.name ? form.name : '' %>"
           required
           class="w-full border rounded px-3 py-2"
         />
       </div>
       <div>
         <label class="block text-sm mb-1">Color Theme</label>
-        <input
-          name="color_theme"
-          value="<%= category.color_theme %>"
-          class="w-full border rounded px-3 py-2"
-        />
+        <select
+          name="color"
+          required
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+        >
+          <option value="">Select color</option>
+        <% colorOptions.map((color) => { %>
+          <option value="<%= color %>" <%= (typeof form !== 'undefined' && form.color_theme === color.toLowerCase()) ? 'selected' : '' %>><%= color %></option>
+        <% }) %>
+          
+        </select>
       </div>
     </div>
     <div class="mt-4">
@@ -26,15 +32,36 @@
       <textarea
         name="description"
         rows="4"
+        required
         class="w-full border rounded px-3 py-2"
-      >
-<%= category.description %></textarea
-      >
+      ><%= typeof form !== 'undefined' && form.description ? form.description : '' %></textarea>
     </div>
-    <div class="mt-4">
-      <button type="submit" class="px-4 py-2 bg-yellow-600 text-white rounded">
-        Update
+
+    <% if (typeof error !=='undefined' && error) { %>
+    <div id="flashError" class="mb-4 text-sm text-red-600"><%= error %></div>
+    <% } %>
+
+    <div class="mt-4 flex justify-end space-x-2">
+      <button
+        type="button"
+        onclick="window.history.back()"
+        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 active:scale-90 transition-all duration-300"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="px-6 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 active:scale-90 transition-all duration-300"
+      >
+        Save
       </button>
     </div>
   </form>
 </div>
+
+<script>
+  setTimeout(() => {
+    const el = document.getElementById("flashError");
+    if (el) el.remove();
+  }, 3000);
+</script>
