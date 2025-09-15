@@ -40,6 +40,7 @@ export const adminLoginHandler = async (req, res) => {
         email: logInAdmin[0].email,
       };
 
+      req.flash("success", "Successfully logged in");
       res.redirect("/admin/dashboard");
     } else {
       res.render("admin/login", {
@@ -47,6 +48,7 @@ export const adminLoginHandler = async (req, res) => {
       });
     }
   } catch (error) {
+    req.flash("error", "Failed to log in. Internal server error!");
     errorHandler(res, error, "adminLoginHandler");
   }
 };
@@ -54,8 +56,10 @@ export const adminLoginHandler = async (req, res) => {
 export const adminLogout = (req, res) => {
   try {
     req.session.destroy();
+    req.flash("success", "Successfully logged out");
     res.redirect("/admin");
   } catch (error) {
+    req.flash("error", "Failed to log out!");
     errorHandler(res, error, "adminLogout");
   }
 };

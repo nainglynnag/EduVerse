@@ -4,12 +4,16 @@ import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import { fileURLToPath } from "url";
 
+// For toast
+import flash from "connect-flash";
+
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
 
 const app = express();
 const PORT = 3000;
 
+// Middlewares for User session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "default-secret",
@@ -20,6 +24,14 @@ app.use(
 
 app.use((req, res, next) => {
   res.locals.admin = req.session.admin || null;
+  next();
+});
+
+// Middlewares for Toast
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.success = req.flash("success");
+  res.locals.error = req.flash("error");
   next();
 });
 

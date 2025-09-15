@@ -193,8 +193,10 @@ export const createCourseHandler = async (req, res) => {
     req.body.coursePrerequisites = parseList(coursePrerequisites);
 
     await createCourse(req.body);
+    req.flash("success", "Successfully created course!");
     res.redirect("/admin/courses");
   } catch (error) {
+    req.flash("error", "Failed to create course!");
     errorHandler(res, error, "createCourseHandler");
   }
 };
@@ -420,8 +422,10 @@ export const updateCourseHandler = async (req, res) => {
     }
 
     await updateCourse(courseId, submitted);
+    req.flash("success", "Successfully updated course");
     res.redirect("/admin/courses");
   } catch (error) {
+    req.flash("error", "Failed to update course");
     errorHandler(res, error, "updateCourseHandler");
   }
 };
@@ -429,8 +433,10 @@ export const updateCourseHandler = async (req, res) => {
 export const deleteCourseHandler = async (req, res) => {
   try {
     await deleteCourse(req.params.id);
+    req.flash("success", "Successfully deleted course");
     res.redirect("/admin/courses");
   } catch (error) {
+    req.flash("error", "Failed to delete course");
     errorHandler(res, error, "deleteCourseHandler");
   }
 };
@@ -520,8 +526,10 @@ export const createInstructorHandler = async (req, res) => {
 
     // console.log(req.body);
     await createInstructor(req.body);
+    req.flash("success", "Successfully created instructor");
     res.redirect("/admin/instructors");
   } catch (error) {
+    req.flash("error", "Failed to create instructor");
     errorHandler(res, error, "createInstructorHandler");
   }
 };
@@ -584,6 +592,8 @@ export const updateInstructorHandler = async (req, res) => {
 
     if (Object.keys(updates).length > 0) {
       await updateInstructor(user_id, updates);
+
+      req.flash("success", "Successfully updated instructor");
     } else {
       return res.render("admin/instructors/update", {
         layout: "admin/layouts/layout",
@@ -596,6 +606,7 @@ export const updateInstructorHandler = async (req, res) => {
 
     res.redirect("/admin/instructors");
   } catch (error) {
+    req.flash("error", "Failed to update instructor");
     errorHandler(res, error, "updateInstructorHandler");
   }
 };
@@ -605,8 +616,10 @@ export const deleteInstructorHandler = async (req, res) => {
     const user_id = req.params.id;
 
     await deleteInstructor(user_id);
+    req.flash("success", "Successfully deleted instructor");
     res.redirect("/admin/instructors");
   } catch (error) {
+    req.flash("error", "Failed to delete instructor");
     errorHandler(res, error, "deleteInstructorHandler");
   }
 };
@@ -699,8 +712,10 @@ export const createStudentHandler = async (req, res) => {
     }
 
     await createStudent(req.body);
+    req.flash("success", "Successfully created student");
     res.redirect("/admin/students");
   } catch (error) {
+    req.flash("error", "Failed to create student");
     errorHandler(res, error, "createStudentHandler");
   }
 };
@@ -761,6 +776,8 @@ export const updateStudentHandler = async (req, res) => {
 
     if (Object.keys(updates).length > 0) {
       await updateStudent(id, updates);
+
+      req.flash("success", "Successfully updated student");
     } else {
       const statuses = ["active", "inactive", "suspended"];
 
@@ -777,6 +794,7 @@ export const updateStudentHandler = async (req, res) => {
 
     res.redirect("/admin/students");
   } catch (error) {
+    req.flash("error", "Failed to update student");
     errorHandler(res, error, "updateStudentHandler");
   }
 };
@@ -785,8 +803,10 @@ export const deleteStudentHandler = async (req, res) => {
   try {
     const id = req.params.id;
     await deleteStudent(id);
+    req.flash("success", "Successfully deleted student account");
     res.redirect("/admin/students");
   } catch (error) {
+    req.flash("error", "Failed to delete student account");
     errorHandler(res, error, "deleteStudentHandler");
   }
 };
@@ -854,8 +874,10 @@ export const createCategoryHandler = async (req, res) => {
     // console.log(newCategory);
 
     await createCategory(req.body);
+    req.flash("success", "Successfully created category");
     res.redirect("/admin/categories");
   } catch (error) {
+    req.flash("error", "Failed to create category");
     errorHandler(res, error, "createCategoryHandler");
   }
 };
@@ -906,6 +928,8 @@ export const updateCategoryHandler = async (req, res) => {
 
     if (Object.keys(updates).length > 0) {
       await updateCategory(id, updates);
+
+      req.flash("success", "Successfully updated category");
     } else {
       return res.render("admin/categories/update", {
         layout: "admin/layouts/layout",
@@ -919,6 +943,7 @@ export const updateCategoryHandler = async (req, res) => {
 
     res.redirect("/admin/categories");
   } catch (error) {
+    req.flash("error", "Failed to update category");
     errorHandler(res, error, "updateCategoryHandler");
   }
 };
@@ -928,8 +953,10 @@ export const deleteCategoryHandler = async (req, res) => {
     const id = req.params.id;
 
     await deleteCategory(id);
+    req.flash("success", "Successfully deleted category");
     res.redirect("/admin/categories");
   } catch (error) {
+    req.flash("error", "Failed to delete category");
     errorHandler(res, error, "deleteCategoryHandler");
   }
 };
@@ -978,8 +1005,10 @@ export const createAdminHandler = async (req, res) => {
     }
 
     await createAdmin(req.body);
+    req.flash("success", "Successfully created admin account");
     res.redirect("/admin/admins");
   } catch (error) {
+    req.flash("error", "Failed to create admin account!");
     errorHandler(res, error, "createAdminHandler");
   }
 };
@@ -1019,6 +1048,8 @@ export const updateAdminHandler = async (req, res) => {
 
     if (Object.keys(updates).length > 0) {
       await updateAdmin(id, updates);
+
+      req.flash("success", "Successfully updated admin account");
     } else {
       return res.render("admin/adminUsers/update", {
         layout: "admin/layouts/layout",
@@ -1031,6 +1062,7 @@ export const updateAdminHandler = async (req, res) => {
 
     res.redirect("/admin/admins");
   } catch (error) {
+    req.flash("error", "Failed to update admin account!");
     errorHandler(res, error, "updateAdminHandler");
   }
 };
@@ -1040,8 +1072,10 @@ export const deleteAdminHandler = async (req, res) => {
     const id = req.params.id;
 
     await deleteAdmin(id);
+    req.flash("success", "Successfully deleted admin account");
     res.redirect("/admin/admins");
   } catch (error) {
+    req.flash("error", "Failed to delete admin account!");
     errorHandler(res, error, "deleteAdminHandler");
   }
 };

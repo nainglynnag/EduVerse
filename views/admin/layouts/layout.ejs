@@ -384,6 +384,50 @@
       aria-hidden="true"
     ></form>
 
+    <% if (success && success.length) { %>
+    <div
+      id="toastAlert"
+      class="z-50 fixed top-4 right-4 flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 shadow-lg transition-opacity duration-500"
+      role="alert"
+    >
+      <svg
+        class="shrink-0 inline w-4 h-4 me-3"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+
+      <div><span class="font-medium">Success!</span> <%= success[0] %></div>
+    </div>
+
+    <% } %> <% if (error && error.length) { %>
+    <div
+      id="toastAlert"
+      class="z-50 fixed top-4 right-4 flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 shadow-lg transition-opacity duration-500"
+      role="alert"
+    >
+      <svg
+        class="shrink-0 inline w-4 h-4 me-3"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
+        />
+      </svg>
+
+      <div><span class="font-medium">Error!</span> <%= error[0] %></div>
+    </div>
+    <% } %>
+
     <script>
       (function () {
         const modal = document.getElementById("confirmDeleteModal");
@@ -460,6 +504,14 @@
         // expose for pages to call programmatically
         window.showConfirmDelete = showConfirmDelete;
       })();
+
+      const toast = document.getElementById("toastAlert");
+      if (toast) {
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 500); // remove after fade
+        }, 3000);
+      }
     </script>
 
     <!-- Universal Modals and scripts (keeps behavior consistent for children) -->
@@ -552,41 +604,6 @@
         document.body.style.overflow = "auto";
       }
 
-      // Global modal open/close mapping for admin feature modals
-      // function showCreateModal(type) {
-      //   const mapping = {
-      //     course: "createCourseModal",
-      //     instructor: "createInstructorModal",
-      //     user: "createUserModal",
-      //     category: "createCategoryModal",
-      //   };
-      //   const id = mapping[type];
-      //   if (!id) return;
-      //   const modal = document.getElementById(id);
-      //   if (modal) {
-      //     modal.classList.remove("hidden");
-      //     document.body.style.overflow = "hidden";
-      //   }
-      // }
-
-      // function closeCreateModal(type) {
-      //   const mapping = {
-      //     course: "createCourseModal",
-      //     instructor: "createInstructorModal",
-      //     user: "createUserModal",
-      //     category: "createCategoryModal",
-      //   };
-      //   const id = mapping[type];
-      //   if (!id) return;
-      //   const modal = document.getElementById(id);
-      //   if (modal) {
-      //     modal.classList.add("hidden");
-      //     document.body.style.overflow = "auto";
-      //   }
-      // }
-
-      // Expose to window so child views can re-run initialization after DOM changes
-      // window.initAdminUI = initAdminUI;
       document.addEventListener("DOMContentLoaded", initAdminUI);
     </script>
 
