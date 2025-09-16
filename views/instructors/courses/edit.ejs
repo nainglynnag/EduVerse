@@ -112,7 +112,7 @@
                 rows="4"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="What will students learn from this course? (Enter each objective on a new line)"
-              ><%= typeof objectives !== 'undefined' && objectives && objectives.length > 0 ? objectives.map(obj => obj.objective).join('\n') : '' %></textarea>
+              ><%= typeof objectives !== 'undefined' && objectives && objectives.length > 0 ? objectives.map(obj => obj.objective.startsWith('• ') ? obj.objective : '• ' + obj.objective).join('\n') : '' %></textarea>
             </div>
 
             <!-- Course Prerequisites -->
@@ -124,7 +124,7 @@
                 rows="3"
                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="What should students know before taking this course? (Enter each prerequisite on a new line)"
-              ><%= typeof prerequisites !== 'undefined' && prerequisites && prerequisites.length > 0 ? prerequisites.map(prereq => prereq.prerequisite).join('\n') : '' %></textarea>
+              ><%= typeof prerequisites !== 'undefined' && prerequisites && prerequisites.length > 0 ? prerequisites.map(prereq => prereq.prerequisite.startsWith('• ') ? prereq.prerequisite : '• ' + prereq.prerequisite).join('\n') : '' %></textarea>
             </div>
 
             <!-- Course Lessons -->
