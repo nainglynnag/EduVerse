@@ -126,8 +126,15 @@
 
       <!-- Learning Objectives -->
       <% if (objectives && objectives.length > 0) { %>
-      <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Learning Objectives</h3>
+      <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <div class="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center mr-2">
+            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          Learning Objectives
+        </h3>
         <ul class="space-y-3">
           <% objectives.forEach((objective, index) => { %>
           <li class="flex items-center space-x-3 text-gray-800 text-base font-medium">
@@ -141,8 +148,15 @@
 
       <!-- Course Prerequisites -->
       <% if (prerequisites && prerequisites.length > 0) { %>
-      <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
-        <h3 class="text-xl font-bold text-gray-800 mb-4">Prerequisites</h3>
+      <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+        <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+          <div class="w-6 h-6 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg flex items-center justify-center mr-2">
+            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          Prerequisites
+        </h3>
         <ul class="space-y-3">
           <% prerequisites.forEach((prerequisite, index) => { %>
           <li class="flex items-center space-x-3 text-gray-800 text-base font-medium">
