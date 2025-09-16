@@ -59,19 +59,29 @@ export const getInstructorData = async (req, res, next) => {
 // Dashboard Controllers
 export const getInstructorDashboard = async (req, res) => {
   try {
+    console.log('Getting instructor dashboard...');
     const instructorId = DEFAULT_INSTRUCTOR_ID;
+    console.log('Instructor ID:', instructorId);
 
     // Fetch all required data in parallel for better performance
+    console.log('Fetching data...');
     const [courses, totalStudents, students] = await Promise.all([
       getInstructorCourses(instructorId),
       getInstructorTotalStudents(instructorId),
       getInstructorStudents(instructorId)
     ]);
 
+    console.log('Data fetched successfully:', {
+      coursesCount: courses.length,
+      totalStudents,
+      studentsCount: students.length
+    });
+
     const totalCourses = courses.length;
     const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
     const avgRating = parseFloat(res.locals.instructor.rating) || 0.0;
 
+    console.log('Rendering dashboard...');
     renderSuccess(res, "instructors/dashboard/index", {
       courses,
       students,
@@ -84,6 +94,7 @@ export const getInstructorDashboard = async (req, res) => {
     });
 
   } catch (error) {
+    console.error('Error in getInstructorDashboard:', error);
     handleError(res, error);
   }
 };
@@ -92,10 +103,42 @@ export const getInstructorDashboard = async (req, res) => {
 export const getInstructorCoursesList = async (req, res) => {
   try {
     const instructorId = DEFAULT_INSTRUCTOR_ID;
-    const courses = await getInstructorCourses(instructorId);
+    
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12; // 12 courses per page
+    const offset = (page - 1) * limit;
+    
+    // Get total count for pagination
+    const [totalCountResult] = await db.execute(
+      'SELECT COUNT(*) as total FROM courses WHERE instructor_id = ?',
+      [instructorId]
+    );
+    const totalCount = totalCountResult[0].total;
+    
+    // Get all courses first, then apply pagination
+    const allCourses = await getInstructorCourses(instructorId);
+    const courses = allCourses.slice(offset, offset + limit);
+    
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    
+    const pagination = {
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+      hasNextPage,
+      hasPrevPage,
+      nextPage: hasNextPage ? page + 1 : null,
+      prevPage: hasPrevPage ? page - 1 : null
+    };
 
     renderSuccess(res, "instructors/courses/index", { 
       courses,
+      pagination,
       req: req // Pass request object to access query parameters
     });
 
@@ -549,18 +592,46 @@ export const deleteLesson = async (req, res) => {
 export const getInstructorStudentsPage = async (req, res) => {
   try {
     const instructorId = DEFAULT_INSTRUCTOR_ID;
+    
+    // Pagination parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10; // 10 students per page
+    const offset = (page - 1) * limit;
 
-    const [courses, students] = await Promise.all([
+    const [courses, studentsResult] = await Promise.all([
       getInstructorCourses(instructorId),
       getInstructorStudents(instructorId)
     ]);
 
+    // Get total count for pagination
+    const totalCount = studentsResult.length;
+    
+    // Apply pagination to students
+    const students = studentsResult.slice(offset, offset + limit);
+
     const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
+    
+    // Calculate pagination info
+    const totalPages = Math.ceil(totalCount / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    
+    const pagination = {
+      currentPage: page,
+      totalPages,
+      totalCount,
+      limit,
+      hasNextPage,
+      hasPrevPage,
+      nextPage: hasNextPage ? page + 1 : null,
+      prevPage: hasPrevPage ? page - 1 : null
+    };
 
     renderSuccess(res, "instructors/students/index", {
       courses,
       students,
-      totalEnrollments
+      totalEnrollments,
+      pagination
     });
 
   } catch (error) {
