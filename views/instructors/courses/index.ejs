@@ -548,12 +548,6 @@
                   Edit Course
                 </button>
                 <button
-                  onclick="duplicateCourse()"
-                  class="w-full border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Duplicate Course
-                </button>
-                <button
                   onclick="deleteCourse()"
                   class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                 >
@@ -1003,10 +997,6 @@
          window.location.href = `/instructor/courses/${courseId}/edit`;
        }
 
-       function duplicateCourse() {
-         alert("Course duplicated successfully! You can now edit the copy.");
-         closeCourseDetail();
-       }
 
        function deleteCourse(courseId, courseTitle) {
          // If courseId is not provided, get it from the modal
