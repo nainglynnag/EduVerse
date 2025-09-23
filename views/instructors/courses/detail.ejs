@@ -139,7 +139,7 @@
           <% objectives.forEach((objective, index) => { %>
           <li class="flex items-center space-x-3 text-gray-800 text-base font-medium">
             <span class="text-black text-lg">•</span>
-            <span><%= objective.objective.startsWith('• ') ? objective.objective.substring(2) : objective.objective %></span>
+            <span><%= objective.objective.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim() %></span>
           </li>
           <% }); %>
         </ul>
@@ -161,7 +161,7 @@
           <% prerequisites.forEach((prerequisite, index) => { %>
           <li class="flex items-center space-x-3 text-gray-800 text-base font-medium">
             <span class="text-black text-lg">•</span>
-            <span><%= prerequisite.prerequisite.startsWith('• ') ? prerequisite.prerequisite.substring(2) : prerequisite.prerequisite %></span>
+            <span><%= prerequisite.prerequisite.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim() %></span>
           </li>
           <% }); %>
         </ul>
