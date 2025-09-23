@@ -7,7 +7,6 @@ import "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
 import courseRoutes from "./routes/courseRoutes.js";
-import { getAllPublishedCourses } from "./models/courseModel.js";
 
 const app = express();
 const PORT = 3000;
@@ -33,23 +32,6 @@ app.get("/", (req, res) => {
   res.render("index"); // no layout because default is false
 });
 
-app.get("/courses", async (req, res) => {
-  // courses listing page with server-side data
-  try {
-    const courses = await getAllPublishedCourses();
-    
-    res.render("courses", { 
-      courses,
-      layout: false
-    });
-  } catch (error) {
-    console.error('Error loading courses:', error);
-    res.render("courses", { 
-      courses: [],
-      layout: false
-    });
-  }
-});
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
