@@ -646,3 +646,119 @@ export const getInstructorStudentsPage = async (req, res) => {
     handleError(res, error);
   }
 };
+
+// Profile Management Controllers
+export const getEditProfilePage = async (req, res) => {
+  try {
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructor = await getInstructorById(instructorId);
+    
+    // Check for success parameter from redirect
+    const success = req.query.success === 'true';
+    
+    renderSuccess(res, "instructors/profile/edit", {
+      instructor,
+      form: instructor, // Pass instructor data as form data for pre-filling
+      success: success
+    });
+
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const { name, email, specialization, bio, password } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !specialization || !bio) {
+      return res.status(400).render('instructors/profile/edit', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        form: req.body,
+        error: 'All fields except password are required'
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).render('instructors/profile/edit', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        form: req.body,
+        error: 'Please enter a valid email address'
+      });
+    }
+
+    // Check if email is already taken by another user
+    const [existingUser] = await db.execute(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [email, instructorId]
+    );
+
+    if (existingUser.length > 0) {
+      return res.status(400).render('instructors/profile/edit', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        form: req.body,
+        error: 'Email address is already taken by another user'
+      });
+    }
+
+    // Update user table
+    const updateUserQuery = password 
+      ? 'UPDATE users SET name = ?, email = ? WHERE id = ?'
+      : 'UPDATE users SET name = ?, email = ? WHERE id = ?';
+    
+    const userParams = password 
+      ? [name, email, instructorId]
+      : [name, email, instructorId];
+
+    await db.execute(updateUserQuery, userParams);
+
+    // Update or insert instructor profile
+    const [existingProfile] = await db.execute(
+      'SELECT user_id FROM instructor_profiles WHERE user_id = ?',
+      [instructorId]
+    );
+
+    if (existingProfile.length > 0) {
+      // Update existing profile
+      await db.execute(
+        'UPDATE instructor_profiles SET specialization = ?, bio = ? WHERE user_id = ?',
+        [specialization, bio, instructorId]
+      );
+    } else {
+      // Insert new profile
+      await db.execute(
+        'INSERT INTO instructor_profiles (user_id, specialization, bio) VALUES (?, ?, ?)',
+        [instructorId, specialization, bio]
+      );
+    }
+
+    // If password is provided, update it
+    if (password && password.trim()) {
+      // In a real application, you would hash the password here
+      // For now, we'll just update it directly (not recommended for production)
+      await db.execute(
+        'UPDATE users SET password = ? WHERE id = ?',
+        [password, instructorId]
+      );
+    }
+
+    // Redirect with success message
+    res.redirect('/instructor/profile/edit?success=true');
+
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).render('instructors/profile/edit', {
+      layout: DEFAULT_LAYOUT,
+      instructor: res.locals.instructor,
+      form: req.body,
+      error: 'An error occurred while updating your profile. Please try again.'
+    });
+  }
+};

@@ -10,7 +10,9 @@ import {
   updateCourse,
   deleteCourse,
   deleteLesson,
-  getInstructorStudentsPage
+  getInstructorStudentsPage,
+  getEditProfilePage,
+  updateProfile
 } from '../controllers/instructorController.js';
 
 const router = express.Router();
@@ -36,5 +38,9 @@ router.delete('/courses/:courseId/lessons/:lessonId', deleteLesson);
 
 // Student Management Routes
 router.get('/students', getInstructorStudentsPage);
+
+// Profile Management Routes
+router.get('/profile/edit', getEditProfilePage);
+router.post('/profile/edit', updateProfile);
 
 export default router;

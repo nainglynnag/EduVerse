@@ -289,7 +289,8 @@
           </div>
 
           <div class="space-y-2">
-            <button
+            <a
+              href="/instructor/profile/edit"
               class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3"
             >
               <svg
@@ -306,7 +307,7 @@
                 />
               </svg>
               <span>Edit Profile</span>
-            </button>
+            </a>
 
             <button
               class="w-full text-left px-4 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center space-x-3"
@@ -355,6 +356,7 @@
             <hr class="my-2" />
 
             <button
+              onclick="signOut()"
               class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 transition-colors flex items-center space-x-3 text-red-600"
             >
               <svg
@@ -404,6 +406,23 @@
       function closeProfile() {
         document.getElementById("profileModal").classList.add("hidden");
         document.body.style.overflow = "auto";
+      }
+
+      // Sign out function
+      function signOut() {
+        // Show confirmation dialog
+        if (confirm('Are you sure you want to sign out?')) {
+          // Close profile modal
+          closeProfile();
+          
+          // Show loading state
+          document.body.style.cursor = 'wait';
+          
+          // Redirect to welcome page (root)
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 500);
+        }
       }
 
       // Event listeners
