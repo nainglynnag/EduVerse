@@ -5,57 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Portal - Login</title>
     <link rel="stylesheet" href="/css/main.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            animation: {
-              float: "float 6s ease-in-out infinite",
-              "fade-in": "fadeIn 0.8s ease-out",
-              "slide-up": "slideUp 0.6s ease-out",
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .coffee-steam {
-        animation: float 3s ease-in-out infinite;
-      }
-      .coffee-steam:nth-child(2) {
-        animation-delay: 0.5s;
-      }
-      .coffee-steam:nth-child(3) {
-        animation-delay: 1s;
-      }
-    </style>
   </head>
   <body
     class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden"
@@ -803,7 +752,7 @@
                   name="email"
                   type="email"
                   required
-                  class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= typeof error !== 'undefined' && error ? 'border-red-500' : '' %> transition-all duration-200 bg-gray-50 focus:bg-white"
+                  class="block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= error && typeof error === 'string' ? 'border-red-500' : 'border-gray-300' %> transition-all duration-200 bg-gray-50 focus:bg-white"
                   placeholder="admin@company.com"
                 />
               </div>
@@ -840,7 +789,7 @@
                   name="password"
                   type="password"
                   required
-                  class="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= typeof error !== 'undefined' && error ? 'border-red-500' : '' %> transition-all duration-200 bg-gray-50 focus:bg-white"
+                  class="block w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= error && typeof error === 'string' ? 'border-red-500' : 'border-gray-300' %> transition-all duration-200 bg-gray-50 focus:bg-white"
                   placeholder="••••••••"
                 />
                 <button
@@ -902,7 +851,7 @@
             <div>
               <button
                 type="submit"
-                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
               >
                 <span class="absolute left-0 inset-y-0 flex items-center pl-3">
                   <svg

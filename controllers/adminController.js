@@ -33,7 +33,7 @@ const errorHandler = (
   res,
   error,
   operation,
-  message = "Internal server error"
+  message = "Internal server error",
 ) => {
   console.log(`Controller error in ${operation}: `, error);
   res.status(500).send({ error, message });
@@ -52,7 +52,7 @@ export const listCourses = async (req, res) => {
       page,
       limit,
       status,
-      search
+      search,
     );
 
     // Calculate total number of pages
@@ -87,14 +87,12 @@ export const showCourseDetail = async (req, res) => {
   course.lessons.map((lesson, index) => {
     if (lesson.video_url.includes("youtube.com/watch?v=")) {
       const videoId = lesson.video_url.split("v=")[1];
-      course.lessons[
-        index
-      ].embed_url = `https://www.youtube.com/embed/${videoId}`;
+      course.lessons[index].embed_url =
+        `https://www.youtube.com/embed/${videoId}`;
     } else if (lesson.video_url.includes("youtu.be/")) {
       const videoId = lesson.video_url.split("youtu.be/")[1];
-      course.lessons[
-        index
-      ].embed_url = `https://www.youtube.com/embed/${videoId}`;
+      course.lessons[index].embed_url =
+        `https://www.youtube.com/embed/${videoId}`;
     } else {
       course.lessons[index].video_url;
     }
@@ -299,7 +297,7 @@ export const updateCourseHandler = async (req, res) => {
           titles.length,
           durations.length,
           descriptions.length,
-          videos.length
+          videos.length,
         );
         const rows = [];
         for (let i = 0; i < maxLen; i++) {
@@ -452,7 +450,7 @@ export const listInstructors = async (req, res) => {
     const { instructors, totalInstructors } = await getAllInstructorsByParams(
       page,
       limit,
-      search
+      search,
     );
 
     // Calculate total number of pages
@@ -540,7 +538,7 @@ export const showEditInstructorForm = async (req, res) => {
     const { user_id, name, email, specialization, bio } = instructors.find(
       (instructor) => {
         return instructor.user_id == req.params.id;
-      }
+      },
     );
     // console.log(name, email, specialization, bio);
 
@@ -637,7 +635,7 @@ export const listStudents = async (req, res) => {
       page,
       limit,
       status,
-      search
+      search,
     );
 
     // Calculate total number of pages
@@ -764,7 +762,7 @@ export const updateStudentHandler = async (req, res) => {
     const [student] = await getStudentDetails(req.params.id);
 
     const currentPlanId = studentPlans.find(
-      (plan) => plan.name.toLowerCase() === student.plan.toLowerCase()
+      (plan) => plan.name.toLowerCase() === student.plan.toLowerCase(),
     ).id;
 
     const updates = {};
@@ -822,7 +820,7 @@ export const listCategories = async (req, res) => {
     const { categories, totalCategories } = await getAllCategoriesByParams(
       page,
       limit,
-      search
+      search,
     );
 
     const totalPages = Math.ceil(totalCategories / limit);
@@ -888,7 +886,7 @@ export const showEditCategoryForm = async (req, res) => {
     const { id, name, color_theme, description } = categories.find(
       (category) => {
         return category.id == req.params.id;
-      }
+      },
     );
     // console.log(name, color_theme, description);
 
@@ -914,7 +912,7 @@ export const updateCategoryHandler = async (req, res) => {
     const { id, name, color_theme, description } = categories.find(
       (category) => {
         return category.id == req.params.id;
-      }
+      },
     );
 
     const colorOptions = ["Blue", "Purple", "Green", "Yellow"];
