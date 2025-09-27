@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@theme {
+    --color-blue-950: "#1e3a8a";
+}
+
 @layer components {
     @keyframes float {
         0%,
