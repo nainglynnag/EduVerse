@@ -172,14 +172,26 @@ export const createCourse = async (req, res) => {
       courseDifficulty: difficulty_id,
       coursePrice: price,
       courseDescription: description,
-      courseObjectives: objectives,
-      coursePrerequisites: prerequisites,
+      courseObjectives: objectivesText,
+      coursePrerequisites: prerequisitesText,
       lessonTitles = [],
       lessonDurations = [],
       lessonDescriptions = [],
       lessonVideoUrls = [],
       courseStatus: status = 'draft'
     } = req.body;
+
+    // Handle both single text field and array formats
+    let objectives = objectivesText;
+    let prerequisites = prerequisitesText;
+    
+    // If arrays are provided (from create form), use them instead
+    if (req.body['courseObjectives[]'] && Array.isArray(req.body['courseObjectives[]'])) {
+      objectives = req.body['courseObjectives[]'].join('\n');
+    }
+    if (req.body['coursePrerequisites[]'] && Array.isArray(req.body['coursePrerequisites[]'])) {
+      prerequisites = req.body['coursePrerequisites[]'].join('\n');
+    }
 
     const instructorId = DEFAULT_INSTRUCTOR_ID;
 
@@ -216,8 +228,8 @@ export const createCourse = async (req, res) => {
       if (objectives && objectives.trim()) {
         const objectiveLines = objectives.split('\n').filter(line => line.trim());
         for (const objective of objectiveLines) {
-          // Remove bullet point if present
-          const cleanObjective = objective.trim().replace(/^•\s*/, '');
+          // Remove bullet point and dash if present
+          const cleanObjective = objective.trim().replace(/^[-•]\s*/, '');
           await db.execute(
             'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
             [newCourseId, cleanObjective]
@@ -229,8 +241,8 @@ export const createCourse = async (req, res) => {
       if (prerequisites && prerequisites.trim()) {
         const prerequisiteLines = prerequisites.split('\n').filter(line => line.trim());
         for (const prerequisite of prerequisiteLines) {
-          // Remove bullet point if present
-          const cleanPrerequisite = prerequisite.trim().replace(/^•\s*/, '');
+          // Remove bullet point and dash if present
+          const cleanPrerequisite = prerequisite.trim().replace(/^[-•]\s*/, '');
           await db.execute(
             'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
             [newCourseId, cleanPrerequisite]
@@ -462,8 +474,8 @@ const updateCourseObjectivesFromText = async (courseId, objectivesText) => {
       const objectives = objectivesText.split('\n').filter(line => line.trim());
       for (const objective of objectives) {
         if (objective.trim()) {
-          // Remove bullet point if present
-          const cleanObjective = objective.trim().replace(/^•\s*/, '');
+          // Remove bullet point and dash if present
+          const cleanObjective = objective.trim().replace(/^[-•]\s*/, '');
           await db.execute(
             'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
             [courseId, cleanObjective]
@@ -490,8 +502,8 @@ const updateCoursePrerequisitesFromText = async (courseId, prerequisitesText) =>
       const prerequisites = prerequisitesText.split('\n').filter(line => line.trim());
       for (const prerequisite of prerequisites) {
         if (prerequisite.trim()) {
-          // Remove bullet point if present
-          const cleanPrerequisite = prerequisite.trim().replace(/^•\s*/, '');
+          // Remove bullet point and dash if present
+          const cleanPrerequisite = prerequisite.trim().replace(/^[-•]\s*/, '');
           await db.execute(
             'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
             [courseId, cleanPrerequisite]

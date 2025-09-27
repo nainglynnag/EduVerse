@@ -132,7 +132,7 @@
             rows="4"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="What will students learn from this course?"
-          ><%= typeof objectives !== 'undefined' && objectives && objectives.length > 0 ? objectives.map(obj => obj.objective.startsWith('• ') ? obj.objective : '• ' + obj.objective).join('\n') : '' %></textarea>
+          ><%= typeof objectives !== 'undefined' && objectives && objectives.length > 0 ? objectives.map(obj => '• ' + obj.objective.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim()).join('\n') : '' %></textarea>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -144,7 +144,7 @@
             rows="3"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="What should students know before taking this course?"
-          ><%= typeof prerequisites !== 'undefined' && prerequisites && prerequisites.length > 0 ? prerequisites.map(prereq => prereq.prerequisite.startsWith('• ') ? prereq.prerequisite : '• ' + prereq.prerequisite).join('\n') : '' %></textarea>
+          ><%= typeof prerequisites !== 'undefined' && prerequisites && prerequisites.length > 0 ? prerequisites.map(prereq => '• ' + prereq.prerequisite.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim()).join('\n') : '' %></textarea>
         </div>
       </div>
     </div>
