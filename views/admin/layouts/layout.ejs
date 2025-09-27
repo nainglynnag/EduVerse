@@ -5,20 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EduVerse</title>
     <link rel="stylesheet" href="/css/main.css" />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              "blue-950": "#1e3a8a",
-            },
-          },
-        },
-      };
-    </script>
 
     <% if (typeof head !== 'undefined') { %> <%- head %> <% } %>
   </head>
+
   <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <!-- Sidebar -->
     <div
@@ -296,31 +286,37 @@
               </div>
 
               <!-- Notifications -->
-              <button
-                id="notificationBtn"
-                class="relative p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  fill="currentColor"
-                  class="bi bi-bell-fill"
-                  viewBox="0 0 16 16"
-                >
-                  <path
-                    d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
-                  />
-                </svg>
-                <span
-                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                  >12</span
-                >
-              </button>
+              <div>
+                  <button
+                    id="notificationBtn"
+                    class="relative p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        class="bi bi-bell-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
+                        />
+                      </svg>
+                      <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                        >12</span
+                      >
+
+                  </button>
+              </div>
+
             </div>
           </div>
         </div>
       </header>
+
+      <%- include('../partials/notificationModal') %>
 
       <!-- Main Content Area -->
       <main class="p-6">
@@ -593,6 +589,18 @@
       }
 
       document.addEventListener("DOMContentLoaded", initAdminUI);
+
+      const bell = document.getElementById('notificationBtn');
+        const dropdown = document.getElementById('notificationDropdown');
+        bell.addEventListener('click', () => {
+          window.scrollTo(0, 0);
+          dropdown.classList.toggle('hidden');
+        });
+        window.addEventListener('click', (e) => {
+          if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
     </script>
 
     <% if (typeof scripts !== 'undefined') { %> <%- scripts %> <% } %>

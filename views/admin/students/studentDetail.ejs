@@ -35,7 +35,7 @@
           <span class="px-2 rounded-full text-sm font-semibold <%= student.status === "active"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800" %>"><%= student.status %></span>
-          
+
         </p>
 
         <p>
@@ -53,6 +53,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <% student.courses_details.map((course) => { %>
         <a
+            href="/admin/courses/<%= course.course_id %>"
           class="bg-indigo-200 shadow-lg hover:shadow-50 p-4 backdrop-blur-lg bg-opacity-50 rounded-lg cursor-pointer"
         >
           <div class="text-lg font-semibold mb-2"><%= course.title %></div>
