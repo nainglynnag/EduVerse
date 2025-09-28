@@ -1,0 +1,112 @@
+<h2 class="text-3xl font-bold text-gray-800 mb-4"><%= student.name %></h2>
+<div class="grid grid-cols-1 lg:grid-cols-4 lg:gap-6">
+  <div class="col-span-3">
+    <div class="bg-white rounded-2xl p-6 shadow-md mb-8">
+      <h3 class="text-xl font-semibold text-gray-800 mb-4">
+        Student Information
+      </h3>
+      <div class="space-y-2">
+        <p>
+          <span class="font-medium mr-2">Student ID:</span>
+          <%= student.student_code %>
+        </p>
+
+        <p>
+          <span class="font-medium mr-2">Email:</span>
+          <%= student.email %>
+        </p>
+        <p>
+          <span class="font-medium mr-2">Current Plan:</span>
+          <%= student.plan %>
+        </p>
+
+        <p>
+          <span class="font-medium mr-2">Plan Description:</span>
+          <%= student.plan_description || "N/A" %>
+        </p>
+
+        <p>
+          <span class="font-medium mr-2">Total Enrolled Courses:</span>
+          <%= student.total_courses || 0 %>
+        </p>
+
+        <p>
+          <span class="font-medium mr-2">Status:</span>
+          <span class="px-2 rounded-full text-sm font-semibold <%= student.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800" %>"><%= student.status %></span>
+
+        </p>
+
+        <p>
+          <span class="font-medium mr-2">Joined at:</span>
+          <%= student && student.joined_date ? new
+          Date(student.joined_date).toLocaleDateString() : "N/A" %>
+        </p>
+      </div>
+    </div>
+
+    <% if (student && Array.isArray(student.courses_details) &&
+    student.courses_details[0].course_id != null) { %>
+    <div class="mb-8">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">Enrolled Courses</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <% student.courses_details.map((course) => { %>
+        <a
+            href="/admin/courses/<%= course.course_id %>"
+          class="bg-indigo-200 shadow-lg hover:shadow-50 p-4 backdrop-blur-lg bg-opacity-50 rounded-lg cursor-pointer"
+        >
+          <div class="text-lg font-semibold mb-2"><%= course.title %></div>
+
+          <div class="mb-2">
+            <span>Enrolled Date:</span>
+            <%= course.enrolled_at ? new
+            Date(course.enrolled_at).toLocaleDateString() : 'N/A' %>
+          </div>
+
+          <div class="flex justify-between items-center gap-2">
+            <!-- <div>Course Progress:</div> -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+              <div
+                class="bg-blue-600 h-2.5 rounded-full dark:bg-blue-500"
+                style="width: <%= course.progress_percent %>%"
+              ></div>
+            </div>
+
+            <div>
+              <%= (typeof course.progress_percent !== 'undefined' &&
+              course.progress_percent !== null) ? course.progress_percent : '0'
+              %>%
+            </div>
+          </div>
+        </a>
+        <% }) %>
+      </div>
+    </div>
+    <% } %>
+  </div>
+
+  <div>
+    <h3 class="text-lg font-semibold text-gray-800 mb-2">Actions</h3>
+    <div class="space-y-2">
+      <div class="w-full">
+        <a
+          href="/admin/edit-student/<%= student.id %>"
+          class="block w-full bg-blue-600 text-white text-center px-4 py-2 rounded-lg hover:bg-blue-700"
+        >
+          Edit Student
+        </a>
+      </div>
+
+      <div class="w-full">
+        <a
+          class="block w-full bg-red-600 text-white text-center px-4 py-2 rounded-lg hover:bg-red-700 btn-delete"
+          data-action="/admin/delete-student/<%= student.id %>"
+          data-confirm-message="Are you sure you want to delete Student <%= student.name %>? This action cannot be undone."
+        >
+          Delete Student
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

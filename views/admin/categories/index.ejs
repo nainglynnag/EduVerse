@@ -1,113 +1,225 @@
 <!-- Categories index view -->
 <div id="categoriesFragment">
   <div class="flex items-center justify-between mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Category Management</h2>
+    <h2 class="text-2xl font-bold text-gray-800">
+      Category Management
+      <span class="text-lg text-blue-600">(<%= totalCategories %>)</span>
+    </h2>
     <a
-      href="/admin/categories/create"
-      class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-2 rounded"
-      >Add New Category</a
+      href="/admin/create-category"
+      class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 md:px-6 py-2 rounded-lg hover:from-red-700 hover:to-orange-700 transition-all flex items-center space-x-2"
+      ><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      <span class="text-sm md:text-base">Add New Category</span></a
     >
   </div>
 
+  <!-- Category Filters -->
+  <div
+    class="bg-white opacity-80 backdrop-blur-lg rounded-lg p-4 mb-4 shadow-sm"
+  >
+    <div class="flex flex-wrap md:gap-4 justify-between items-center">
+      <div class="flex text-sm overflow-x-auto"></div>
+
+      <div class="flex-1"></div>
+      
+      <form action="/admin/categories" method="GET">
+        <div class="relative w-full md:w-auto">
+        <input
+          type="text"
+          name="search"
+          placeholder="Search category..."
+          value="<%= search %>"
+          class="pl-10 pr-4 py-1.5 md:py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent placeholder-text-sm md:placeholder-text-base"
+        />
+        <svg
+          class="w-4 h-4 text-gray-400 absolute left-3 top-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <button type="submit" class="hidden"></button>
+      </div>
+      </form>
+    </div>
+  </div>
+
+  <% if(categories && categories.length > 0) { %>
   <div
     class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
     id="categoriesGrid"
   >
     <!-- category cards -->
+    <% categories.map((category) => { %>
+    <div
+      class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden"
+    >
+      <div
+        class="bg-gradient-to-r <%= colorClasses[category.color_theme] %> h-24 flex items-center justify-center"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="30"
+          height="30"
+          fill="white"
+          class="bi bi-collection-fill"
+          viewBox="0 0 16 16"
+        >
+          <path
+            d="M0 13a1.5 1.5 0 0 0 1.5 1.5h13A1.5 1.5 0 0 0 16 13V6a1.5 1.5 0 0 0-1.5-1.5h-13A1.5 1.5 0 0 0 0 6zM2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3m2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1"
+          />
+        </svg>
+      </div>
+      <div class="lg:min-h-[210px] p-6 flex flex-col">
+        <h3 class="font-bold text-gray-800 mb-2"><%= category.name %></h3>
+        <p class="text-gray-600 text-sm mb-4"><%= category.description %></p>
+        <div class="flex justify-between items-center mb-4 lg:mt-auto">
+          <span class="text-sm text-gray-600">Courses</span>
+          <span class="font-bold text-<%= category.color_theme %>-600"
+            ><%= category.total_courses %></span
+          >
+        </div>
+        <div class="flex space-x-2">
+          <a
+            href="/admin/edit-category/<%= category.id %>"
+            class="flex-1 border border-gray-300 text-gray-700 text-sm text-center px-3 py-2 rounded-lg hover:bg-gray-50 active:scale-90 transition-all duration-300"
+          >
+            Edit
+          </a>
+          <button
+            class="px-3 py-2 text-red-600 hover:bg-red-50 hover:text-red-400 active:scale-90 duration-300 rounded-lg transition-all btn-delete"
+            data-action="/admin/delete-category/<%= category.id %>"
+            data-confirm-message="Are you sure you want to delete category <%= category.name %>? This action cannot be undone."
+          >
+            <div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                />
+              </svg>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+
+  <!-- Pagination -->
+<div class="mt-auto px-4 pt-4">
+  <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+    <!-- Items per page -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-600">Show</span>
+      <select
+        onchange="location.href='?page=1&limit='+this.value"
+        class="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      >
+        <option value="10" <%= limit == 10 ? 'selected' : '' %>>10</option>
+        <option value="25" <%= limit == 25 ? 'selected' : '' %>>25</option>
+        <option value="50" <%= limit == 50 ? 'selected' : '' %>>50</option>
+        <option value="100" <%= limit == 100 ? 'selected' : '' %>>100</option>
+      </select>
+      <span class="text-sm text-gray-600">per page</span>
+    </div>
+
+    <!-- Pagination Numbers -->
+    <div class="flex items-center space-x-2">
+      <!-- Prev Button -->
+      <button
+        onclick="location.href='?page=<%= currentPage - 1 %>&limit=<%= limit %>'"
+        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+          <%= currentPage <= 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
+        <%= currentPage <= 1 ? 'disabled' : '' %>>
+        Prev
+      </button>
+
+      <!-- Page Numbers -->
+      <div class="flex items-center space-x-1">
+        <% for (let i = 1; i <= totalPages; i++) { %>
+          <button
+            onclick="location.href='?page=<%= i %>&limit=<%= limit %>&search=<%= search %>'"
+            class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
+              <%= currentPage === i ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-600' %>">
+            <%= i %>
+          </button>
+        <% } %>
+      </div>
+
+      <!-- Next Button -->
+      <button
+        onclick="location.href='?page=<%= currentPage + 1 %>&limit=<%= limit %>'"
+        class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+          <%= currentPage >= totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-blue-50 text-blue-600 hover:bg-blue-100' %>"
+        <%= currentPage >= totalPages ? 'disabled' : '' %>>
+        Next
+      </button>
+      
+    </div>
+
+    <!-- Jump to Page -->
+    <div class="flex items-center space-x-2">
+      <span class="text-sm text-gray-600">Go to</span>
+      <input
+        type="number"
+        min="1"
+        max="<%= totalPages %>"
+        value="<%= currentPage %>"
+        onchange="location.href='?page='+this.value+'&limit=<%= limit %>'"
+        class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+      />
+    </div>
+
   </div>
 </div>
-
-<script>
-  let categories = [
-    {
-      id: 1,
-      name: "Programming",
-      description: "Learn various programming languages and frameworks",
-      courses: 89,
-      color: "blue",
-    },
-    {
-      id: 2,
-      name: "Design",
-      description: "UI/UX Design, Graphic Design, and more",
-      courses: 45,
-      color: "purple",
-    },
-    {
-      id: 3,
-      name: "Business",
-      description: "Business strategy, management, and entrepreneurship",
-      courses: 67,
-      color: "green",
-    },
-    {
-      id: 4,
-      name: "Data Science",
-      description: "Data analysis, machine learning, and AI",
-      courses: 34,
-      color: "yellow",
-    },
-  ];
-
-  function showCategories() {
-    // hideAllContent();
-    // document.getElementById("categoriesContent").classList.remove("hidden");
-    // updateActiveNav("categories");
-    document.querySelector("header h1").textContent = "Category Management";
-    populateCategoriesGrid();
-  }
-
-  function populateCategoriesGrid() {
-    const grid = document.getElementById("categoriesGrid");
-    const colorClasses = {
-      blue: "from-blue-500 to-blue-600",
-      purple: "from-purple-500 to-purple-600",
-      green: "from-green-500 to-green-600",
-      yellow: "from-yellow-500 to-yellow-600",
-    };
-
-    grid.innerHTML = categories
-      .map(
-        (category) => `
-                <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow overflow-hidden">
-                    <div class="bg-gradient-to-r ${
-                      colorClasses[category.color]
-                    } h-24 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                    <div class="p-6">
-                        <h3 class="font-bold text-gray-800 mb-2">${
-                          category.name
-                        }</h3>
-                        <p class="text-gray-600 text-sm mb-4">${
-                          category.description
-                        }</p>
-                        <div class="flex justify-between items-center mb-4">
-                            <span class="text-sm text-gray-600">Courses</span>
-                            <span class="font-bold text-${
-                              category.color
-                            }-600">${category.courses}</span>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button onclick="editItem('category', ${
-                              category.id
-                            })" class="flex-1 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                                Edit
-                            </button>
-                            <button onclick="deleteItem('category', ${
-                              category.id
-                            })" class="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors text-sm">
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `
-      )
-      .join("");
-  }
-
-  showCategories();
-</script>
+  <% } else { %>
+  <div class="col-span-full text-center py-4">
+    <div class="bg-white rounded-lg p-8 shadow-lg">
+      <svg
+        class="w-16 h-16 text-gray-400 mx-auto mb-4"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+                  fill-rule="evenodd"
+                  d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                  clip-rule="evenodd"
+                />
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-800 mb-1">No Category</h3>
+      <p class="text-sm text-gray-600 mb-6">
+        You haven't created any category yet. Start by creating your first
+        category!
+      </p>
+      <a
+        href="/admin/create-category"
+        class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-6 py-2 rounded-lg hover:from-red-700 hover:to-orange-700 transition-all"
+      >
+        Create New Category
+      </a>
+    </div>
+  </div>
+  <% } %>
+</div>

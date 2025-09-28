@@ -4,21 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EduVerse</title>
-    <!-- Tailwind CDN (keeps child Tailwind classes working) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              "blue-950": "#1e3a8a",
-            },
-          },
-        },
-      };
-    </script>
+    <link rel="stylesheet" href="/css/main.css" />
+
     <% if (typeof head !== 'undefined') { %> <%- head %> <% } %>
   </head>
+
   <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <!-- Sidebar -->
     <div
@@ -27,9 +17,9 @@
     >
       <!-- Logo -->
       <div class="p-6 border-b border-gray-200">
-        <div class="flex items-center space-x-3">
+        <a href="/admin/dashboard" class="flex items-center space-x-3">
           <div
-            class="bg-gradient-to-r from-red-600 to-orange-600 p-2 rounded-lg"
+            class="bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-lg"
           >
             <svg
               class="w-8 h-8 text-white"
@@ -37,18 +27,15 @@
               viewBox="0 0 20 20"
             >
               <path
-                fill-rule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-                clip-rule="evenodd"
+                d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"
               />
             </svg>
           </div>
           <span
-            class="text-xl font-bold bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent"
+            class="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent"
             >EduVerse</span
           >
-        </div>
-        <p class="text-sm text-gray-600 mt-1">Admin Portal</p>
+        </a>
       </div>
 
       <!-- Navigation Menu -->
@@ -56,7 +43,7 @@
         <ul class="space-y-2">
           <li>
             <a
-              href="/admin"
+              href="/admin/dashboard"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg <%= active === 'dashboard' ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white' : 'text-gray-700 hover:bg-red-50 hover:text-red-600' %>"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -95,15 +82,15 @@
           </li>
           <li>
             <a
-              href="/admin/users"
-              class="flex items-center space-x-3 px-4 py-3 rounded-lg <%= active === 'users' ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white' : 'text-gray-700 hover:bg-red-50 hover:text-red-600' %>"
+              href="/admin/students"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg <%= active === 'students' ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white' : 'text-gray-700 hover:bg-red-50 hover:text-red-600' %>"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
                 />
               </svg>
-              <span>Users</span>
+              <span>Students</span>
             </a>
           </li>
           <li>
@@ -121,6 +108,25 @@
               <span>Categories</span>
             </a>
           </li>
+
+          <li>
+            <a
+              href="/admin/admins"
+              class="flex items-center space-x-3 px-4 py-3 rounded-lg <%= active === 'admins' ? 'bg-gradient-to-r from-red-600 to-orange-600 text-white' : 'text-gray-700 hover:bg-red-50 hover:text-red-600' %>"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                class="bi bi-person-fill-gear w-5 h-5"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0"
+                />
+              </svg>
+              <span>Admins</span>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -135,10 +141,12 @@
           <div
             class="w-10 h-10 bg-gradient-to-r from-red-600 to-orange-600 rounded-full flex items-center justify-center"
           >
-            <span class="text-sm font-bold text-white">AD</span>
+            <span class="text-sm font-bold text-white"
+              ><%= admin.name.split(" ").map((n) => n[0]).join("") %></span
+            >
           </div>
           <div class="flex-1">
-            <p class="text-sm font-medium text-gray-800">Admin User</p>
+            <p class="text-sm font-medium text-gray-800"><%= admin.name %></p>
             <p class="text-xs text-gray-600">System Administrator</p>
           </div>
           <svg
@@ -161,7 +169,7 @@
     <!-- Mobile Sidebar Overlay -->
     <div
       id="sidebarOverlay"
-      class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden lg:hidden"
+      class="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
     ></div>
 
     <!-- Main Content -->
@@ -194,15 +202,15 @@
 
             <!-- Page Title -->
             <div class="flex-1 lg:flex-none">
-              <h1 class="text-2xl font-bold text-gray-800">
-                <%= typeof title !== 'undefined' ? title : 'Admin Dashboard' %>
+              <h1 class="text-xl md:text-2xl font-bold text-gray-800">
+                <%= typeof title !== 'undefined' ? title : 'Dashboard' %>
               </h1>
             </div>
 
             <!-- Header Actions -->
             <div class="flex items-center space-x-4">
               <!-- Search -->
-              <div class="hidden md:block relative">
+              <!-- <div class="hidden md:block relative">
                 <input
                   type="text"
                   placeholder="Search..."
@@ -221,7 +229,7 @@
                     d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
-              </div>
+              </div> -->
 
               <!-- Quick Actions -->
               <div class="relative">
@@ -242,62 +250,73 @@
                   id="quickActionsMenu"
                   class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-30"
                 >
-                  <div class="py-2">
-                    <button
-                      onclick="showCreateModal('course')"
+                  <div class="py-2 flex flex-col">
+                    <a
+                      href="/admin/create-course"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Course
-                    </button>
-                    <button
-                      onclick="showCreateModal('instructor')"
+                    </a>
+                    <a
+                      href="/admin/create-instructor"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Instructor
-                    </button>
-                    <button
-                      onclick="showCreateModal('user')"
+                    </a>
+                    <a
+                      href="/admin/create-student"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
-                      Add New User
-                    </button>
-                    <button
-                      onclick="showCreateModal('category')"
+                      Add New Student
+                    </a>
+                    <a
+                      href="/admin/create-category"
                       class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
                     >
                       Add New Category
-                    </button>
+                    </a>
+                    <a
+                      href="/admin/create-admin"
+                      class="w-full text-left px-4 py-2 hover:bg-gray-50 text-sm"
+                    >
+                      Add New Admin
+                    </a>
                   </div>
                 </div>
               </div>
 
               <!-- Notifications -->
-              <button
-                id="notificationBtn"
-                class="relative p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-              >
-                <svg
-                  class="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 17h5l-5 5v-5zM10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.061L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"
-                  />
-                </svg>
-                <span
-                  class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                  >12</span
-                >
-              </button>
+              <div>
+                  <button
+                    id="notificationBtn"
+                    class="relative p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
+                  >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        class="bi bi-bell-fill"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5 5 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901"
+                        />
+                      </svg>
+                      <span
+                        class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                        >12</span
+                      >
+
+                  </button>
+              </div>
+
             </div>
           </div>
         </div>
       </header>
+
+      <%- include('../partials/notificationModal') %>
 
       <!-- Main Content Area -->
       <main class="p-6">
@@ -310,49 +329,278 @@
       </main>
     </div>
 
+    <!-- Confirm Delete Modal (global) -->
+    <div
+      id="confirmDeleteModal"
+      class="fixed inset-0 z-50 hidden items-center justify-center"
+    >
+      <div class="absolute inset-0 bg-black/50" data-close-modal></div>
+      <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4 p-6 z-10">
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Confirm delete</h3>
+        <p id="confirmDeleteMessage" class="text-sm text-gray-600 mb-4">
+          Are you sure you want to delete this item?
+        </p>
+
+        <div class="flex justify-end space-x-2">
+          <button
+            type="button"
+            data-cancel-delete
+            class="px-4 py-2 rounded-lg border"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            id="confirmDeleteBtn"
+            class="px-4 py-2 rounded-lg bg-red-600 text-white"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden form used for POST-delete (so we can keep RESTful deletes) -->
+    <form
+      id="confirmDeleteForm"
+      method="POST"
+      class="hidden"
+      aria-hidden="true"
+    ></form>
+
+    <% if (success && success.length) { %>
+    <div
+      id="toastAlert"
+      class="z-50 fixed top-4 right-4 flex items-center p-4 mb-4 text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 shadow-lg transition-opacity duration-500"
+      role="alert"
+    >
+      <svg
+        class="shrink-0 inline w-4 h-4 me-3"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm13.707-1.293a1 1 0 0 0-1.414-1.414L11 12.586l-1.793-1.793a1 1 0 0 0-1.414 1.414l2.5 2.5a1 1 0 0 0 1.414 0l4-4Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+
+      <div><span class="font-medium">Success!</span> <%= success[0] %></div>
+    </div>
+
+    <% } %> <% if (error && error.length) { %>
+    <div
+      id="toastAlert"
+      class="z-50 fixed top-4 right-4 flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 shadow-lg transition-opacity duration-500"
+      role="alert"
+    >
+      <svg
+        class="shrink-0 inline w-4 h-4 me-3"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="currentColor"
+        viewBox="0 0 20 20"
+      >
+        <path
+          d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
+        />
+      </svg>
+
+      <div><span class="font-medium">Error!</span> <%= error[0] %></div>
+    </div>
+    <% } %>
+
+    <script>
+      (function () {
+        const modal = document.getElementById("confirmDeleteModal");
+        const overlay = modal && modal.querySelector("[data-close-modal]");
+        const cancelBtn = modal && modal.querySelector("[data-cancel-delete]");
+        const confirmBtn = document.getElementById("confirmDeleteBtn");
+        const messageEl = document.getElementById("confirmDeleteMessage");
+        const form = document.getElementById("confirmDeleteForm");
+
+        function showConfirmDelete(opts = {}) {
+          // opts: { message, action, method = 'POST', onConfirmRedirect }
+          if (!modal) return;
+          messageEl.textContent =
+            opts.message || "Are you sure you want to delete this item?";
+          form.action = opts.action || "";
+          form.method = (opts.method || "POST").toUpperCase();
+          // clear form content then optionally insert hidden inputs (e.g. _method)
+          form.innerHTML = "";
+          if (opts._hidden && typeof opts._hidden === "object") {
+            for (const k in opts._hidden) {
+              const inp = document.createElement("input");
+              inp.type = "hidden";
+              inp.name = k;
+              inp.value = opts._hidden[k];
+              form.appendChild(inp);
+            }
+          }
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          // bind once
+          confirmBtn.onclick = function () {
+            if (form.action) {
+              form.submit();
+            } else if (opts.onConfirmRedirect) {
+              window.location.href = opts.onConfirmRedirect;
+            } else {
+              modal.classList.add("hidden");
+              modal.classList.remove("flex");
+            }
+          };
+        }
+
+        function hideConfirm() {
+          if (!modal) return;
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+        }
+
+        // close handlers
+        if (overlay) overlay.addEventListener("click", hideConfirm);
+        if (cancelBtn) cancelBtn.addEventListener("click", hideConfirm);
+
+        // delegate: any element with .btn-delete and data-action will show confirm
+        document.addEventListener("click", function (e) {
+          const el = e.target.closest && e.target.closest(".btn-delete");
+          if (!el) return;
+          e.preventDefault();
+          const action = el.getAttribute("data-action"); // POST URL
+          const method = el.getAttribute("data-method") || "POST";
+          const msg =
+            el.getAttribute("data-confirm-message") ||
+            "This action cannot be undone. Are you sure?";
+          // optional hidden fields encoded in JSON (data-hidden='{"_method":"DELETE"}')
+          let hidden = null;
+          const hiddenAttr = el.getAttribute("data-hidden");
+          try {
+            hidden = hiddenAttr ? JSON.parse(hiddenAttr) : null;
+          } catch (err) {
+            hidden = null;
+          }
+          showConfirmDelete({ action, method, message: msg, _hidden: hidden });
+        });
+
+        // expose for pages to call programmatically
+        window.showConfirmDelete = showConfirmDelete;
+      })();
+
+      const toast = document.getElementById("toastAlert");
+      if (toast) {
+        setTimeout(() => {
+          toast.style.opacity = "0";
+          setTimeout(() => toast.remove(), 500); // remove after fade
+        }, 3000);
+      }
+    </script>
+
     <!-- Universal Modals and scripts (keeps behavior consistent for children) -->
     <%- include('../partials/modals') %>
 
     <script>
-      // Basic UI JS for sidebar and modals - preserved so child pages can use the same functions
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const sidebar = document.getElementById("sidebar");
-      const sidebarOverlay = document.getElementById("sidebarOverlay");
-
-      if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener("click", function () {
-          sidebar.classList.toggle("-translate-x-full");
-          sidebarOverlay.classList.toggle("hidden");
-        });
-      }
-
-      if (sidebarOverlay) {
-        sidebarOverlay.addEventListener("click", function () {
-          sidebar.classList.add("-translate-x-full");
-          sidebarOverlay.classList.add("hidden");
-        });
-      }
-
-      document.addEventListener("click", function () {
+      // Initialize admin UI behaviors (idempotent)
+      function initAdminUI() {
+        const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+        const sidebar = document.getElementById("sidebar");
+        const sidebarOverlay = document.getElementById("sidebarOverlay");
+        const quickActionsBtn = document.getElementById("quickActionsBtn");
         const quickActionsMenu = document.getElementById("quickActionsMenu");
-        if (quickActionsMenu) quickActionsMenu.classList.add("hidden");
-      });
 
-      function openProfile() {
-        const profileModal = document.getElementById("profileModal");
-        if (profileModal) {
-          profileModal.classList.remove("hidden");
-          document.body.style.overflow = "hidden";
+        // mobile menu toggle
+        if (mobileMenuBtn && sidebar && sidebarOverlay) {
+          const newBtn = mobileMenuBtn.cloneNode(true);
+          mobileMenuBtn.parentNode.replaceChild(newBtn, mobileMenuBtn);
+          newBtn.addEventListener("click", function () {
+            sidebar.classList.toggle("-translate-x-full");
+            sidebarOverlay.classList.toggle("hidden");
+          });
         }
+
+        // overlay click to close
+        if (sidebarOverlay && sidebar) {
+          sidebarOverlay.addEventListener("click", function () {
+            sidebar.classList.add("-translate-x-full");
+            sidebarOverlay.classList.add("hidden");
+          });
+        }
+
+        // quick actions toggle
+        if (quickActionsBtn && quickActionsMenu) {
+          // guard to avoid multiple bindings
+          quickActionsBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            quickActionsMenu.classList.toggle("hidden");
+          });
+          document.addEventListener("click", function () {
+            quickActionsMenu.classList.add("hidden");
+          });
+        }
+
+        // Responsive behavior: ensure sidebar visibility matches breakpoint immediately
+        function _edu_resizeHandler() {
+          try {
+            if (!sidebar || !sidebarOverlay) return;
+            if (window.innerWidth >= 1024) {
+              // desktop: ensure sidebar visible and overlay hidden
+              sidebar.classList.remove("-translate-x-full");
+              sidebarOverlay.classList.add("hidden");
+            } else {
+              // mobile: hide sidebar by default (user can open it)
+              sidebar.classList.add("-translate-x-full");
+              sidebarOverlay.classList.add("hidden");
+            }
+          } catch (e) {
+            // swallow errors to avoid breaking UI
+            console.warn("resize handler error", e);
+          }
+        }
+
+        // remove previous listener if any, attach fresh
+        if (window._eduResizeHandler) {
+          window.removeEventListener("resize", window._eduResizeHandler);
+        }
+        window._eduResizeHandler = _edu_resizeHandler;
+        window.addEventListener("resize", window._eduResizeHandler);
+
+        // apply once to set initial state
+        _edu_resizeHandler();
+      }
+
+      // Run when DOM is ready, or immediately if already ready
+      // if (document.readyState === "loading") {
+      //   document.addEventListener("DOMContentLoaded", initAdminUI);
+      // } else {
+      //   initAdminUI();
+      // }
+
+      // Profile modal functions
+      function openProfile() {
+        document.getElementById("profileModal").classList.remove("hidden");
+        document.body.style.overflow = "hidden";
       }
 
       function closeProfile() {
-        const profileModal = document.getElementById("profileModal");
-        if (profileModal) {
-          profileModal.classList.add("hidden");
-          document.body.style.overflow = "auto";
-        }
+        document.getElementById("profileModal").classList.add("hidden");
+        document.body.style.overflow = "auto";
       }
+
+      document.addEventListener("DOMContentLoaded", initAdminUI);
+
+      const bell = document.getElementById('notificationBtn');
+        const dropdown = document.getElementById('notificationDropdown');
+        bell.addEventListener('click', () => {
+          window.scrollTo(0, 0);
+          dropdown.classList.toggle('hidden');
+        });
+        window.addEventListener('click', (e) => {
+          if (!bell.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+          }
+        });
     </script>
 
     <% if (typeof scripts !== 'undefined') { %> <%- scripts %> <% } %>
