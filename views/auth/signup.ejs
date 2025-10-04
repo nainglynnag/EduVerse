@@ -169,10 +169,16 @@
         <!-- Sign Up Form -->
         <div class="bg-white rounded-3xl shadow-2xl p-8 border border-gray-100">
           <!-- Form Header -->
-          <div class="text-center mb-8">
+          <div class="text-center mb-6">
             <h2 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h2>
             <p class="text-gray-600">Join thousands of learners worldwide</p>
           </div>
+          
+          <% if (typeof error !== 'undefined' && error) { %>
+          <div id="flashError" class="w-full inline-block mb-2 text-sm text-red-600 text-center">
+            <%= error %>
+          </div>
+          <% } %>
 
           <!-- Sign Up Form -->
           <form id="signupForm" class="space-y-5" action="/signup" method="POST">
@@ -352,7 +358,7 @@
                 </button>
               </div>
               <!-- Password Strength Indicator -->
-              <div id="passwordStrength" class="mt-2">
+              <!--<div id="passwordStrength" class="mt-2">
                 <div class="flex space-x-1">
                   <div class="h-2 w-full bg-gray-200 rounded-full">
                     <div
@@ -365,7 +371,7 @@
                 <p id="strengthText" class="text-xs text-gray-500 mt-1">
                   Password strength: Weak
                 </p>
-              </div>
+              </div>-->
             </div>
 
             <!-- Confirm Password Field -->
@@ -512,6 +518,38 @@
         
       </div>
     </div>
+    
+    <script>
+    // Password toggle functionality
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    togglePassword.addEventListener("click", function () {
+      const type =
+        passwordInput.getAttribute("type") === "password"
+          ? "text"
+          : "password";
+      passwordInput.setAttribute("type", type);
+
+      if (type === "password") {
+        eyeIcon.innerHTML = `
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              `;
+      } else {
+        eyeIcon.innerHTML = `
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+              `;
+      }
+    });
+    
+    setTimeout(() => {
+      const flashError = document.getElementById("flashError");
+      if (flashError) flashError.remove();
+    }, 3000);
+    
+    </script>
 
   </body>
 </html>
