@@ -9,6 +9,7 @@ import flash from "connect-flash";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 const app = express();
 const PORT = 3000;
@@ -50,13 +51,14 @@ app.use(expressLayouts);
 app.set("layout", false);
 
 // Routes
-app.get("/", (req, res) => {
+// app.get("/", (req, res) => {
   // landing page will NOT use any layout
-  res.render("index"); // no layout because default is false
-});
+  // res.render("index"); // no layout because default is false
+// });
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
+app.use("/", authRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
