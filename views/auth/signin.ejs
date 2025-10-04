@@ -4,43 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EduVerse - Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              "blue-950": "#1e3a8a",
-            },
-            animation: {
-              float: "float 6s ease-in-out infinite",
-              "bounce-slow": "bounce 3s infinite",
-              "pulse-slow": "pulse 4s infinite",
-            },
-          },
-        },
-      };
-    </script>
-    <style>
-      @keyframes float {
-        0%,
-        100% {
-          transform: translateY(0px);
-        }
-        50% {
-          transform: translateY(-20px);
-        }
-      }
-
-      .gradient-bg {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      }
-
-      .form-gradient {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
   </head>
+  
   <body class="min-h-screen bg-gray-50 flex">
     <!-- Left Side - Educational Graphics -->
     <div class="hidden lg:flex lg:w-1/2 gradient-bg relative overflow-hidden">
@@ -68,17 +34,15 @@
         <div class="mb-8">
           <div class="flex items-center space-x-3 mb-4">
             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-2xl">
-              <svg
-                class="w-12 h-12 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm3 3a1 1 0 011-1h3a1 1 0 110 2h-3a1 1 0 01-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+                <svg
+                  class="w-8 h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"
+                  />
+                </svg>
             </div>
             <div>
               <h1 class="text-4xl font-bold text-white">EduVerse</h1>
@@ -91,143 +55,7 @@
         <div class="relative w-full max-w-md mx-auto">
           <!-- Main Character - Student with Laptop -->
           <div class="animate-float">
-            <svg viewBox="0 0 400 300" class="w-full h-auto">
-              <!-- Desk -->
-              <rect
-                x="50"
-                y="200"
-                width="300"
-                height="20"
-                rx="10"
-                fill="#8B5CF6"
-                opacity="0.8"
-              />
-
-              <!-- Laptop -->
-              <rect
-                x="120"
-                y="160"
-                width="160"
-                height="100"
-                rx="8"
-                fill="#374151"
-              />
-              <rect
-                x="125"
-                y="165"
-                width="150"
-                height="85"
-                rx="4"
-                fill="#1F2937"
-              />
-              <rect
-                x="130"
-                y="170"
-                width="140"
-                height="75"
-                rx="2"
-                fill="#3B82F6"
-              />
-
-              <!-- Laptop Screen Content -->
-              <rect
-                x="140"
-                y="180"
-                width="30"
-                height="20"
-                rx="2"
-                fill="#EF4444"
-              />
-              <rect
-                x="175"
-                y="180"
-                width="30"
-                height="20"
-                rx="2"
-                fill="#10B981"
-              />
-              <rect
-                x="210"
-                y="180"
-                width="30"
-                height="20"
-                rx="2"
-                fill="#F59E0B"
-              />
-              <rect
-                x="140"
-                y="210"
-                width="100"
-                height="4"
-                rx="2"
-                fill="#E5E7EB"
-              />
-              <rect
-                x="140"
-                y="220"
-                width="80"
-                height="4"
-                rx="2"
-                fill="#E5E7EB"
-              />
-              <rect
-                x="140"
-                y="230"
-                width="90"
-                height="4"
-                rx="2"
-                fill="#E5E7EB"
-              />
-
-              <!-- Student Character -->
-              <!-- Head -->
-              <circle cx="200" cy="120" r="25" fill="#FBBF24" />
-              <!-- Hair -->
-              <path
-                d="M175 105 Q200 85 225 105 Q225 95 200 90 Q175 95 175 105"
-                fill="#92400E"
-              />
-              <!-- Eyes -->
-              <circle cx="190" cy="115" r="3" fill="#1F2937" />
-              <circle cx="210" cy="115" r="3" fill="#1F2937" />
-              <!-- Smile -->
-              <path
-                d="M185 125 Q200 135 215 125"
-                stroke="#1F2937"
-                stroke-width="2"
-                fill="none"
-              />
-
-              <!-- Body -->
-              <rect
-                x="180"
-                y="145"
-                width="40"
-                height="60"
-                rx="20"
-                fill="#3B82F6"
-              />
-              <!-- Arms -->
-              <rect
-                x="160"
-                y="155"
-                width="20"
-                height="40"
-                rx="10"
-                fill="#FBBF24"
-              />
-              <rect
-                x="220"
-                y="155"
-                width="20"
-                height="40"
-                rx="10"
-                fill="#FBBF24"
-              />
-              <!-- Hands on keyboard -->
-              <circle cx="170" cy="195" r="8" fill="#FBBF24" />
-              <circle cx="230" cy="195" r="8" fill="#FBBF24" />
-            </svg>
+              <img src="/images/2741402_370266-PC0MK1-25.svg" alt="">
           </div>
 
           <!-- Floating Elements -->
@@ -249,13 +77,15 @@
 
           <div class="absolute -top-5 -right-5 animate-pulse-slow">
             <div class="bg-white/20 backdrop-blur-sm p-3 rounded-full">
-              <svg
-                class="w-6 h-6 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+                <svg
+                  class="w-6 h-6 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
+                  />
+                </svg>
             </div>
           </div>
 
@@ -305,59 +135,7 @@
           </p>
         </div>
 
-        <!-- Features -->
-        <div class="grid grid-cols-3 gap-6 mt-12 w-full max-w-md">
-          <div class="text-center">
-            <div
-              class="bg-white/20 backdrop-blur-sm p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2"
-            >
-              <svg
-                class="w-6 h-6 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"
-                />
-              </svg>
-            </div>
-            <p class="text-white/80 text-sm">Expert Instructors</p>
-          </div>
-
-          <div class="text-center">
-            <div
-              class="bg-white/20 backdrop-blur-sm p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2"
-            >
-              <svg
-                class="w-6 h-6 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <p class="text-white/80 text-sm">Quality Courses</p>
-          </div>
-
-          <div class="text-center">
-            <div
-              class="bg-white/20 backdrop-blur-sm p-3 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-2"
-            >
-              <svg
-                class="w-6 h-6 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <p class="text-white/80 text-sm">Certificates</p>
-          </div>
-        </div>
+        
       </div>
     </div>
 
@@ -370,17 +148,15 @@
             <div
               class="bg-gradient-to-r from-blue-600 to-purple-600 p-3 rounded-2xl"
             >
-              <svg
-                class="w-8 h-8 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10.496 2.132a1 1 0 00-.992 0l-7 4A1 1 0 003 8v7a1 1 0 100 2h14a1 1 0 100-2V8a1 1 0 00.496-1.868l-7-4zM6 9a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm3 3a1 1 0 011-1h3a1 1 0 110 2h-3a1 1 0 01-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
+                <svg
+                  class="w-8 h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"
+                  />
+                </svg>
             </div>
             <div>
               <h1
@@ -693,30 +469,11 @@
           const provider = this.textContent.trim();
           if (provider.includes("Google") || provider.includes("Facebook")) {
             alert(
-              `${provider} login integration would be implemented here. This would redirect to ${provider}'s OAuth flow.`
+              `${provider} login integration will be available soon. This will redirect to ${provider}'s OAuth flow.`
             );
           }
         });
       });
-
-      // Forgot password link
-      document
-        .querySelector('a[href="#"]')
-        .addEventListener("click", function (e) {
-          e.preventDefault();
-          if (this.textContent.includes("Forgot password")) {
-            const email = prompt(
-              "Enter your email address to reset your password:"
-            );
-            if (email) {
-              alert(`Password reset instructions have been sent to ${email}`);
-            }
-          } else if (this.textContent.includes("Sign up")) {
-            alert(
-              "Sign up page would be displayed here. This would redirect to the registration form."
-            );
-          }
-        });
 
       // Input focus effects
       document
@@ -730,24 +487,6 @@
             this.parentElement.classList.remove("ring-2", "ring-blue-500");
           });
         });
-
-      // Auto-fill demo credentials on click
-      // document.querySelectorAll(".text-blue-700 p").forEach((p) => {
-      //   p.style.cursor = "pointer";
-      //   p.addEventListener("click", function () {
-      //     const text = this.textContent;
-      //     if (text.includes("student@eduverse.com")) {
-      //       document.getElementById("email").value = "student@eduverse.com";
-      //       document.getElementById("password").value = "password123";
-      //     } else if (text.includes("instructor@eduverse.com")) {
-      //       document.getElementById("email").value = "instructor@eduverse.com";
-      //       document.getElementById("password").value = "password123";
-      //     } else if (text.includes("admin@eduverse.com")) {
-      //       document.getElementById("email").value = "admin@eduverse.com";
-      //       document.getElementById("password").value = "password123";
-      //     }
-      //   });
-      // });
 
       // Form validation
       document.getElementById("email").addEventListener("input", function () {
@@ -834,7 +573,7 @@
         }, 300);
       });
     </script>
-    <script>
+    <!--<script>
       (function () {
         function c() {
           var b = a.contentDocument || a.contentWindow.document;
@@ -868,6 +607,6 @@
           }
         }
       })();
-    </script>
+    </script>-->
   </body>
 </html>

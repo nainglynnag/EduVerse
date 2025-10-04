@@ -2,9 +2,22 @@
 
 @theme {
     --color-blue-950: "#1e3a8a";
+    
+    --animation-float: float 6s ease-in-out infinite;
+    --animation-bounce-slow: bounce 3s infinite;
+    --animation-pulse-slow: pulse 4s infinite;
 }
 
 @layer components {
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      opacity: 90%;
+    }
+
+    .form-gradient {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    
     @keyframes float {
         0%,
         100% {
@@ -33,6 +46,16 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+    
+    @keyframes bounce-slow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-30px); }
+    }
+    
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
 
     .coffee-steam {
