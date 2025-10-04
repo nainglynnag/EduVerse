@@ -130,6 +130,9 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --animation-float: float 6s ease-in-out infinite;
+    --animation-bounce-slow: bounce-slow 3s infinite;
+    --animation-pulse-slow: pulse-slow 4s infinite;
   }
 }
 @layer base {
@@ -2423,6 +2426,21 @@
     50% {
       opacity: 0.5;
     }
+  }
+  .animate-float {
+    animation: var(--animation-float);
+  }
+  .animate-bounce-slow {
+    animation: var(--animation-bounce-slow);
+  }
+  .animate-pulse-slow {
+    animation: var(--animation-pulse-slow);
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.6s ease-out;
+  }
+  .animate-slideUp {
+    animation: slideUp 0.6s ease-out;
   }
   .coffee-steam {
     animation: float 3s ease-in-out infinite;
