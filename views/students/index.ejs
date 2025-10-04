@@ -982,6 +982,177 @@
       </div>
     </div>
 
+    <!-- Course Modal -->
+    <div
+      id="courseModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div class="p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 id="courseTitle" class="text-2xl font-bold text-gray-800">
+              Course Title
+            </h2>
+            <button
+              onclick="closeCourse()"
+              class="text-gray-500 hover:text-gray-700"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Video Player -->
+            <div class="lg:col-span-2">
+              <div
+                class="bg-gray-900 rounded-lg aspect-video flex items-center justify-center mb-4"
+              >
+                <div class="text-center text-white">
+                  <svg
+                    class="w-16 h-16 mx-auto mb-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <p class="text-lg">Video Player</p>
+                  <p class="text-sm text-gray-400">Click to play lesson</p>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 rounded-lg p-4">
+                <h3 class="font-semibold text-gray-800 mb-2">
+                  Lesson Description
+                </h3>
+                <p class="text-gray-600 text-sm mb-4">
+                  In this lesson, you'll learn advanced concepts that will help
+                  you become a better developer. We'll cover practical examples
+                  and real-world applications.
+                </p>
+
+                <div class="flex items-center space-x-4">
+                  <button
+                    class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all"
+                  >
+                    Mark Complete
+                  </button>
+                  <button
+                    class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-all"
+                  >
+                    Take Notes
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Course Content -->
+            <div>
+              <h3 class="font-semibold text-gray-800 mb-4">Course Content</h3>
+              <div class="space-y-2">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-800"
+                      >1. Introduction</span
+                    >
+                    <svg
+                      class="w-4 h-4 text-green-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span class="text-xs text-gray-600">5 min</span>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm font-medium text-gray-800"
+                      >2. Basic Concepts</span
+                    >
+                    <svg
+                      class="w-4 h-4 text-blue-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span class="text-xs text-gray-600">12 min</span>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600"
+                      >3. Advanced Topics</span
+                    >
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span class="text-xs text-gray-600">18 min</span>
+                </div>
+
+                <div class="border border-gray-200 rounded-lg p-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-600"
+                      >4. Practical Examples</span
+                    >
+                    <svg
+                      class="w-4 h-4 text-gray-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <span class="text-xs text-gray-600">25 min</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Profile Modal -->
     <div
       id="profileModal"

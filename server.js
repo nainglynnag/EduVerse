@@ -9,9 +9,10 @@ import flash from "connect-flash";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 // Middlewares for User session
 app.use(
@@ -57,6 +58,7 @@ app.get("/", (req, res) => {
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
+app.use("/students", studentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

@@ -1,0 +1,70 @@
+<!-- Student Dashboard -->
+<div>
+  <main>
+    <div id="studentDashboardContent">
+      <div class="mb-6">
+        <h2 class="text-3xl font-bold mb-2">
+          <span class="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            Welcome to Your Dashboard 🎓
+          </span>
+        </h2>
+        <p class="text-lg text-gray-600">Overview of your learning progress</p>
+      </div>
+
+      <!-- Enrolled Courses -->
+      <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+        <h3 class="text-xl font-bold mb-4">Enrolled Courses</h3>
+        <% if (enrolledCourses && enrolledCourses.length) { %>
+        <ul class="space-y-3">
+          <% enrolledCourses.forEach(course => { %>
+          <li class="p-3 border rounded-lg flex justify-between items-center">
+            <div>
+              <div class="font-semibold"><%= course.title %></div>
+              <div class="text-sm text-gray-600"><%= course.description?.slice(0,120) %></div>
+            </div>
+            <div class="text-sm text-gray-500">Enrolled: <%= course.enrolled_at %></div>
+          </li>
+          <% }) %>
+        </ul>
+        <% } else { %>
+        <p class="text-gray-600">You are not enrolled in any courses yet.</p>
+        <% } %>
+      </div>
+
+      <!-- Progress Summary -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div class="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 class="text-xl font-bold mb-4">Progress Summary</h3>
+          <% if (progressSummary && progressSummary.length) { %>
+          <ul class="space-y-3">
+            <% progressSummary.forEach(p => { %>
+            <li class="flex justify-between">
+              <span><%= p.title %></span>
+              <span class="font-semibold"><%= p.completed_lessons %> completed</span>
+            </li>
+            <% }) %>
+          </ul>
+          <% } else { %>
+          <p class="text-gray-600">No progress data yet.</p>
+          <% } %>
+        </div>
+
+        <div class="bg-white rounded-2xl p-6 shadow-lg">
+          <h3 class="text-xl font-bold mb-4">Recommended for you</h3>
+          <% if (recommended && recommended.length) { %>
+          <ul class="space-y-3">
+            <% recommended.forEach(r => { %>
+            <li class="p-2 border rounded-lg">
+              <div class="font-medium"><%= r.title %></div>
+              <div class="text-sm text-gray-600"><%= r.description?.slice(0,120) %></div>
+            </li>
+            <% }) %>
+          </ul>
+          <% } else { %>
+          <p class="text-gray-600">No recommendations at the moment.</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
