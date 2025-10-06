@@ -2,7 +2,7 @@ import db from "../config/db.js";
 
 // Find a user by email
 export const findUserByEmail = async (email) => {
-  const [rows] = await db.promise().query(
+  const [rows] = await db.query(
     "SELECT * FROM users WHERE email = ? LIMIT 1",
     [email]
   );
@@ -11,7 +11,7 @@ export const findUserByEmail = async (email) => {
 
 // Create a new user
 export const createUser = async ({ name, email, password_hash, role_id }) => {
-  const [result] = await db.promise().query(
+  const [result] = await db.query(
     "INSERT INTO users (name, email, password_hash, role_id) VALUES (?, ?, ?, ?)",
     [name, email, password_hash, role_id]
   );

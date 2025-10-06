@@ -14,8 +14,12 @@ import {
   getEditProfilePage,
   updateProfile
 } from '../controllers/instructorController.js';
+import { requireInstructor } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// Apply authentication middleware to all instructor routes
+router.use(requireInstructor);
 
 // Apply instructor middleware to all routes
 router.use(getInstructorData);

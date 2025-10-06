@@ -39,7 +39,8 @@ const renderSuccess = (res, view, data) => {
 // Middleware to fetch instructor data for layout
 export const getInstructorData = async (req, res, next) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    // Use authenticated user's ID instead of hardcoded value
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     const instructor = await getInstructorById(instructorId);
     
     res.locals.instructor = instructor;
@@ -60,7 +61,7 @@ export const getInstructorData = async (req, res, next) => {
 export const getInstructorDashboard = async (req, res) => {
   try {
     console.log('Getting instructor dashboard...');
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     console.log('Instructor ID:', instructorId);
 
     // Fetch all required data in parallel for better performance
@@ -102,7 +103,7 @@ export const getInstructorDashboard = async (req, res) => {
 // Course Controllers
 export const getInstructorCoursesList = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     
     // Pagination parameters
     const page = parseInt(req.query.page) || 1;
@@ -193,7 +194,7 @@ export const createCourse = async (req, res) => {
       prerequisites = req.body['coursePrerequisites[]'].join('\n');
     }
 
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     console.log('Course status received:', status);
     console.log('Course status type:', typeof status);
@@ -352,7 +353,7 @@ export const createCourse = async (req, res) => {
 export const getCourseDetail = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     const [course, lessons, objectives, prerequisites] = await Promise.all([
       getCourseByIdAndInstructor(courseId, instructorId),
@@ -383,7 +384,7 @@ export const getCourseDetail = async (req, res) => {
 export const getEditCoursePage = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     console.log('Getting edit page for course:', courseId);
 
@@ -425,7 +426,7 @@ export const getEditCoursePage = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     const {
       courseTitle: title,
@@ -586,7 +587,7 @@ const updateCoursePrerequisitesFromText = async (courseId, prerequisitesText) =>
 export const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     console.log('Delete course request:', { courseId, instructorId });
 
@@ -634,7 +635,7 @@ export const deleteCourse = async (req, res) => {
 export const deleteLesson = async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
 
     console.log('Delete lesson request:', { courseId, lessonId, instructorId });
 
@@ -675,7 +676,7 @@ export const deleteLesson = async (req, res) => {
 // Student Controllers
 export const getInstructorStudentsPage = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     
     // Pagination parameters
     const page = parseInt(req.query.page) || 1;
@@ -726,7 +727,7 @@ export const getInstructorStudentsPage = async (req, res) => {
 // Profile Management Controllers
 export const getEditProfilePage = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     const instructor = await getInstructorById(instructorId);
     
     // Check for success parameter from redirect
@@ -745,7 +746,7 @@ export const getEditProfilePage = async (req, res) => {
 
 export const updateProfile = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = req.session.user?.userId || DEFAULT_INSTRUCTOR_ID;
     const { name, email, specialization, bio, password } = req.body;
 
     // Validate required fields

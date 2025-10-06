@@ -63,6 +63,9 @@ export const postSignIn = async (req, res) => {
       case 2: // Instructor
         redirectUrl = "/instructor";
         break;
+      case 3: // Admin
+        redirectUrl = "/admin/dashboard";
+        break;
       default:
         redirectUrl = "/";
     }
@@ -146,12 +149,19 @@ export const postSignUp = async (req, res) => {
   }
 };
 
-// GET /auth/signout - Handle user sign out
+// GET /signout - Handle user sign out
 export const signOut = (req, res) => {
   try {
-    // Clear session
-    req.session = null;
-    res.redirect("/signin");
+    // Properly destroy the session
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        return res.redirect("/");
+      }
+      // Clear the session cookie
+      res.clearCookie("connect.sid");
+      res.redirect("/signin");
+    });
   } catch (error) {
     console.error("Error in signOut:", error);
     res.redirect("/");
