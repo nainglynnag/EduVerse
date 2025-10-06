@@ -15,21 +15,37 @@ import {
 import db from "../config/db.js";
 
 // Constants
-const DEFAULT_INSTRUCTOR_ID = 2; // John Smith - React instructor from seeded data
 const DEFAULT_LAYOUT = "instructors/layouts/layout";
 
+// Helper function to get instructor ID from session
+const getInstructorId = (req) => {
+  return req.session.user?.userId || null;
+};
+
 // Helper function for error handling
-const handleError = (res, error, message = 'Internal server error') => {
+const handleError = (res, error, message = 'Internal server error', statusCode = 500) => {
   console.error('Controller error:', error);
-  res.status(500).json({ 
-    success: false,
-    message: message,
-    error: error.message
-  });
+  
+  if (res.headersSent) {
+    return;
+  }
+  
+  if (req.accepts('json')) {
+    res.status(statusCode).json({ 
+      success: false,
+      message: message,
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+    });
+  } else {
+    res.status(statusCode).render('error', {
+      layout: DEFAULT_LAYOUT,
+      error: { message, status: statusCode }
+    });
+  }
 };
 
 // Helper function for successful responses
-const renderSuccess = (res, view, data) => {
+const renderSuccess = (res, view, data = {}) => {
   res.render(view, { 
     layout: DEFAULT_LAYOUT,
     instructor: res.locals.instructor,
@@ -37,12 +53,109 @@ const renderSuccess = (res, view, data) => {
   });
 };
 
+// Helper function for JSON responses
+const sendJsonResponse = (res, data, statusCode = 200) => {
+  res.status(statusCode).json({
+    success: true,
+    ...data
+  });
+};
+
+// Validation helpers
+const validateCourseData = (data) => {
+  const errors = [];
+  const { title, category_id, difficulty_id, description, price, objectives, prerequisites, lessonTitles } = data;
+  
+  if (!title?.trim()) errors.push('Course Title is required');
+  if (!category_id) errors.push('Category is required');
+  if (!difficulty_id) errors.push('Difficulty Level is required');
+  if (!description?.trim()) errors.push('Description is required');
+  if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) errors.push('Valid price is required');
+  if (!objectives?.trim()) errors.push('Learning Objectives are required');
+  if (!prerequisites?.trim()) errors.push('Prerequisites are required');
+  if (!lessonTitles?.length || lessonTitles.every(title => !title?.trim())) {
+    errors.push('At least one lesson is required');
+  }
+  
+  return errors;
+};
+
+const validateLessonData = (lessonTitles, lessonDurations, lessonDescriptions, lessonVideoUrls) => {
+  const errors = [];
+  
+  for (let i = 0; i < lessonTitles.length; i++) {
+    if (lessonTitles[i]?.trim()) {
+      if (!lessonDurations[i]?.trim()) errors.push(`Lesson ${i + 1}: Duration is required`);
+      if (!lessonDescriptions[i]?.trim()) errors.push(`Lesson ${i + 1}: Description is required`);
+      if (!lessonVideoUrls[i]?.trim()) errors.push(`Lesson ${i + 1}: Video URL is required`);
+    }
+  }
+  
+  return errors;
+};
+
+// Helper functions for course creation
+const createCourseObjectives = async (courseId, objectives) => {
+  if (!objectives?.trim()) return;
+  
+  const objectiveLines = objectives.split('\n').filter(line => line.trim());
+  for (const objective of objectiveLines) {
+    const cleanObjective = objective.trim().replace(/^[-•]\s*/, '');
+    if (cleanObjective) {
+      await db.execute(
+        'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
+        [courseId, cleanObjective]
+      );
+    }
+  }
+};
+
+const createCoursePrerequisites = async (courseId, prerequisites) => {
+  if (!prerequisites?.trim()) return;
+  
+  const prerequisiteLines = prerequisites.split('\n').filter(line => line.trim());
+  for (const prerequisite of prerequisiteLines) {
+    const cleanPrerequisite = prerequisite.trim().replace(/^[-•]\s*/, '');
+    if (cleanPrerequisite) {
+      await db.execute(
+        'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
+        [courseId, cleanPrerequisite]
+      );
+    }
+  }
+};
+
+const createCourseLessons = async (courseId, lessonTitles, lessonDurations, lessonDescriptions, lessonVideoUrls) => {
+  if (!lessonTitles?.length) return;
+  
+  for (let i = 0; i < lessonTitles.length; i++) {
+    if (lessonTitles[i]?.trim()) {
+      const lessonNumber = i + 1;
+      await db.execute(
+        'INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          courseId,
+          lessonNumber,
+          lessonTitles[i].trim(),
+          lessonDurations[i] ? parseInt(lessonDurations[i]) : null,
+          lessonDescriptions[i]?.trim() || null,
+          lessonVideoUrls[i]?.trim() || null
+        ]
+      );
+    }
+  }
+};
+
 // Middleware to fetch instructor data for layout
 export const getInstructorData = async (req, res, next) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-    const instructor = await getInstructorById(instructorId);
+    const instructorId = getInstructorId(req);
     
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
+    
+    const instructor = await getInstructorById(instructorId);
     res.locals.instructor = instructor;
     next();
   } catch (error) {
@@ -60,29 +173,23 @@ export const getInstructorData = async (req, res, next) => {
 // Dashboard Controllers
 export const getInstructorDashboard = async (req, res) => {
   try {
-    console.log('Getting instructor dashboard...');
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-    console.log('Instructor ID:', instructorId);
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
 
     // Fetch all required data in parallel for better performance
-    console.log('Fetching data...');
     const [courses, totalStudents, students] = await Promise.all([
       getInstructorCourses(instructorId),
       getInstructorTotalStudents(instructorId),
       getInstructorStudents(instructorId)
     ]);
 
-    console.log('Data fetched successfully:', {
-      coursesCount: courses.length,
-      totalStudents,
-      studentsCount: students.length
-    });
-
     const totalCourses = courses.length;
     const totalEnrollments = courses.reduce((sum, course) => sum + (course.enrollment_count || 0), 0);
-    const avgRating = parseFloat(res.locals.instructor.rating) || 0.0;
+    const avgRating = parseFloat(res.locals.instructor?.rating) || 0.0;
 
-    console.log('Rendering dashboard...');
     renderSuccess(res, "instructors/dashboard/index", {
       courses,
       students,
@@ -95,19 +202,22 @@ export const getInstructorDashboard = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error in getInstructorDashboard:', error);
-    handleError(res, error);
+    handleError(res, error, 'Failed to load dashboard');
   }
 };
 
 // Course Controllers
 export const getInstructorCoursesList = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
     
     // Pagination parameters
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 12; // 12 courses per page
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit) || 12));
     const offset = (page - 1) * limit;
     
     // Get total count for pagination
@@ -140,16 +250,22 @@ export const getInstructorCoursesList = async (req, res) => {
     renderSuccess(res, "instructors/courses/index", { 
       courses,
       pagination,
-      req: req // Pass request object to access query parameters
+      query: req.query // Pass query parameters for form preservation
     });
 
   } catch (error) {
-    handleError(res, error);
+    handleError(res, error, 'Failed to load courses');
   }
 };
 
 export const getCreateCoursePage = async (req, res) => {
   try {
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
+
     const [categories, difficultyLevels] = await Promise.all([
       getAllCategories(),
       getAllDifficultyLevels()
@@ -161,12 +277,18 @@ export const getCreateCoursePage = async (req, res) => {
     });
 
   } catch (error) {
-    handleError(res, error);
+    handleError(res, error, 'Failed to load create course page');
   }
 };
 
 export const createCourse = async (req, res) => {
   try {
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
+
     const {
       courseTitle: title,
       courseCategory: category_id,
@@ -194,156 +316,70 @@ export const createCourse = async (req, res) => {
       prerequisites = req.body['coursePrerequisites[]'].join('\n');
     }
 
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-
-    console.log('Course status received:', status);
-    console.log('Course status type:', typeof status);
-
-    // Validate required fields for both draft and published courses
-    const missingFields = [];
-    
-    if (!title || title.trim() === '') {
-      missingFields.push('Course Title');
-    }
-    if (!category_id) {
-      missingFields.push('Category');
-    }
-    if (!difficulty_id) {
-      missingFields.push('Difficulty Level');
-    }
-    if (!description || description.trim() === '') {
-      missingFields.push('Description');
-    }
-    if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
-      missingFields.push('Price');
-    }
-    if (!objectives || objectives.trim() === '') {
-      missingFields.push('Learning Objectives');
-    }
-    if (!prerequisites || prerequisites.trim() === '') {
-      missingFields.push('Prerequisites');
-    }
-
-    // Validate Course Lessons
-    if (!lessonTitles || lessonTitles.length === 0) {
-      missingFields.push('Course Lessons');
-    } else {
-      // Check if at least one lesson has all required fields
-      let hasValidLesson = false;
-      for (let i = 0; i < lessonTitles.length; i++) {
-        const lessonTitle = lessonTitles[i] ? lessonTitles[i].trim() : '';
-        const lessonDuration = lessonDurations[i] ? lessonDurations[i].trim() : '';
-        const lessonDescription = lessonDescriptions[i] ? lessonDescriptions[i].trim() : '';
-        const lessonVideoUrl = lessonVideoUrls[i] ? lessonVideoUrls[i].trim() : '';
-        
-        if (lessonTitle && lessonDuration && lessonDescription && lessonVideoUrl) {
-          hasValidLesson = true;
-          break;
-        }
-      }
-      
-      if (!hasValidLesson) {
-        missingFields.push('Course Lessons (at least one complete lesson)');
-      }
-    }
-
-    // For draft courses, show validation error but allow saving with defaults
-    if (status === 'draft' && missingFields.length > 0) {
-      return res.status(400).render('instructors/courses/create', {
-        layout: DEFAULT_LAYOUT,
-        instructor: res.locals.instructor,
-        categories: await getAllCategories(),
-        difficultyLevels: await getAllDifficultyLevels(),
-        error: `Cannot save as draft. Please fill in the following required fields: ${missingFields.join(', ')}`,
-        form: req.body // Preserve form data
-      });
-    }
-    
-    // For published courses, enforce all required fields
-    if (status !== 'draft' && missingFields.length > 0) {
-      return res.status(400).render('instructors/courses/create', {
-        layout: DEFAULT_LAYOUT,
-        instructor: res.locals.instructor,
-        categories: await getAllCategories(),
-        difficultyLevels: await getAllDifficultyLevels(),
-        error: `Missing required fields: ${missingFields.join(', ')}`,
-        form: req.body // Preserve form data
-      });
-    }
-    
-    // For draft courses, provide default values for empty required fields
-    const finalTitle = title || 'Untitled Course';
-    const finalCategoryId = category_id || 1; // Default to first category
-    const finalDifficultyId = difficulty_id || 1; // Default to first difficulty level
-
+    // Validate course data
     const courseData = {
-      title: finalTitle,
-      category_id: parseInt(finalCategoryId),
-      difficulty_id: parseInt(finalDifficultyId),
+      title,
+      category_id,
+      difficulty_id,
+      price,
+      description,
+      objectives,
+      prerequisites,
+      lessonTitles
+    };
+    
+    const validationErrors = validateCourseData(courseData);
+    const lessonErrors = validateLessonData(lessonTitles, lessonDurations, lessonDescriptions, lessonVideoUrls);
+    const allErrors = [...validationErrors, ...lessonErrors];
+    
+    // Handle validation errors
+    if (allErrors.length > 0) {
+      const [categories, difficultyLevels] = await Promise.all([
+        getAllCategories(),
+        getAllDifficultyLevels()
+      ]);
+      
+      return res.status(400).render('instructors/courses/create', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        categories,
+        difficultyLevels,
+        error: `Please fix the following errors: ${allErrors.join(', ')}`,
+        form: req.body
+      });
+    }
+    
+    // Prepare course data
+    const finalCourseData = {
+      title: title.trim(),
+      category_id: parseInt(category_id),
+      difficulty_id: parseInt(difficulty_id),
       price: parseFloat(price) || 0,
-      description: description || '',
+      description: description.trim(),
       status,
       instructor_id: instructorId
     };
 
-    const newCourseId = await createCourseModel(courseData);
+    // Create the course
+    const newCourseId = await createCourseModel(finalCourseData);
 
-    if (newCourseId) {
-      // Create course objectives if provided
-      if (objectives && objectives.trim()) {
-        const objectiveLines = objectives.split('\n').filter(line => line.trim());
-        for (const objective of objectiveLines) {
-          // Remove bullet point and dash if present
-          const cleanObjective = objective.trim().replace(/^[-•]\s*/, '');
-          await db.execute(
-            'INSERT INTO course_objectives (course_id, objective) VALUES (?, ?)',
-            [newCourseId, cleanObjective]
-          );
-        }
-      }
-
-      // Create course prerequisites if provided
-      if (prerequisites && prerequisites.trim()) {
-        const prerequisiteLines = prerequisites.split('\n').filter(line => line.trim());
-        for (const prerequisite of prerequisiteLines) {
-          // Remove bullet point and dash if present
-          const cleanPrerequisite = prerequisite.trim().replace(/^[-•]\s*/, '');
-          await db.execute(
-            'INSERT INTO course_prerequisites (course_id, prerequisite) VALUES (?, ?)',
-            [newCourseId, cleanPrerequisite]
-          );
-        }
-      }
-
-      // Create course lessons if provided
-      if (lessonTitles && lessonTitles.length > 0) {
-        for (let i = 0; i < lessonTitles.length; i++) {
-          if (lessonTitles[i] && lessonTitles[i].trim()) {
-            const lessonNumber = i + 1; // Automatically generate sequential lesson numbers
-            await db.execute(
-              'INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES (?, ?, ?, ?, ?, ?)',
-              [
-                newCourseId,
-                lessonNumber,
-                lessonTitles[i].trim(),
-                lessonDurations[i] ? parseInt(lessonDurations[i]) : null,
-                lessonDescriptions[i] ? lessonDescriptions[i].trim() : null,
-                lessonVideoUrls[i] ? lessonVideoUrls[i].trim() : null
-              ]
-            );
-          }
-        }
-      }
-
-      // Redirect with success message
-      if (status === 'draft') {
-        res.redirect('/instructor/courses?draft_saved=true');
-      } else {
-        res.redirect('/instructor/courses?course_published=true');
-      }
-    } else {
-      handleError(res, new Error('Failed to create course'), 'Failed to create course');
+    if (!newCourseId) {
+      throw new Error('Failed to create course');
     }
+
+    // Create course objectives, prerequisites, and lessons
+    await Promise.all([
+      createCourseObjectives(newCourseId, objectives),
+      createCoursePrerequisites(newCourseId, prerequisites),
+      createCourseLessons(newCourseId, lessonTitles, lessonDurations, lessonDescriptions, lessonVideoUrls)
+    ]);
+
+    // Redirect with success message
+    const redirectUrl = status === 'draft' 
+      ? '/instructor/courses?draft_saved=true'
+      : '/instructor/courses?course_published=true';
+    
+    res.redirect(redirectUrl);
 
   } catch (error) {
     handleError(res, error, 'Error creating course');
@@ -353,7 +389,11 @@ export const createCourse = async (req, res) => {
 export const getCourseDetail = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
 
     const [course, lessons, objectives, prerequisites] = await Promise.all([
       getCourseByIdAndInstructor(courseId, instructorId),
@@ -363,9 +403,9 @@ export const getCourseDetail = async (req, res) => {
     ]);
 
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: 'Course not found'
+      return res.status(404).render('error', {
+        layout: DEFAULT_LAYOUT,
+        error: { message: 'Course not found', status: 404 }
       });
     }
 
@@ -377,16 +417,18 @@ export const getCourseDetail = async (req, res) => {
     });
 
   } catch (error) {
-    handleError(res, error);
+    handleError(res, error, 'Failed to load course details');
   }
 };
 
 export const getEditCoursePage = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-
-    console.log('Getting edit page for course:', courseId);
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
 
     const [course, categories, difficultyLevels, lessons, objectives, prerequisites] = await Promise.all([
       getCourseByIdAndInstructor(courseId, instructorId),
@@ -397,36 +439,35 @@ export const getEditCoursePage = async (req, res) => {
       getCoursePrerequisites(courseId)
     ]);
 
-
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: 'Course not found'
+      return res.status(404).render('error', {
+        layout: DEFAULT_LAYOUT,
+        error: { message: 'Course not found', status: 404 }
       });
     }
 
-    const templateData = {
+    renderSuccess(res, "instructors/courses/edit", {
       course,
       categories,
       difficultyLevels,
       lessons: lessons || [],
       objectives: objectives || [],
       prerequisites: prerequisites || []
-    };
-
-
-    renderSuccess(res, "instructors/courses/edit", templateData);
+    });
 
   } catch (error) {
-    console.error('Error in getEditCoursePage:', error);
-    handleError(res, error);
+    handleError(res, error, 'Failed to load edit course page');
   }
 };
 
 export const updateCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
 
     const {
       courseTitle: title,
@@ -445,50 +486,46 @@ export const updateCourse = async (req, res) => {
     } = req.body;
 
     // Validate required fields
-    if (!title || !category_id || !difficulty_id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields: title, category, difficulty level'
+    if (!title?.trim() || !category_id || !difficulty_id) {
+      return res.status(400).render('error', {
+        layout: DEFAULT_LAYOUT,
+        error: { message: 'Missing required fields: title, category, difficulty level', status: 400 }
       });
     }
 
     const courseData = {
-      title,
+      title: title.trim(),
       category_id: parseInt(category_id),
       difficulty_id: parseInt(difficulty_id),
       price: parseFloat(price) || 0,
-      description: description || '',
+      description: description?.trim() || '',
       status
     };
 
-    console.log('Course data to update:', courseData);
-
     const updatedCourse = await updateCourseModel(courseId, instructorId, courseData);
 
-    if (updatedCourse) {
-      // Handle lesson updates
-      await updateCourseLessons(courseId, {
-        lessonTitles,
-        lessonDurations,
-        lessonDescriptions,
-        lessonVideoUrls,
-        lessonIds
-      });
-
-      // Handle objectives updates
-      await updateCourseObjectivesFromText(courseId, objectivesText);
-
-      // Handle prerequisites updates
-      await updateCoursePrerequisitesFromText(courseId, prerequisitesText);
-
-      res.redirect('/instructor/courses');
-    } else {
-      console.log('Update failed - no rows affected');
-      handleError(res, new Error('Failed to update course - course not found or no changes made'), 'Failed to update course');
+    if (!updatedCourse) {
+      throw new Error('Failed to update course - course not found or no changes made');
     }
 
+    // Handle lesson updates
+    await updateCourseLessons(courseId, {
+      lessonTitles,
+      lessonDurations,
+      lessonDescriptions,
+      lessonVideoUrls,
+      lessonIds
+    });
+
+    // Handle objectives and prerequisites updates
+    await Promise.all([
+      updateCourseObjectivesFromText(courseId, objectivesText),
+      updateCoursePrerequisitesFromText(courseId, prerequisitesText)
+    ]);
+
+    res.redirect('/instructor/courses?course_updated=true');
+
   } catch (error) {
-    console.error('Error in updateCourse controller:', error);
     handleError(res, error, 'Error updating course');
   }
 };
@@ -587,9 +624,14 @@ const updateCoursePrerequisitesFromText = async (courseId, prerequisitesText) =>
 export const deleteCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-
-    console.log('Delete course request:', { courseId, instructorId });
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please login to access this page'
+      });
+    }
 
     // First check if course exists and belongs to the instructor
     const course = await getCourseByIdAndInstructor(courseId, instructorId);
@@ -602,42 +644,39 @@ export const deleteCourse = async (req, res) => {
     }
 
     // Delete related data first (foreign key constraints)
-    await db.execute('DELETE FROM course_lessons WHERE course_id = ?', [courseId]);
-    await db.execute('DELETE FROM course_objectives WHERE course_id = ?', [courseId]);
-    await db.execute('DELETE FROM course_prerequisites WHERE course_id = ?', [courseId]);
-    await db.execute('DELETE FROM enrollments WHERE course_id = ?', [courseId]);
-    await db.execute('DELETE FROM lesson_progress WHERE course_id = ?', [courseId]);
+    await Promise.all([
+      db.execute('DELETE FROM course_lessons WHERE course_id = ?', [courseId]),
+      db.execute('DELETE FROM course_objectives WHERE course_id = ?', [courseId]),
+      db.execute('DELETE FROM course_prerequisites WHERE course_id = ?', [courseId]),
+      db.execute('DELETE FROM enrollments WHERE course_id = ?', [courseId]),
+      db.execute('DELETE FROM lesson_progress WHERE course_id = ?', [courseId])
+    ]);
 
     // Finally delete the course
     const [result] = await db.execute('DELETE FROM courses WHERE id = ? AND instructor_id = ?', [courseId, instructorId]);
 
     if (result.affectedRows > 0) {
-      console.log('Course deleted successfully:', courseId);
-      res.json({ success: true, message: 'Course deleted successfully' });
+      sendJsonResponse(res, { message: 'Course deleted successfully' });
     } else {
-      console.log('Failed to delete course - no rows affected');
-      res.status(500).json({
-        success: false,
-        message: 'Failed to delete course'
-      });
+      throw new Error('Failed to delete course - no rows affected');
     }
 
   } catch (error) {
-    console.error('Error in deleteCourse controller:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error deleting course',
-      error: error.message
-    });
+    handleError(res, error, 'Error deleting course');
   }
 };
 
 export const deleteLesson = async (req, res) => {
   try {
     const { courseId, lessonId } = req.params;
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
-
-    console.log('Delete lesson request:', { courseId, lessonId, instructorId });
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.status(401).json({
+        success: false,
+        message: 'Please login to access this page'
+      });
+    }
 
     // First check if course exists and belongs to the instructor
     const course = await getCourseByIdAndInstructor(courseId, instructorId);
@@ -653,10 +692,8 @@ export const deleteLesson = async (req, res) => {
     const [result] = await db.execute('DELETE FROM course_lessons WHERE id = ? AND course_id = ?', [lessonId, courseId]);
 
     if (result.affectedRows > 0) {
-      console.log('Lesson deleted successfully:', lessonId);
-      res.json({ success: true, message: 'Lesson deleted successfully' });
+      sendJsonResponse(res, { message: 'Lesson deleted successfully' });
     } else {
-      console.log('Failed to delete lesson - no rows affected');
       res.status(404).json({
         success: false,
         message: 'Lesson not found'
@@ -664,19 +701,18 @@ export const deleteLesson = async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Error in deleteLesson controller:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error deleting lesson',
-      error: error.message
-    });
+    handleError(res, error, 'Error deleting lesson');
   }
 };
 
 // Student Controllers
 export const getInstructorStudentsPage = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
     
     // Pagination parameters
     const page = parseInt(req.query.page) || 1;
@@ -727,7 +763,12 @@ export const getInstructorStudentsPage = async (req, res) => {
 // Profile Management Controllers
 export const getEditProfilePage = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
+    
     const instructor = await getInstructorById(instructorId);
     
     // Check for success parameter from redirect
@@ -740,13 +781,17 @@ export const getEditProfilePage = async (req, res) => {
     });
 
   } catch (error) {
-    handleError(res, error);
+    handleError(res, error, 'Failed to load profile edit page');
   }
 };
 
 export const updateProfile = async (req, res) => {
   try {
-    const instructorId = DEFAULT_INSTRUCTOR_ID;
+    const instructorId = getInstructorId(req);
+    
+    if (!instructorId) {
+      return res.redirect('/signin?error=Please login to access this page');
+    }
     const { name, email, specialization, bio, password } = req.body;
 
     // Validate required fields

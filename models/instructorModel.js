@@ -9,9 +9,19 @@ const handleDbError = (error, operation) => {
   throw new Error(`Database operation failed: ${operation}`);
 };
 
+// Helper function to validate instructor ID
+const validateInstructorId = (instructorId) => {
+  if (!instructorId || isNaN(parseInt(instructorId))) {
+    throw new Error('Invalid instructor ID');
+  }
+  return parseInt(instructorId);
+};
+
 // Instructor Profile Functions
 export const getInstructorById = async (instructorId) => {
   try {
+    const validId = validateInstructorId(instructorId);
+    
     const query = `
       SELECT 
         u.id,
@@ -27,7 +37,7 @@ export const getInstructorById = async (instructorId) => {
       WHERE u.id = ? AND u.role_id = (SELECT id FROM roles WHERE name = 'instructor')
     `;
 
-    const [results] = await db.execute(query, [instructorId]);
+    const [results] = await db.execute(query, [validId]);
     return results[0] || { 
       name: 'Instructor', 
       email: '', 
@@ -42,6 +52,8 @@ export const getInstructorById = async (instructorId) => {
 // Course Management Functions
 export const getInstructorCourses = async (instructorId) => {
   try {
+    const validId = validateInstructorId(instructorId);
+    
     const query = `
       SELECT 
         c.*,
@@ -59,7 +71,7 @@ export const getInstructorCourses = async (instructorId) => {
       ORDER BY c.created_at DESC
     `;
 
-    const [results] = await db.execute(query, [instructorId]);
+    const [results] = await db.execute(query, [validId]);
     return results || [];
   } catch (error) {
     handleDbError(error, 'getInstructorCourses');
@@ -68,6 +80,13 @@ export const getInstructorCourses = async (instructorId) => {
 
 export const getCourseByIdAndInstructor = async (courseId, instructorId) => {
   try {
+    const validInstructorId = validateInstructorId(instructorId);
+    const validCourseId = parseInt(courseId);
+    
+    if (!validCourseId || isNaN(validCourseId)) {
+      throw new Error('Invalid course ID');
+    }
+    
     const query = `
       SELECT 
         c.*,
@@ -82,7 +101,7 @@ export const getCourseByIdAndInstructor = async (courseId, instructorId) => {
       GROUP BY c.id
     `;
 
-    const [results] = await db.execute(query, [courseId, instructorId]);
+    const [results] = await db.execute(query, [validCourseId, validInstructorId]);
     return results[0] || null;
   } catch (error) {
     handleDbError(error, 'getCourseByIdAndInstructor');
