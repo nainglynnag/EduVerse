@@ -14,18 +14,36 @@ import {
   getEditProfilePage,
   updateProfile
 } from '../controllers/instructorController.js';
-import { requireInstructor } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // Apply authentication middleware to all instructor routes
 router.use(requireInstructor);
 
-// Apply instructor middleware to all routes
+// Authentication middleware
+const isLoggedIn = (req, res, next) => {
+  console.log('Auth middleware - Session:', req.session);
+  console.log('Auth middleware - Instructor session:', req.session.instructor);
+  
+  if (req.session.instructor) {
+    console.log('User is logged in, proceeding...');
+    return next();
+  } else {
+    console.log('User not logged in, redirecting to login...');
+    res.redirect("/instructor");
+  }
+};
+
+// Login routes (no middleware)
+router.get('/', instructorLogin);
+router.post('/', instructorLoginHandler);
+router.get('/logout', instructorLogout);
+
+// Apply instructor middleware to all protected routes
+router.use(isLoggedIn);
 router.use(getInstructorData);
 
 // Dashboard Routes
-router.get('/', getInstructorDashboard);
 router.get('/dashboard', getInstructorDashboard);
 
 // Course Management Routes
