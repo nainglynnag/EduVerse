@@ -1104,8 +1104,9 @@
          const coursesList = document.getElementById("coursesList");
          
          try {
-           // Fetch courses from API
-           const response = await fetch('/api/courses/instructor/4'); // Default instructor ID
+           // Fetch courses from API - use current instructor's ID
+           const currentInstructorId = parseInt('<%= instructor.id || 2 %>');
+           const response = await fetch('/api/courses/instructor/' + currentInstructorId);
            const result = await response.json();
            
            if (result.success && result.data.length > 0) {

@@ -9,6 +9,23 @@ const handleDbError = (error, operation) => {
   throw new Error(`Database operation failed: ${operation}`);
 };
 
+// Authentication Functions
+export const getLogInInstructor = async (email) => {
+  try {
+    const query = `
+      SELECT u.id, u.name, u.email, u.password_hash
+      FROM users u
+      JOIN roles r ON u.role_id = r.id
+      WHERE u.email = ? AND r.name = 'instructor'
+    `;
+
+    const [results] = await db.execute(query, [email]);
+    return results;
+  } catch (error) {
+    handleDbError(error, 'getLogInInstructor');
+  }
+};
+
 // Instructor Profile Functions
 export const getInstructorById = async (instructorId) => {
   try {

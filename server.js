@@ -26,6 +26,7 @@ app.use(
 
 app.use((req, res, next) => {
   res.locals.admin = req.session.admin || null;
+  res.locals.instructor = req.session.instructor || null;
   next();
 });
 

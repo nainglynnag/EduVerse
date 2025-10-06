@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Instructor Portal - Login</title>
+    <link rel="stylesheet" href="/css/main.css" />
+  </head>
+  <body
+    class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden"
+  >
+    <div class="flex min-h-screen">
+      <!-- Left Side - Illustration -->
+      <div
+        class="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 items-center justify-center p-12"
+      >
+        <!-- Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+          <svg
+            class="w-full h-full"
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <pattern
+                id="grid"
+                width="10"
+                height="10"
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M 10 0 L 0 0 0 10"
+                  fill="none"
+                  stroke="white"
+                  stroke-width="0.5"
+                />
+              </pattern>
+            </defs>
+            <rect width="100" height="100" fill="url(#grid)" />
+          </svg>
+        </div>
+
+        <!-- Main Illustration -->
+        <div class="relative z-10 animate-fade-in">
+          <svg
+            class="w-auto max-w-[16rem] h-96 text-gray-800 transform scale-x-[-1] dark:text-white"
+            aria-hidden="true"
+            width="411"
+            height="578"
+            viewBox="0 0 411 578"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- Instructor/Teacher Illustration -->
+            <path
+              d="M59 6C59 2.68629 61.6863 0 65 0H261C264.314 0 267 2.68629 267 6V245C267 248.314 264.314 251 261 251H65C61.6863 251 59 248.314 59 245V6Z"
+              fill="#1F2A37"
+            />
+            <path
+              d="M200 64.5C200 84.6584 183.658 101 163.5 101C143.342 101 127 84.6584 127 64.5C127 44.3416 143.342 28 163.5 28C183.658 28 200 44.3416 200 64.5Z"
+              fill="#374151"
+            />
+            <path
+              d="M86 120C86 118.895 86.8954 118 88 118H158C159.105 118 160 118.895 160 120V132C160 133.105 159.105 134 158 134H88C86.8954 134 86 133.105 86 132V120Z"
+              fill="#374151"
+            />
+            <path
+              d="M166 120C166 118.895 166.895 118 168 118H238C239.105 118 240 118.895 240 120V132C240 133.105 239.105 134 238 134H168C166.895 134 166 133.105 166 132V120Z"
+              fill="#374151"
+            />
+            <path
+              d="M86 144C86 142.895 86.8954 142 88 142H158C159.105 142 160 142.895 160 144V156C160 157.105 159.105 158 158 158H88C86.8954 158 86 157.105 86 156V144Z"
+              fill="#374151"
+            />
+            <path
+              d="M86 167C86 165.895 86.8954 165 88 165H238C239.105 165 240 165.895 240 167V179C240 180.105 239.105 181 238 181H88C86.8954 181 86 180.105 86 179V167Z"
+              fill="#374151"
+            />
+            <path
+              d="M166 144C166 142.895 166.895 142 168 144H238C239.105 144 240 144.895 240 146V156C240 157.105 239.105 158 238 158H168C166.895 158 166 157.105 166 156V144Z"
+              fill="#374151"
+            />
+            <!-- Teacher's desk and board -->
+            <rect x="80" y="200" width="200" height="4" fill="#8B5CF6" />
+            <rect x="70" y="210" width="220" height="80" fill="#10B981" rx="4" />
+            <path d="M70 210L90 190L250 190L270 210L70 210Z" fill="#059669" />
+            <!-- Books on desk -->
+            <rect x="100" y="195" width="20" height="15" fill="#F59E0B" />
+            <rect x="125" y="195" width="20" height="15" fill="#EF4444" />
+            <rect x="150" y="195" width="20" height="15" fill="#3B82F6" />
+            <!-- Chalkboard -->
+            <rect x="80" y="220" width="200" height="60" fill="#1F2937" rx="4" />
+            <path d="M80 220L100 200L260 200L280 220L80 220Z" fill="#111827" />
+            <!-- Chalk writing on board -->
+            <path d="M100 240 Q120 230 140 240 Q160 250 180 240" stroke="white" stroke-width="2" fill="none" />
+            <path d="M100 250 Q120 245 140 250 Q160 255 180 250" stroke="white" stroke-width="2" fill="none" />
+            <path d="M100 260 Q120 255 140 260 Q160 265 180 260" stroke="white" stroke-width="2" fill="none" />
+            <!-- Students desks -->
+            <rect x="100" y="300" width="40" height="20" fill="#6B7280" />
+            <rect x="150" y="300" width="40" height="20" fill="#6B7280" />
+            <rect x="200" y="300" width="40" height="20" fill="#6B7280" />
+            <!-- Students -->
+            <circle cx="120" cy="290" r="8" fill="#FBBF24" />
+            <circle cx="170" cy="290" r="8" fill="#FBBF24" />
+            <circle cx="220" cy="290" r="8" fill="#FBBF24" />
+            <!-- Teacher figure -->
+            <circle cx="163" cy="60" r="12" fill="#FBBF24" />
+            <path d="M163 72L150 90L176 90L163 72Z" fill="#8B5CF6" />
+            <path d="M140 90L186 90L180 120L150 120L140 90Z" fill="#3B82F6" />
+            <path d="M140 90L150 120L180 120L186 90L140 90Z" fill="#1E40AF" />
+            <!-- Teacher's pointer stick -->
+            <path d="M163 90L200 150" stroke="#8B5CF6" stroke-width="3" />
+            <circle cx="200" cy="150" r="3" fill="#8B5CF6" />
+          </svg>
+        </div>
+
+        <!-- Welcome Text -->
+        <div class="absolute bottom-12 text-white animate-slide-up">
+          <h2 class="text-3xl font-bold mb-4">Welcome Back, Instructor!</h2>
+          <p class="text-lg opacity-90 max-w-md">
+            Continue teaching and inspiring students with your knowledge and expertise.
+          </p>
+        </div>
+      </div>
+
+      <!-- Right Side - Login Form -->
+      <div
+        class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white relative"
+      >
+        <!-- Background Decoration -->
+        <div
+          class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full -translate-y-16 translate-x-16 opacity-50"
+        ></div>
+        <div
+          class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-100 to-pink-100 rounded-full translate-y-12 -translate-x-12 opacity-50"
+        ></div>
+
+        <div class="w-full max-w-md animate-slide-up">
+          <!-- Logo/Brand -->
+          <div class="text-center mb-8">
+            <div
+              class="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 p-2 rounded-2xl mb-4 inline-flex justify-center items-center"
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"
+                />
+              </svg>
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Instructor Portal</h1>
+            <p class="text-gray-600">Sign in to your teaching dashboard</p>
+          </div>
+
+          <% if (typeof error !== 'undefined' && error) { %>
+          <div id="flashError" class="mb-4 text-sm text-red-600 text-center">
+            <%= error %>
+          </div>
+          <% } %>
+
+          <!-- Login Form -->
+          <form class="space-y-6" action="/instructor" method="POST">
+            <!-- Email Field -->
+            <div>
+              <label
+                for="email"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Email Address
+              </label>
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                    />
+                  </svg>
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  required
+                  class="block w-full pl-10 pr-3 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= error && typeof error === 'string' ? 'border-red-500' : 'border-gray-300' %> transition-all duration-200 bg-gray-50 focus:bg-white"
+                  placeholder="instructor@company.com"
+                />
+              </div>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+              <label
+                for="password"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Password
+              </label>
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="h-5 w-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
+                  class="block w-full pl-10 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent <%= error && typeof error === 'string' ? 'border-red-500' : 'border-gray-300' %> transition-all duration-200 bg-gray-50 focus:bg-white"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onclick="togglePassword()"
+                >
+                  <svg
+                    id="eyeIcon"
+                    class="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition-all duration-200"
+                />
+                <label
+                  for="remember-me"
+                  class="ml-2 block text-sm text-gray-700"
+                >
+                  Remember me
+                </label>
+              </div>
+              <div class="text-sm">
+                <a
+                  href="#"
+                  class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+                >
+                  Forgot password?
+                </a>
+              </div>
+            </div>
+
+            <!-- Login Button -->
+            <div>
+              <button
+                type="submit"
+                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
+              >
+                <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                  <svg
+                    class="h-5 w-5 text-white group-hover:text-blue-100 transition-colors duration-200"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    />
+                  </svg>
+                </span>
+                Sign In
+              </button>
+            </div>
+          </form>
+
+          <!-- Footer -->
+          <div class="mt-8 text-center">
+            <p class="text-sm text-gray-600">
+              Need help?
+              <a
+                href="mailto:support@eduverse.com"
+                class="font-medium text-blue-600 hover:text-blue-500 transition-colors duration-200"
+              >
+                Contact Support
+              </a>
+            </p>
+            <div class="mt-4">
+              <a
+                href="/signin"
+                class="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
+              >
+                ← Back to Student Login
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function togglePassword() {
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
+
+        if (passwordInput.type === "password") {
+          passwordInput.type = "text";
+          eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+                `;
+        } else {
+          passwordInput.type = "password";
+          eyeIcon.innerHTML = `
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                `;
+        }
+      }
+
+      // Form submission is now handled by the server
+
+      setTimeout(() => {
+        const flashError = document.getElementById("flashError");
+        if (flashError) flashError.remove();
+      }, 3000);
+
+      //   function socialLogin(provider) {
+      //     alert(
+      //       `${
+      //         provider.charAt(0).toUpperCase() + provider.slice(1)
+      //       } login would be implemented here. This is a demo interface.`
+      //     );
+      //   }
+
+      // Form validation
+      document.getElementById("email").addEventListener("input", function () {
+        const email = this.value;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (email && !emailRegex.test(email)) {
+          this.classList.add("border-red-500");
+          this.classList.remove("border-gray-300");
+        } else {
+          this.classList.remove("border-red-500");
+          this.classList.add("border-gray-300");
+        }
+      });
+
+      // Input focus effects
+      document
+        .querySelectorAll('input[type="email"], input[type="password"]')
+        .forEach((input) => {
+          input.addEventListener("focus", function () {
+            this.parentElement.classList.add("ring-2", "ring-blue-500");
+          });
+
+          input.addEventListener("blur", function () {
+            this.parentElement.classList.remove("ring-2", "ring-blue-500");
+          });
+        });
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        // Alt + L to focus on login form
+        if (e.altKey && e.key === "l") {
+          e.preventDefault();
+          document.getElementById("email").focus();
+        }
+
+        // Enter key to submit form when focused on any input
+        if (
+          e.key === "Enter" &&
+          (e.target.type === "email" || e.target.type === "password")
+        ) {
+          document
+            .querySelector('form')
+            .dispatchEvent(new Event("submit"));
+        }
+      });
+    </script>
+  </body>
+</html>
