@@ -1,24 +1,22 @@
-import mysql from "mysql2/promise";
+import mysql from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const db = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
+const db = mysql.createConnection({
+  host: process.env.DB_HOST,
   port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '1234',
-  database: process.env.DB_NAME || 'mini_lms_db',
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
 
-// Test the connection
-db.getConnection()
-  .then(connection => {
-    console.log("MySQL is connected successfully ...");
-    connection.release();
-  })
-  .catch(err => {
+db.connect((err) => {
+  if (err) {
     console.error("Database connection failed:", err);
-  });
+  } else {
+    console.log("MySQL is connected successfully ...");
+  }
+});
 
 export default db;

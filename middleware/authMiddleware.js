@@ -34,17 +34,17 @@ export const requireStudent = (req, res, next) => {
 };
 
 // Middleware to check if user is an admin
-export const requireAdmin = (req, res, next) => {
-  if (!req.session.user) {
-    return res.redirect('/signin?error=Please login to access this page');
-  }
+// export const requireAdmin = (req, res, next) => {
+//   if (!req.session.user) {
+//     return res.redirect('/signin?error=Please login to access this page');
+//   }
   
-  if (req.session.user.roleId !== 3) {
-    return res.redirect('/signin?error=Access denied. Admin access required.');
-  }
+//   if (req.session.user.roleId !== 3) {
+//     return res.redirect('/signin?error=Access denied. Admin access required.');
+//   }
   
-  next();
-};
+//   next();
+// };
 
 // Middleware to set user data in locals for templates
 export const setUserData = (req, res, next) => {
@@ -52,6 +52,6 @@ export const setUserData = (req, res, next) => {
   res.locals.isAuthenticated = !!req.session.user;
   res.locals.isInstructor = req.session.user?.roleId === 2;
   res.locals.isStudent = req.session.user?.roleId === 1;
-  res.locals.isAdmin = req.session.user?.roleId === 3;
+  // res.locals.isAdmin = req.session.user?.roleId === 3;
   next();
 };

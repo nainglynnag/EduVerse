@@ -9,10 +9,10 @@ import flash from "connect-flash";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
-import studentRoutes from "./routes/studentRoutes.js";
+
 import courseRoutes from "./routes/courseRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import { setUserData } from "./middleware/authMiddleware.js";
+// import { setUserData } from "./middleware/authMiddleware.js";
 
 const app = express();
 const PORT = 3000;
@@ -27,18 +27,19 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24, // 24 hours
       httpOnly: true,
       secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-      sameSite: "lax"
-    }
-  })
+      sameSite: "lax",
+    },
+  }),
 );
 
 app.use((req, res, next) => {
   res.locals.admin = req.session.admin || null;
+  res.locals.user = req.session.user || null;
   next();
 });
 
 // Set user data in locals for all templates
-app.use(setUserData);
+// app.use(setUserData);
 
 // Middlewares for Toast
 app.use(flash());
@@ -65,14 +66,13 @@ app.set("layout", false);
 
 // Routes
 // app.get("/", (req, res) => {
-  // landing page will NOT use any layout
-  // res.render("index"); // no layout because default is false
+// landing page will NOT use any layout
+// res.render("index"); // no layout because default is false
 // });
-
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
-app.use("/student", studentRoutes);
+// app.use("/student", studentRoutes);
 app.use("/api/courses", courseRoutes);
 app.use("/", authRoutes);
 
