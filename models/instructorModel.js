@@ -29,20 +29,23 @@ export const getInstructorById = async (instructorId) => {
         u.email,
         u.status,
         u.joined_date,
-        ip.specialization,
-        ip.bio,
-        ip.rating
+        COALESCE(ip.specialization, 'General') as specialization,
+        COALESCE(ip.bio, '') as bio,
+        COALESCE(ip.rating, 0.0) as rating
       FROM users u
       LEFT JOIN instructor_profiles ip ON u.id = ip.user_id
-      WHERE u.id = ? AND u.role_id = (SELECT id FROM roles WHERE name = 'instructor')
+      WHERE u.id = ? AND u.role_id = 2
     `;
 
-    const [results] = await db.execute(query, [validId]);
+    const [results] = await db.promise().query(query, [validId]);
     return results[0] || { 
+      id: validId,
       name: 'Instructor', 
       email: '', 
       status: 'active',
-      rating: 0.0
+      rating: 0.0,
+      specialization: 'General',
+      bio: ''
     };
   } catch (error) {
     handleDbError(error, 'getInstructorById');
@@ -52,7 +55,16 @@ export const getInstructorById = async (instructorId) => {
 // Course Management Functions
 export const getInstructorCourses = async (instructorId) => {
   try {
+    console.log('Model - getInstructorCourses called with instructorId:', instructorId);
+    console.log('Model - instructorId type:', typeof instructorId);
+    
+    if (!instructorId) {
+      console.log('Model - No instructor ID provided, returning empty array');
+      return [];
+    }
+    
     const validId = validateInstructorId(instructorId);
+    console.log('Model - Valid instructor ID:', validId);
     
     const query = `
       SELECT 
@@ -71,10 +83,29 @@ export const getInstructorCourses = async (instructorId) => {
       ORDER BY c.created_at DESC
     `;
 
-    const [results] = await db.execute(query, [validId]);
-    return results || [];
+    console.log('Model - Executing query for instructor:', validId);
+    const [results] = await db.promise().query(query, [validId]);
+    console.log('Model - Query results type:', typeof results);
+    console.log('Model - Query results is array:', Array.isArray(results));
+    console.log('Model - Query results length:', results ? results.length : 'null/undefined');
+    
+    // Ensure we always return an array
+    if (Array.isArray(results)) {
+      console.log('Model - Returning array with', results.length, 'courses');
+      return results;
+    } else if (results && typeof results === 'object') {
+      console.log('Model - Results is object, converting to array');
+      return [results];
+    } else {
+      console.log('Model - Results is not array or object, returning empty array');
+      return [];
+    }
   } catch (error) {
-    handleDbError(error, 'getInstructorCourses');
+    console.error('Model - Error in getInstructorCourses:', error);
+    console.error('Model - Error details:', error.message);
+    console.error('Model - Error stack:', error.stack);
+    // Don't throw the error, return empty array instead
+    return [];
   }
 };
 
@@ -101,7 +132,7 @@ export const getCourseByIdAndInstructor = async (courseId, instructorId) => {
       GROUP BY c.id
     `;
 
-    const [results] = await db.execute(query, [validCourseId, validInstructorId]);
+    const [results] = await db.promise().query(query, [validCourseId, validInstructorId]);
     return results[0] || null;
   } catch (error) {
     handleDbError(error, 'getCourseByIdAndInstructor');
@@ -125,7 +156,7 @@ export const createCourse = async (courseData) => {
       VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
     `;
 
-    const [result] = await db.execute(query, [
+    const [result] = await db.promise().query(query, [
       title,
       category_id,
       difficulty_id,
@@ -160,7 +191,7 @@ export const updateCourse = async (courseId, instructorId, courseData) => {
       WHERE id = ? AND instructor_id = ?
     `;
 
-    const [result] = await db.execute(query, [
+    const [result] = await db.promise().query(query, [
       title,
       category_id,
       difficulty_id,
@@ -190,7 +221,7 @@ export const getInstructorTotalStudents = async (instructorId) => {
       WHERE c.instructor_id = ?
     `;
 
-    const [results] = await db.execute(query, [instructorId]);
+    const [results] = await db.promise().query(query, [instructorId]);
     return results[0]?.total_students || 0;
   } catch (error) {
     handleDbError(error, 'getInstructorTotalStudents');
@@ -220,7 +251,7 @@ export const getInstructorStudents = async (instructorId) => {
       ORDER BY courses_enrolled DESC, u.name
     `;
 
-    const [results] = await db.execute(query, [instructorId]);
+    const [results] = await db.promise().query(query, [instructorId]);
     return results || [];
   } catch (error) {
     handleDbError(error, 'getInstructorStudents');
@@ -236,7 +267,7 @@ export const getAllCategories = async () => {
       ORDER BY name
     `;
 
-    const [results] = await db.execute(query);
+    const [results] = await db.promise().query(query);
     return results || [];
   } catch (error) {
     handleDbError(error, 'getAllCategories');
@@ -251,7 +282,7 @@ export const getAllDifficultyLevels = async () => {
       ORDER BY id
     `;
 
-    const [results] = await db.execute(query);
+    const [results] = await db.promise().query(query);
     return results || [];
   } catch (error) {
     handleDbError(error, 'getAllDifficultyLevels');
@@ -268,7 +299,7 @@ export const getCourseLessons = async (courseId) => {
       ORDER BY lesson_no
     `;
 
-    const [results] = await db.execute(query, [courseId]);
+    const [results] = await db.promise().query(query, [courseId]);
     return results || [];
   } catch (error) {
     console.error('Error in getCourseLessons:', error);
@@ -285,7 +316,7 @@ export const getCourseObjectives = async (courseId) => {
       ORDER BY id
     `;
 
-    const [results] = await db.execute(query, [courseId]);
+    const [results] = await db.promise().query(query, [courseId]);
     return results || [];
   } catch (error) {
     console.error('Error in getCourseObjectives:', error);
@@ -302,11 +333,105 @@ export const getCoursePrerequisites = async (courseId) => {
       ORDER BY id
     `;
 
-    const [results] = await db.execute(query, [courseId]);
+    const [results] = await db.promise().query(query, [courseId]);
     return results || [];
   } catch (error) {
     console.error('Error in getCoursePrerequisites:', error);
     return [];
+  }
+};
+
+// Course Management Functions
+export const deleteCourse = async (courseId, instructorId) => {
+  try {
+    const validCourseId = parseInt(courseId);
+    const validInstructorId = validateInstructorId(instructorId);
+    
+    if (!validCourseId || isNaN(validCourseId)) {
+      throw new Error('Invalid course ID');
+    }
+    
+    // First delete related data
+    await Promise.all([
+      db.promise().query('DELETE FROM course_objectives WHERE course_id = ?', [validCourseId]),
+      db.promise().query('DELETE FROM course_prerequisites WHERE course_id = ?', [validCourseId]),
+      db.promise().query('DELETE FROM course_lessons WHERE course_id = ?', [validCourseId]),
+      db.promise().query('DELETE FROM enrollments WHERE course_id = ?', [validCourseId])
+    ]);
+    
+    // Then delete the course
+    const [result] = await db.promise().query(
+      'DELETE FROM courses WHERE id = ? AND instructor_id = ?',
+      [validCourseId, validInstructorId]
+    );
+    
+    return result.affectedRows > 0;
+  } catch (error) {
+    handleDbError(error, 'deleteCourse');
+  }
+};
+
+export const deleteLesson = async (courseId, lessonId, instructorId) => {
+  try {
+    const validCourseId = parseInt(courseId);
+    const validLessonId = parseInt(lessonId);
+    const validInstructorId = validateInstructorId(instructorId);
+    
+    if (!validCourseId || !validLessonId || isNaN(validCourseId) || isNaN(validLessonId)) {
+      throw new Error('Invalid course or lesson ID');
+    }
+    
+    // Verify the course belongs to the instructor
+    const [courseCheck] = await db.promise().query(
+      'SELECT id FROM courses WHERE id = ? AND instructor_id = ?',
+      [validCourseId, validInstructorId]
+    );
+    
+    if (courseCheck.length === 0) {
+      throw new Error('Course not found or access denied');
+    }
+    
+    // Delete the lesson
+    const [result] = await db.promise().query(
+      'DELETE FROM course_lessons WHERE id = ? AND course_id = ?',
+      [validLessonId, validCourseId]
+    );
+    
+    return result.affectedRows > 0;
+  } catch (error) {
+    handleDbError(error, 'deleteLesson');
+  }
+};
+
+// Profile Management Functions
+export const updateInstructorProfile = async (instructorId, profileData) => {
+  try {
+    const validId = validateInstructorId(instructorId);
+    const { specialization, bio } = profileData;
+    
+    // Check if profile exists
+    const [existingProfile] = await db.promise().query(
+      'SELECT user_id FROM instructor_profiles WHERE user_id = ?',
+      [validId]
+    );
+    
+    if (existingProfile.length > 0) {
+      // Update existing profile
+      const [result] = await db.promise().query(
+        'UPDATE instructor_profiles SET specialization = ?, bio = ? WHERE user_id = ?',
+        [specialization, bio, validId]
+      );
+      return result.affectedRows > 0;
+    } else {
+      // Create new profile
+      const [result] = await db.promise().query(
+        'INSERT INTO instructor_profiles (user_id, specialization, bio) VALUES (?, ?, ?)',
+        [validId, specialization, bio]
+      );
+      return result.affectedRows > 0;
+    }
+  } catch (error) {
+    handleDbError(error, 'updateInstructorProfile');
   }
 };
 

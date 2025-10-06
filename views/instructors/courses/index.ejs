@@ -11,6 +11,7 @@
             </div>
           </div>
         <% } %>
+
         
         <% if (typeof req !== 'undefined' && req.query.course_published === 'true') { %>
           <div class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-lg">
@@ -197,15 +198,39 @@
           class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
           id="coursesGrid"
         >
-          <% if (courses && courses.length > 0) { %>
-            <% courses.forEach(course => { %>
+          <% 
+            // Enhanced safety check with better error handling
+            let safeCourses = [];
+            try {
+              if (courses && Array.isArray(courses)) {
+                safeCourses = courses;
+              } else if (courses && typeof courses === 'object') {
+                // Handle case where courses might be wrapped in an object
+                if (courses.data && Array.isArray(courses.data)) {
+                  safeCourses = courses.data;
+                } else if (courses.results && Array.isArray(courses.results)) {
+                  safeCourses = courses.results;
+                } else {
+                  safeCourses = [];
+                }
+              } else {
+                safeCourses = [];
+              }
+            } catch (e) {
+              console.error('Error processing courses data:', e);
+              safeCourses = [];
+            }
+          %>
+          <% if (safeCourses && safeCourses.length > 0) { %>
+            <% for (let i = 0; i < safeCourses.length; i++) { %>
+              <% const course = safeCourses[i]; %>
               <div class="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden course-card group transform hover:-translate-y-1"
-                   data-title="<%= course.title.toLowerCase() %>"
-                   data-category="<%= (course.category_name || '').toLowerCase() %>"
-                   data-difficulty="<%= (course.difficulty_name || '').toLowerCase() %>"
-                   data-status="<%= (course.status || '').toLowerCase() %>"
-                   data-description="<%= (course.description || '').toLowerCase() %>"
-                   data-created="<%= course.created_at %>"
+                   data-title="<%= (course.title || 'Untitled Course').toLowerCase() %>"
+                   data-category="<%= (course.category_name || 'Uncategorized').toLowerCase() %>"
+                   data-difficulty="<%= (course.difficulty_name || 'Unknown').toLowerCase() %>"
+                   data-status="<%= (course.status || 'draft').toLowerCase() %>"
+                   data-description="<%= (course.description || 'No description available').toLowerCase() %>"
+                   data-created="<%= course.created_at || new Date().toISOString() %>"
                    data-students="<%= course.enrollment_count || 0 %>"
                    data-price="<%= course.price || 0 %>">
                 
@@ -251,7 +276,7 @@
                   <!-- Course Title & Description -->
                   <div class="mb-4">
                     <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-purple-600 transition-colors mb-2">
-                      <%= course.title %>
+                      <%= course.title || 'Untitled Course' %>
                     </h3>
                     <p class="text-gray-500 text-sm line-clamp-2">
                       <%= course.description || 'No description available' %>
@@ -286,7 +311,7 @@
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
                         </svg>
-                        <span class="text-sm"><%= new Date(course.created_at).toLocaleDateString() %></span>
+                        <span class="text-sm"><%= course.created_at ? new Date(course.created_at).toLocaleDateString() : 'Unknown' %></span>
                     </div>
                     </div>
                   </div>
@@ -305,7 +330,7 @@
                   </div>
                 </div>
               </div>
-            <% }); %>
+            <% } %>
           <% } else { %>
             <!-- Responsive Empty State -->
             <div class="col-span-full text-center py-8 md:py-16">

@@ -21,30 +21,32 @@
 
       <h3 class="text-lg font-bold text-gray-800 mb-4">Basic Information</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Course Title *</label
-            >
-            <input
-              type="text"
-              id="courseTitle"
-              name="courseTitle"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Enter course title"
-              value="<%= typeof form !== 'undefined' && form.courseTitle ? form.courseTitle : '' %>"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Category *</label
-            >
-            <select
-              id="courseCategory"
-              name="courseCategory"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
+           <div>
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Course Title *</label
+             >
+             <input
+               type="text"
+               id="courseTitle"
+               name="courseTitle"
+               required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="Enter course title"
+               value="<%= typeof form !== 'undefined' && form.courseTitle ? form.courseTitle : '' %>"
+               oninput="updateFieldIndicator('courseTitle')"
+             />
+           </div>
+           <div>
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Category *</label
+             >
+             <select
+               id="courseCategory"
+               name="courseCategory"
+               required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               onchange="updateFieldIndicator('courseCategory')"
+             >
               <option value="">Select category</option>
               <% if (categories && categories.length > 0) { %>
                 <% categories.forEach(category => { %>
@@ -56,18 +58,19 @@
               <% } %>
             </select>
           </div>
-          <div class="md:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Short Description *</label
-            >
-            <textarea
-              id="courseDescription"
-              name="courseDescription"
-              required
-              rows="3"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Brief description of your course"
-            >
+           <div class="md:col-span-2">
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Short Description *</label
+             >
+             <textarea
+               id="courseDescription"
+               name="courseDescription"
+               required
+               rows="3"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="Brief description of your course"
+               oninput="updateFieldIndicator('courseDescription')"
+             >
 <%= typeof form !== 'undefined' && form.courseDescription ? form.courseDescription : '' %></textarea
             >
           </div>
@@ -77,33 +80,35 @@
     <!-- Course Details -->
     <div class="bg-white rounded-2xl p-6 shadow-lg">
       <h3 class="text-lg font-bold text-gray-800 mb-4">Course Details</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Price ($) *</label
-            >
-            <input
-              type="number"
-              id="coursePrice"
-              name="coursePrice"
-              required
-              min="0"
-              step="0.01"
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="0.00"
-              value="<%= typeof form !== 'undefined' && form.coursePrice ? form.coursePrice : '' %>"
-            />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-              >Difficulty Level *</label
-            >
-            <select
-              id="courseDifficulty"
-              name="courseDifficulty"
-              required
-              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+           <div>
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Price ($) *</label
+             >
+             <input
+               type="number"
+               id="coursePrice"
+               name="coursePrice"
+               required
+               min="0"
+               step="0.01"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               placeholder="0.00"
+               value="<%= typeof form !== 'undefined' && form.coursePrice ? form.coursePrice : '' %>"
+               oninput="updateFieldIndicator('coursePrice')"
+             />
+           </div>
+           <div>
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Difficulty Level *</label
+             >
+             <select
+               id="courseDifficulty"
+               name="courseDifficulty"
+               required
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               onchange="updateFieldIndicator('courseDifficulty')"
+             >
               <option value="">Select level</option>
               <% if (difficultyLevels && difficultyLevels.length > 0) { %>
                 <% difficultyLevels.forEach(level => { %>
@@ -113,77 +118,93 @@
                   </option>
                 <% }); %>
               <% } %>
-            </select>
-          </div>
-        </div>
-      </div>
+             </select>
+           </div>
+           <div>
+             <label class="block text-sm font-medium text-gray-700 mb-2"
+               >Status</label
+             >
+             <select
+               id="status"
+               name="status"
+               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+             >
+               <option value="draft" selected>Draft</option>
+               <option value="published">Published</option>
+             </select>
+           </div>
+         </div>
+       </div>
 
-    <!-- Course Content -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg">
-      <h3 class="text-lg font-bold text-gray-800 mb-4">Course Content</h3>
-      <div class="space-y-4">
+     <!-- Course Content -->
+     <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <h3 class="text-lg font-bold text-gray-800 mb-4">Course Content</h3>
+       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >Learning Objectives</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">Learning Objectives *</label>
           <textarea
             id="courseObjectives"
             name="courseObjectives"
+            required
             rows="4"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="What will students learn from this course?"
-          >
-<%= typeof form !== 'undefined' && form.courseObjectives ? form.courseObjectives : '' %></textarea
-          >
+            placeholder="What will students learn from this course? (One objective per line)"
+            oninput="updateFieldIndicator('courseObjectives')"
+          ><%= typeof form !== 'undefined' && form.courseObjectives ? form.courseObjectives : '' %></textarea>
+          <div class="mt-1 text-xs text-gray-500">
+            <span id="objectivesHelp">Enter one learning objective per line. Use bullet points or numbers for better formatting.</span>
+          </div>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >Prerequisites</label
-          >
+          <label class="block text-sm font-medium text-gray-700 mb-2">Prerequisites *</label>
           <textarea
             id="coursePrerequisites"
             name="coursePrerequisites"
+            required
             rows="3"
             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="What should students know before taking this course?"
-          >
-<%= typeof form !== 'undefined' && form.coursePrerequisites ? form.coursePrerequisites : '' %></textarea
-          >
+            placeholder="What should students know before taking this course? (One prerequisite per line)"
+            oninput="updateFieldIndicator('coursePrerequisites')"
+          ><%= typeof form !== 'undefined' && form.coursePrerequisites ? form.coursePrerequisites : '' %></textarea>
+          <div class="mt-1 text-xs text-gray-500">
+            <span id="prerequisitesHelp">Enter one prerequisite per line. Be specific about required knowledge or skills.</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Course Lessons -->
-    <div class="bg-white rounded-2xl p-6 shadow-lg">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold text-gray-800">Course Lessons</h3>
-      </div>
-      <div id="lessonsContainer" class="space-y-4 mb-4">
-        <!-- Lessons will be added dynamically -->
-      </div>
+     <!-- Course Lessons -->
+     <div class="bg-white rounded-2xl p-6 shadow-lg">
+       <div class="flex items-center justify-between mb-4">
+         <h3 class="text-lg font-bold text-gray-800">Course Lessons</h3>
+       </div>
+       <div id="lessonsContainer" class="space-y-4 mb-4">
+         <!-- Lessons will be added dynamically -->
+       </div>
 
-      <button
-        type="button"
-        onclick="addLesson()"
-        class="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-gray-600 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200 flex flex-col items-center justify-center space-y-2"
-      >
-        <svg
-          class="w-8 h-8"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        </svg>
-        <span class="font-medium">Add New Lesson</span>
-        <span class="text-sm opacity-75">Click to add another lesson to your course</span>
-      </button>
-    </div>
+       <button
+         type="button"
+         onclick="addLesson()"
+         class="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-gray-600 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200 flex flex-col items-center justify-center space-y-2"
+       >
+         <svg
+           class="w-8 h-8"
+           fill="none"
+           stroke="currentColor"
+           viewBox="0 0 24 24"
+         >
+           <path
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             stroke-width="2"
+             d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+           />
+         </svg>
+         <span class="font-medium">Add New Lesson</span>
+         <span class="text-sm opacity-75">Click to add another lesson to your course</span>
+       </button>
+     </div>
+
 
     <!-- Form Actions -->
     <div class="flex justify-end space-x-4">
@@ -193,13 +214,6 @@
         class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
       >
         Cancel
-      </button>
-      <button
-        type="button"
-        onclick="saveDraft()"
-        class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-      >
-        Save as Draft
       </button>
       <button
         type="submit"
@@ -216,82 +230,151 @@
   let lessonCounter = 0;
 
   // Create course form functions
-  function addLesson() {
-    lessonCounter++;
-    const lessonsContainer = document.getElementById("lessonsContainer");
-    const lessonDiv = document.createElement("div");
-    lessonDiv.className = "border border-gray-200 rounded-lg p-4";
-    lessonDiv.innerHTML = `
-            <div class="flex items-center justify-between mb-4 lessonField">
-                <h4 class="font-medium text-gray-800">Lesson ${lessonCounter}</h4>
-                <button type="button" onclick="removeLesson(this)" class="text-red-600 p-2 hover:bg-red-50 hover:border hover:border-red-100 rounded-lg hover:text-red-700">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Title *</label>
-                    <input type="text" id="lessonTitle" name="lessonTitle" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter lesson title" required>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes) *</label>
-                    <input type="number" min="1" id="lessonDuration" name="lessonDuration" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="15" required>
-                </div>
-            </div>
-
-            <div class="my-4">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Description *</label>
-                <textarea rows="2" id="lessonDescription" name="lessonDescription" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of this lesson" required></textarea>
-            </div>
-
-            <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Video URL *</label>
-                    <input type="text" id="videoUrl" name="videoUrl" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter video URL" required>
-                </div>
-        `;
-    lessonsContainer.appendChild(lessonDiv);
-    renumberLessons();
+  // Video URL validation and detection
+  function detectVideoUrlType(url) {
+    if (!url || url.trim() === '') return null;
+    
+    const cleanUrl = url.trim().toLowerCase();
+    
+    // YouTube detection
+    if (cleanUrl.includes('youtube.com/watch') || cleanUrl.includes('youtu.be/')) {
+      return 'YouTube';
+    }
+    
+    // Vimeo detection
+    if (cleanUrl.includes('vimeo.com/')) {
+      return 'Vimeo';
+    }
+    
+    // Direct video file detection
+    if (cleanUrl.match(/\.(mp4|webm|ogg|avi|mov|wmv|flv|mkv)(\?.*)?$/i)) {
+      return 'Direct Video';
+    }
+    
+    return 'Unknown';
   }
 
-  function removeLesson(button) {
-    const lessonsContainer = document.getElementById("lessonsContainer");
-    const items = lessonsContainer.querySelectorAll(".border");
-    if (items.length <= 1) {
-      alert("You can't remove the first lesson!");
+  function validateVideoUrl(url) {
+    if (!url || url.trim() === '') return false;
+    
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
+  function updateVideoUrlFeedback(input) {
+    const url = input.value;
+    const lessonId = input.id.split('_')[1];
+    const urlTypeSpan = document.getElementById(`urlType_${lessonId}`);
+    const urlHelpSpan = document.getElementById(`urlHelp_${lessonId}`);
+    
+    if (!url || url.trim() === '') {
+      urlTypeSpan.classList.add('hidden');
+      urlHelpSpan.textContent = 'Supported: YouTube, Vimeo, or direct video file URLs';
+      input.classList.remove('border-red-500', 'border-green-500');
+      input.classList.add('border-gray-300');
       return;
     }
-    button.closest(".border").remove();
-    renumberLessons();
+    
+    const isValid = validateVideoUrl(url);
+    const urlType = detectVideoUrlType(url);
+    
+    if (isValid) {
+      input.classList.remove('border-red-500');
+      input.classList.add('border-green-500');
+      
+      if (urlType && urlType !== 'Unknown') {
+        urlTypeSpan.textContent = `✓ ${urlType} URL detected`;
+        urlTypeSpan.classList.remove('hidden');
+        urlHelpSpan.textContent = 'URL format looks good!';
+      } else {
+        urlTypeSpan.textContent = '✓ Valid URL';
+        urlTypeSpan.classList.remove('hidden');
+        urlHelpSpan.textContent = 'URL format is valid';
+      }
+    } else {
+      input.classList.remove('border-green-500');
+      input.classList.add('border-red-500');
+      urlTypeSpan.textContent = '⚠ Invalid URL format';
+      urlTypeSpan.classList.remove('hidden');
+      urlHelpSpan.textContent = 'Please enter a valid URL';
+    }
   }
 
-  function renumberLessons() {
-    const lessonsContainer = document.getElementById("lessonsContainer");
-    const items = Array.from(lessonsContainer.querySelectorAll(".lessonField"));
-    // console.log("lessonsContainer", lessonsContainer);
-    // console.log("items", items);
+   function addLesson() {
+     lessonCounter++;
+     const lessonsContainer = document.getElementById("lessonsContainer");
+     const lessonDiv = document.createElement("div");
+     lessonDiv.className = "border border-gray-200 rounded-lg p-4";
+     
+     // Calculate the lesson number based on current lessons count
+     const currentLessonCount = lessonsContainer.children.length;
+     const lessonNumber = currentLessonCount + 1;
+     const isFirstLesson = lessonNumber === 1;
+     
+     lessonDiv.innerHTML = `
+       <div class="flex items-center justify-between mb-4">
+           <h4 class="font-medium text-gray-800">Lesson ${lessonNumber}</h4>
+           <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700 remove-lesson-btn" style="display: ${isFirstLesson ? 'none' : 'block'};">
+               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                   <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+               </svg>
+           </button>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <div>
+               <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Title *</label>
+               <input type="text" name="lessonTitles[]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter lesson title">
+           </div>
+           <div>
+               <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes) *</label>
+               <input type="number" name="lessonDurations[]" min="1" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="15">
+           </div>
+       </div>
+       <div class="mt-4">
+           <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
+           <textarea name="lessonDescriptions[]" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of this lesson"></textarea>
+       </div>
+       <div class="mt-4">
+           <label class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
+           <input type="url" name="lessonVideoUrls[]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+           <p class="text-xs text-gray-500 mt-1">Supported: YouTube, Vimeo, or direct video file URLs</p>
+       </div>
+     `;
+     lessonsContainer.appendChild(lessonDiv);
+     updateDeleteButtonVisibility();
+   }
 
-    items.forEach((item, index) => {
-      const number = index + 1;
-      const title = item.querySelector("h4");
-      if (title) title.textContent = `Lesson ${number}`;
-      const removeBtn = item.querySelector("button[onclick^='removeLesson']");
-      if (removeBtn) {
-        if (number === 1) removeBtn.classList.add("hidden");
-        else removeBtn.classList.remove("hidden");
+  function removeLesson(button) {
+    button.closest(".border").remove();
+    updateDeleteButtonVisibility();
+    updateLessonNumbers();
+  }
+
+  function updateDeleteButtonVisibility() {
+    const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
+    lessonDivs.forEach((lessonDiv, index) => {
+      const deleteBtn = lessonDiv.querySelector('.remove-lesson-btn');
+      if (deleteBtn) {
+        deleteBtn.style.display = index === 0 ? 'none' : 'block';
       }
     });
-    lessonCounter = items.length;
   }
 
-  function resetCreateForm() {
-    document.getElementById("createCourseForm").reset();
-    document.getElementById("lessonsContainer").innerHTML = "";
-    lessonCounter = 0;
-    addLesson(); // Add first lesson by default
+  function updateLessonNumbers() {
+    const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
+    lessonDivs.forEach((lessonDiv, index) => {
+      const lessonHeader = lessonDiv.querySelector('h4');
+      if (lessonHeader) {
+        lessonHeader.textContent = `Lesson ${index + 1}`;
+      }
+    });
   }
+
+
 
   function showErrorMessage(message) {
     // Remove any existing error message
@@ -321,154 +404,100 @@
     }, 5000);
   }
 
-  function clearErrorMessage() {
-    const existingError = document.getElementById('validationError');
-    if (existingError) {
-      existingError.remove();
-    }
-  }
+   function clearErrorMessage() {
+     const existingError = document.getElementById('validationError');
+     if (existingError) {
+       existingError.remove();
+     }
+   }
 
-  function saveDraft() {
-    // Validate required fields for draft
-    const requiredFields = [
-      { id: 'courseTitle', name: 'Course Title' },
-      { id: 'courseCategory', name: 'Category' },
-      { id: 'courseDescription', name: 'Description' },
-      { id: 'coursePrice', name: 'Price' },
-      { id: 'courseDifficulty', name: 'Difficulty Level' },
-      { id: 'courseObjectives', name: 'Learning Objectives' },
-      { id: 'coursePrerequisites', name: 'Prerequisites' }
-    ];
+   function updateFieldIndicator(fieldId) {
+     const field = document.getElementById(fieldId);
+     
+     if (!field) return;
+     
+     // Update warning box
+     updateWarningBox();
+   }
 
-    const missingFields = [];
-    
-    requiredFields.forEach(field => {
-      const element = document.getElementById(field.id);
-      if (!element || !element.value || element.value.trim() === '') {
-        missingFields.push(field.name);
-        // Add visual error indication
-        element.classList.add('border-red-500', 'ring-2', 'ring-red-200');
-        element.classList.remove('border-gray-300');
-      } else {
-        // Remove error indication if field is now valid
-        element.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
-        element.classList.add('border-gray-300');
-      }
-    });
+   function checkAllRequiredFields() {
+     const requiredFields = ['courseTitle', 'courseCategory', 'courseDescription', 'coursePrice', 'courseDifficulty', 'courseObjectives', 'coursePrerequisites'];
+     
+     requiredFields.forEach(fieldId => {
+       updateFieldIndicator(fieldId);
+     });
+     
+     // Show/hide warning box
+     updateWarningBox();
+   }
 
-    // Validate Course Lessons
-    const lessonsContainer = document.getElementById('lessonsContainer');
-    const lessonDivs = lessonsContainer.querySelectorAll('.border');
-    
-    if (lessonDivs.length === 0) {
-      missingFields.push('Course Lessons');
-      showErrorMessage('Cannot save as draft. Please add at least one lesson to your course.');
-      return;
-    }
+   function updateWarningBox() {
+     const requiredFields = [
+       { id: 'courseTitle', name: 'Course Title' },
+       { id: 'courseCategory', name: 'Category' },
+       { id: 'courseDescription', name: 'Description' },
+       { id: 'coursePrice', name: 'Price' },
+       { id: 'courseDifficulty', name: 'Difficulty Level' },
+       { id: 'courseObjectives', name: 'Learning Objectives' },
+       { id: 'coursePrerequisites', name: 'Prerequisites' }
+     ];
 
-    // Check each lesson for required fields
-    let hasValidLesson = false;
-    lessonDivs.forEach((lessonDiv, index) => {
-      const titleInput = lessonDiv.querySelector('input[name="lessonTitle"]');
-      const durationInput = lessonDiv.querySelector('input[name="lessonDuration"]');
-      const descriptionInput = lessonDiv.querySelector('textarea[name="lessonDescription"]');
-      const videoInput = lessonDiv.querySelector('input[name="videoUrl"]');
-      
-      const lessonTitle = titleInput ? titleInput.value.trim() : '';
-      const lessonDuration = durationInput ? durationInput.value.trim() : '';
-      const lessonDescription = descriptionInput ? descriptionInput.value.trim() : '';
-      const videoUrl = videoInput ? videoInput.value.trim() : '';
-      
-      if (lessonTitle && lessonDuration && lessonDescription && videoUrl) {
-        hasValidLesson = true;
-      } else {
-        // Highlight invalid lesson fields
-        [titleInput, durationInput, descriptionInput, videoInput].forEach(input => {
-          if (input && (!input.value || input.value.trim() === '')) {
-            input.classList.add('border-red-500', 'ring-2', 'ring-red-200');
-            input.classList.remove('border-gray-300');
-          } else if (input) {
-            input.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
-            input.classList.add('border-gray-300');
-          }
-        });
-      }
-    });
+     const missingFields = [];
+     
+     requiredFields.forEach(field => {
+       const element = document.getElementById(field.id);
+       if (!element || !element.value || element.value.trim() === '') {
+         missingFields.push(field.name);
+       }
+     });
 
-    if (!hasValidLesson) {
-      missingFields.push('Course Lessons (at least one complete lesson)');
-    }
+     const warningBox = document.getElementById('requiredFieldsWarning');
+     const missingFieldsList = document.getElementById('missingFieldsList');
+     
+     if (missingFields.length > 0) {
+       warningBox.classList.remove('hidden');
+       missingFieldsList.innerHTML = missingFields.map(field => `<li>• ${field}</li>`).join('');
+     } else {
+       warningBox.classList.add('hidden');
+     }
+   }
 
-    if (missingFields.length > 0) {
-      // Show error message
-      showErrorMessage(`Cannot save as draft. Please fill in the following required fields: ${missingFields.join(', ')}`);
-      return;
-    }
 
-    // Clear any existing error messages
-    clearErrorMessage();
-    
-    const statusInput = document.getElementById("courseStatus");
-    statusInput.value = "draft";
-    document.getElementById("createCourseForm").submit();
-  }
 
-  // Initialize
-  document.addEventListener("DOMContentLoaded", function () {
-    addLesson(); // Add first lesson by default
-    // Default published on normal submit unless overridden by Save Draft
+   // Initialize
+   document.addEventListener("DOMContentLoaded", function () {
+     addLesson(); // Add first lesson by default
+     checkAllRequiredFields(); // Check required fields on page load
+    // Form submission handler
     const form = document.getElementById("createCourseForm");
-    form.addEventListener("submit", function () {
-      const statusInput = document.getElementById("courseStatus");
-      if (!statusInput.value) {
-        statusInput.value = "published";
+    form.addEventListener("submit", function (e) {
+      // Check if all required fields are filled
+      checkAllRequiredFields();
+      
+      const requiredFields = [
+        { id: 'courseTitle', name: 'Course Title' },
+        { id: 'courseCategory', name: 'Category' },
+        { id: 'courseDescription', name: 'Description' },
+        { id: 'coursePrice', name: 'Price' },
+        { id: 'courseDifficulty', name: 'Difficulty Level' },
+        { id: 'courseObjectives', name: 'Learning Objectives' },
+        { id: 'coursePrerequisites', name: 'Prerequisites' }
+      ];
+
+      const missingFields = [];
+      
+      requiredFields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (!element || !element.value || element.value.trim() === '') {
+          missingFields.push(field.name);
+        }
+      });
+
+      if (missingFields.length > 0) {
+        e.preventDefault();
+        showErrorMessage(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        return false;
       }
-
-      // Convert multi-line objectives and prerequisites into arrays
-      // and submit as repeated fields: courseObjectives[] and coursePrerequisites[]
-      // Then disable original textareas to avoid duplicate values
-      const objectivesTextarea = document.getElementById("courseObjectives");
-      const prerequisitesTextarea = document.getElementById(
-        "coursePrerequisites"
-      );
-
-      // Cleanup any previously generated fields (in case of client-side validation preventing submit previously)
-      form
-        .querySelectorAll(".generated-array-field")
-        .forEach((el) => el.remove());
-
-      const parseList = (text) => {
-        return text
-          .split(/\r?\n/)
-          .map((line) => line.trim())
-          .filter((line) => line.length > 0)
-          .map((line) => line.replace(/^[-•]\s*/, ""));
-      };
-
-      const objectives = parseList(objectivesTextarea.value);
-      const prerequisites = parseList(prerequisitesTextarea.value);
-
-      objectives.forEach((item) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "courseObjectives[]";
-        input.value = item;
-        input.className = "generated-array-field";
-        form.appendChild(input);
-      });
-
-      prerequisites.forEach((item) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = "coursePrerequisites[]";
-        input.value = item;
-        input.className = "generated-array-field";
-        form.appendChild(input);
-      });
-
-      // Prevent original textarea values from being submitted
-      objectivesTextarea.disabled = true;
-      prerequisitesTextarea.disabled = true;
     });
   });
 

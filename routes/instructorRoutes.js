@@ -1,5 +1,8 @@
 import express from 'express';
 import {
+  getInstructorSignIn,
+  postInstructorSignIn,
+  instructorSignOut,
   getInstructorData,
   getInstructorDashboard,
   getInstructorCoursesList,
@@ -14,7 +17,6 @@ import {
   getEditProfilePage,
   updateProfile
 } from '../controllers/instructorController.js';
-// import { requireInstructor } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -22,16 +24,18 @@ const isLoggedIn = (req, res, next) => {
   if (req.session.user && req.session.user.roleId === 2) {
     return next();
   } else {
-    res.redirect("/signin");
+    res.redirect("/instructor/signin");
   }
 };
 
-// Login routes (no middleware) - redirect to main auth
-router.get('/', isLoggedIn, (req, res) => res.redirect('instructor/dashboard'));
-router.get('/logout', (req, res) => res.redirect('/signout'));
+// Authentication routes (no middleware)
+router.get('/signin', getInstructorSignIn);
+router.post('/signin', express.urlencoded({ extended: true }), postInstructorSignIn);
+router.get('/signout', instructorSignOut);
 
-// Apply authentication middleware to all protected routes
-// router.use(requireInstructor);
+// Main instructor routes
+router.get('/', isLoggedIn, (req, res) => res.redirect('/instructor/dashboard'));
+
 router.use(getInstructorData);
 
 // Dashboard Routes
