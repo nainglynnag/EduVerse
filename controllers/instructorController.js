@@ -198,11 +198,75 @@ export const createCourse = async (req, res) => {
     console.log('Course status received:', status);
     console.log('Course status type:', typeof status);
 
-    // Validate required fields - only enforce for published courses
-    if (status !== 'draft' && (!title || !category_id || !difficulty_id)) {
-      return res.status(400).render('error', {
-        message: 'Missing required fields: title, category, difficulty level',
-        layout: DEFAULT_LAYOUT
+    // Validate required fields for both draft and published courses
+    const missingFields = [];
+    
+    if (!title || title.trim() === '') {
+      missingFields.push('Course Title');
+    }
+    if (!category_id) {
+      missingFields.push('Category');
+    }
+    if (!difficulty_id) {
+      missingFields.push('Difficulty Level');
+    }
+    if (!description || description.trim() === '') {
+      missingFields.push('Description');
+    }
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) < 0) {
+      missingFields.push('Price');
+    }
+    if (!objectives || objectives.trim() === '') {
+      missingFields.push('Learning Objectives');
+    }
+    if (!prerequisites || prerequisites.trim() === '') {
+      missingFields.push('Prerequisites');
+    }
+
+    // Validate Course Lessons
+    if (!lessonTitles || lessonTitles.length === 0) {
+      missingFields.push('Course Lessons');
+    } else {
+      // Check if at least one lesson has all required fields
+      let hasValidLesson = false;
+      for (let i = 0; i < lessonTitles.length; i++) {
+        const lessonTitle = lessonTitles[i] ? lessonTitles[i].trim() : '';
+        const lessonDuration = lessonDurations[i] ? lessonDurations[i].trim() : '';
+        const lessonDescription = lessonDescriptions[i] ? lessonDescriptions[i].trim() : '';
+        const lessonVideoUrl = lessonVideoUrls[i] ? lessonVideoUrls[i].trim() : '';
+        
+        if (lessonTitle && lessonDuration && lessonDescription && lessonVideoUrl) {
+          hasValidLesson = true;
+          break;
+        }
+      }
+      
+      if (!hasValidLesson) {
+        missingFields.push('Course Lessons (at least one complete lesson)');
+      }
+    }
+
+    // For draft courses, show validation error but allow saving with defaults
+    if (status === 'draft' && missingFields.length > 0) {
+      return res.status(400).render('instructors/courses/create', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        categories: await getAllCategories(),
+        difficultyLevels: await getAllDifficultyLevels(),
+        error: `Cannot save as draft. Please fill in the following required fields: ${missingFields.join(', ')}`,
+        form: req.body // Preserve form data
+      });
+    }
+    
+    // For published courses, enforce all required fields
+    if (status !== 'draft' && missingFields.length > 0) {
+      return res.status(400).render('instructors/courses/create', {
+        layout: DEFAULT_LAYOUT,
+        instructor: res.locals.instructor,
+        categories: await getAllCategories(),
+        difficultyLevels: await getAllDifficultyLevels(),
+        error: `Missing required fields: ${missingFields.join(', ')}`,
+        form: req.body // Preserve form data
       });
     }
     

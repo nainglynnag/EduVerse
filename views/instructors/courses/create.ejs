@@ -48,7 +48,8 @@
               <option value="">Select category</option>
               <% if (categories && categories.length > 0) { %>
                 <% categories.forEach(category => { %>
-                  <option value="<%= category.id %>" title="<%= category.description || '' %>">
+                  <option value="<%= category.id %>" title="<%= category.description || '' %>" 
+                    <%= typeof form !== 'undefined' && form.courseCategory == category.id ? 'selected' : '' %>>
                     <%= category.display_name || category.title || category.name %>
                   </option>
                 <% }); %>
@@ -106,7 +107,8 @@
               <option value="">Select level</option>
               <% if (difficultyLevels && difficultyLevels.length > 0) { %>
                 <% difficultyLevels.forEach(level => { %>
-                  <option value="<%= level.id %>" title="<%= level.description || '' %>">
+                  <option value="<%= level.id %>" title="<%= level.description || '' %>"
+                    <%= typeof form !== 'undefined' && form.courseDifficulty == level.id ? 'selected' : '' %>>
                     <%= level.name %>
                   </option>
                 <% }); %>
@@ -291,7 +293,121 @@
     addLesson(); // Add first lesson by default
   }
 
+  function showErrorMessage(message) {
+    // Remove any existing error message
+    clearErrorMessage();
+    
+    // Create error message element
+    const errorDiv = document.createElement('div');
+    errorDiv.id = 'validationError';
+    errorDiv.className = 'bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4';
+    errorDiv.innerHTML = `
+      <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+        </svg>
+        <span class="font-medium">${message}</span>
+      </div>
+    `;
+    
+    // Insert error message at the top of the form
+    const form = document.getElementById('createCourseForm');
+    const firstChild = form.firstElementChild;
+    form.insertBefore(errorDiv, firstChild);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      clearErrorMessage();
+    }, 5000);
+  }
+
+  function clearErrorMessage() {
+    const existingError = document.getElementById('validationError');
+    if (existingError) {
+      existingError.remove();
+    }
+  }
+
   function saveDraft() {
+    // Validate required fields for draft
+    const requiredFields = [
+      { id: 'courseTitle', name: 'Course Title' },
+      { id: 'courseCategory', name: 'Category' },
+      { id: 'courseDescription', name: 'Description' },
+      { id: 'coursePrice', name: 'Price' },
+      { id: 'courseDifficulty', name: 'Difficulty Level' },
+      { id: 'courseObjectives', name: 'Learning Objectives' },
+      { id: 'coursePrerequisites', name: 'Prerequisites' }
+    ];
+
+    const missingFields = [];
+    
+    requiredFields.forEach(field => {
+      const element = document.getElementById(field.id);
+      if (!element || !element.value || element.value.trim() === '') {
+        missingFields.push(field.name);
+        // Add visual error indication
+        element.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+        element.classList.remove('border-gray-300');
+      } else {
+        // Remove error indication if field is now valid
+        element.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+        element.classList.add('border-gray-300');
+      }
+    });
+
+    // Validate Course Lessons
+    const lessonsContainer = document.getElementById('lessonsContainer');
+    const lessonDivs = lessonsContainer.querySelectorAll('.border');
+    
+    if (lessonDivs.length === 0) {
+      missingFields.push('Course Lessons');
+      showErrorMessage('Cannot save as draft. Please add at least one lesson to your course.');
+      return;
+    }
+
+    // Check each lesson for required fields
+    let hasValidLesson = false;
+    lessonDivs.forEach((lessonDiv, index) => {
+      const titleInput = lessonDiv.querySelector('input[name="lessonTitle"]');
+      const durationInput = lessonDiv.querySelector('input[name="lessonDuration"]');
+      const descriptionInput = lessonDiv.querySelector('textarea[name="lessonDescription"]');
+      const videoInput = lessonDiv.querySelector('input[name="videoUrl"]');
+      
+      const lessonTitle = titleInput ? titleInput.value.trim() : '';
+      const lessonDuration = durationInput ? durationInput.value.trim() : '';
+      const lessonDescription = descriptionInput ? descriptionInput.value.trim() : '';
+      const videoUrl = videoInput ? videoInput.value.trim() : '';
+      
+      if (lessonTitle && lessonDuration && lessonDescription && videoUrl) {
+        hasValidLesson = true;
+      } else {
+        // Highlight invalid lesson fields
+        [titleInput, durationInput, descriptionInput, videoInput].forEach(input => {
+          if (input && (!input.value || input.value.trim() === '')) {
+            input.classList.add('border-red-500', 'ring-2', 'ring-red-200');
+            input.classList.remove('border-gray-300');
+          } else if (input) {
+            input.classList.remove('border-red-500', 'ring-2', 'ring-red-200');
+            input.classList.add('border-gray-300');
+          }
+        });
+      }
+    });
+
+    if (!hasValidLesson) {
+      missingFields.push('Course Lessons (at least one complete lesson)');
+    }
+
+    if (missingFields.length > 0) {
+      // Show error message
+      showErrorMessage(`Cannot save as draft. Please fill in the following required fields: ${missingFields.join(', ')}`);
+      return;
+    }
+
+    // Clear any existing error messages
+    clearErrorMessage();
+    
     const statusInput = document.getElementById("courseStatus");
     statusInput.value = "draft";
     document.getElementById("createCourseForm").submit();
