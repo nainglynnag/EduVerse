@@ -20,7 +20,7 @@ export const listStudentsForStudentsArea = async (req, res) => {
     const { students, totalStudents } = await studentModelGetAll(page, limit, search);
 
     res.render("students/student/index", {
-      layout: "admin/layouts/layout",
+      layout: "students/layout/studentLayout",
       title: "Students",
       students,
       totalStudents,
@@ -31,7 +31,7 @@ export const listStudentsForStudentsArea = async (req, res) => {
 };
 
 export const showCreateStudentFormForStudentsArea = (req, res) => {
-  res.render("students/student/create", { layout: "admin/layouts/layout", title: "Create Student", form: {} });
+  res.render("students/student/create", { layout: "students/layouts/layout", title: "Create Student", form: {} });
 };
 
 export const createStudentFromStudentsArea = async (req, res) => {

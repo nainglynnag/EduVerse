@@ -12,7 +12,7 @@ import instructorRoutes from "./routes/instructorRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 
 const app = express();
-const PORT = 3001;
+const PORT = 3000;
 
 // Middlewares for User session
 app.use(
@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
-app.use("/students", studentRoutes);
+app.use("/student", studentRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);

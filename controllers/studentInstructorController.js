@@ -1,8 +1,8 @@
 import {
-  getAllInstructors as adminGetAllInstructors,
+  getAllStudents as adminGetAllInstructors,
   getAllInstructorsDetails,
   createInstructor as adminCreateInstructor,
-} from "../models/adminModel.js";
+} from "../models/studentModel.js";
 
 const errorHandler = (res, error, operation, message = "Internal server error") => {
   console.error(`Controller error in ${operation}:`, error);
