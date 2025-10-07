@@ -128,6 +128,7 @@
                id="status"
                name="status"
                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+               onchange="updateCourseStatus(this.value)"
              >
                <option value="draft" selected>Draft</option>
                <option value="published">Published</option>
@@ -411,14 +412,23 @@
      }
    }
 
-   function updateFieldIndicator(fieldId) {
-     const field = document.getElementById(fieldId);
-     
-     if (!field) return;
-     
-     // Update warning box
-     updateWarningBox();
-   }
+  function updateFieldIndicator(fieldId) {
+    const field = document.getElementById(fieldId);
+    
+    if (!field) return;
+    
+    // Update warning box
+    updateWarningBox();
+  }
+
+  function updateCourseStatus(status) {
+    // Update the hidden field that the controller expects
+    const courseStatusField = document.getElementById('courseStatus');
+    if (courseStatusField) {
+      courseStatusField.value = status;
+    }
+    console.log('Course status updated to:', status);
+  }
 
    function checkAllRequiredFields() {
      const requiredFields = ['courseTitle', 'courseCategory', 'courseDescription', 'coursePrice', 'courseDifficulty', 'courseObjectives', 'coursePrerequisites'];
@@ -468,6 +478,12 @@
    document.addEventListener("DOMContentLoaded", function () {
      addLesson(); // Add first lesson by default
      checkAllRequiredFields(); // Check required fields on page load
+     
+     // Initialize the course status
+     const statusSelect = document.getElementById('status');
+     if (statusSelect) {
+       updateCourseStatus(statusSelect.value);
+     }
     // Form submission handler
     const form = document.getElementById("createCourseForm");
     form.addEventListener("submit", function (e) {

@@ -626,11 +626,14 @@ export const createCourse = async (req, res) => {
       lessonDurations = [],
       lessonDescriptions = [],
       lessonVideoUrls = [],
-      courseStatus: status
+      status,
+      courseStatus
     } = req.body;
 
     // Handle status - ensure it's a valid ENUM value
-    const validStatus = (status === 'published') ? 'published' : 'draft';
+    // Use the status field first, then fallback to courseStatus
+    const selectedStatus = status || courseStatus;
+    const validStatus = (selectedStatus === 'published') ? 'published' : 'draft';
     
     // Handle objectives and prerequisites - convert arrays to strings if needed
     let objectives = objectivesText || '';
