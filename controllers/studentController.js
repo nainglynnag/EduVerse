@@ -1,4 +1,4 @@
-import { getStudentById } from "../models/studentModel.js";
+import { getStudentById, getStudentEnrolledCourses } from "../models/studentModel.js";
 
 
 
@@ -21,11 +21,34 @@ export const getStudent = async (req, res) => {
   console.log(student);
 
   if(student){
-    res.render("students/index");
+    res.render("students/dashboard/index", {
+      layout: DEFAULT_LAYOUT,
+      active: "dashboard",
+      title: "Dashboard",
+      student,
+      
+    });
   }
-  
+
  } catch (error) {
   console.error("Error in get student data:", error);
     res.status(500).send("Internal Server Error");
+ } 
+}
+
+export const getStudentCourses = async (req, res) => {
+ try {
+  const courses = await getStudentEnrolledCourses(1);
+  console.log(courses);
+
+  res.render("students/course/index", {
+      layout: DEFAULT_LAYOUT,
+      active: "mycourses",
+      title: "My Courses",
+      courses,
+      
+    });
+ } catch (error) {
+  
  } 
 }

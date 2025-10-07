@@ -41,7 +41,7 @@ export const getStudentById = async (studentId) => {
     //   status: 'active',
     // };
     return results[0];
-    
+
   } catch (error) {
     handleDbError(error, 'getStudentById');
   }
@@ -109,10 +109,4 @@ export const getRecommendedCourses = async (studentId) => {
   } catch (error) {
     errorHandler(error, "getRecommendedCourses", "get recommended courses");
   }
-};
-
-export default {
-  getStudentEnrolledCourses,
-  getStudentProgressSummary,
-  getRecommendedCourses,
 };

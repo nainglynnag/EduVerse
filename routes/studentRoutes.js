@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStudent } from '../controllers/studentController.js';
+import { getStudent, getStudentCourses } from '../controllers/studentController.js';
 
 const router = express.Router();
 
@@ -11,6 +11,7 @@ const isLoggedIn = (req, res, next) => {
   }
 };
 
-router.get('/', getStudent);
+router.get('/', isLoggedIn, getStudent);
+router.get('/mycourses', isLoggedIn, getStudentCourses);
 
 export default router;
