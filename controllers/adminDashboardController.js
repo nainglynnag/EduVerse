@@ -9,7 +9,7 @@ const errorHandler = (
   res,
   error,
   operation,
-  message = "Internal server error"
+  message = "Internal server error",
 ) => {
   console.log(`Controller error in ${operation}: `, error);
   res.status(500).send({ error, message });
@@ -31,7 +31,7 @@ export const adminLoginHandler = async (req, res) => {
     // console.log(logInAdmin);
 
     if (
-      logInAdmin &&
+      logInAdmin.length > 0 &&
       (await bcrypt.compare(password, logInAdmin[0].password_hash))
     ) {
       req.session.admin = {
@@ -72,7 +72,7 @@ export const adminDashboard = async (req, res) => {
     const total_revenue = data.course_prices.reduce(
       (pv, { price, total_students }) =>
         Number(price) * Number(total_students) + pv,
-      0
+      0,
     );
     // console.log(total_revenue);
 

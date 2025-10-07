@@ -23,14 +23,14 @@ export const getAllCourses = async (page = 1, limit = 10, status, search) => {
 
     if (search) {
       whereClauses.push(
-        `(cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?)`
+        `(cr.title LIKE ? OR cr.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR d.name LIKE ?)`,
       );
       params.push(
         `%${search}%`,
         `%${search}%`,
         `%${search}%`,
         `%${search}%`,
-        `%${search}%`
+        `%${search}%`,
       );
     }
 
@@ -50,7 +50,7 @@ export const getAllCourses = async (page = 1, limit = 10, status, search) => {
     GROUP BY cr.id, u.name, c.name, d.name
     LIMIT ? OFFSET ?
     `,
-      [...params, limit, offset]
+      [...params, limit, offset],
     );
 
     const [totalCourses] = await db.promise().query(
@@ -62,7 +62,7 @@ export const getAllCourses = async (page = 1, limit = 10, status, search) => {
         LEFT JOIN enrollments e ON cr.id = e.course_id
         ${whereSql}
       `,
-      [...params]
+      [...params],
     );
 
     return { courses, totalCourses: totalCourses[0].total };
@@ -86,7 +86,7 @@ export const getCourseDetails = async (courseId) => {
       WHERE c.id = ?
       GROUP BY c.id
     `,
-      [courseId]
+      [courseId],
     );
 
     // Get course objectives
@@ -100,16 +100,16 @@ export const getCourseDetails = async (courseId) => {
       .promise()
       .query(
         `SELECT prerequisite FROM course_prerequisites WHERE course_id = ?`,
-        [courseId]
+        [courseId],
       );
 
     // Get course lessons with video URLs
     const [lessons] = await db.promise().query(
-      `SELECT id, lesson_no, title, duration_mins, description, video_url 
-       FROM course_lessons 
-       WHERE course_id = ? 
+      `SELECT id, lesson_no, title, duration_mins, description, video_url
+       FROM course_lessons
+       WHERE course_id = ?
        ORDER BY lesson_no`,
-      [courseId]
+      [courseId],
     );
 
     const course = courseData[0];
@@ -182,7 +182,7 @@ export const createCourse = async (data) => {
           : 0,
         courseDescription || null,
         status === "published" ? "published" : "draft",
-      ]
+      ],
     );
 
     const courseId = courseInsert.insertId;
@@ -195,7 +195,7 @@ export const createCourse = async (data) => {
         .promise()
         .query(
           `INSERT INTO course_objectives (course_id, objective) VALUES ${placeholders}`,
-          values
+          values,
         );
     }
 
@@ -212,7 +212,7 @@ export const createCourse = async (data) => {
         .promise()
         .query(
           `INSERT INTO course_prerequisites (course_id, prerequisite) VALUES ${placeholders}`,
-          values
+          values,
         );
     }
 
@@ -222,7 +222,7 @@ export const createCourse = async (data) => {
       lessonTitles.length,
       lessonDurations.length,
       lessonDescriptions.length,
-      videoUrls.length
+      videoUrls.length,
     );
     for (let i = 0; i < maxLen; i++) {
       const title = (lessonTitles[i] || "").toString().trim();
@@ -247,7 +247,7 @@ export const createCourse = async (data) => {
       await db.promise().query(
         `INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url)
            VALUES ${placeholders}`,
-        flatValues
+        flatValues,
       );
     }
 
@@ -309,7 +309,7 @@ export const updateCourse = async (courseId, data) => {
         .promise()
         .query(
           `INSERT INTO course_objectives (course_id, objective) VALUES ${objPlaceholders}`,
-          objValues
+          objValues,
         );
     }
 
@@ -326,7 +326,7 @@ export const updateCourse = async (courseId, data) => {
         .promise()
         .query(
           `INSERT INTO course_prerequisites (course_id, prerequisite) VALUES ${prePlaceholders}`,
-          preValues
+          preValues,
         );
     }
 
@@ -355,7 +355,7 @@ export const updateCourse = async (courseId, data) => {
         .promise()
         .query(
           `INSERT INTO course_lessons (course_id, lesson_no, title, duration_mins, description, video_url) VALUES ${placeholders}`,
-          flat
+          flat,
         );
     }
 
@@ -391,7 +391,7 @@ export const getAllInstructors = async () => {
 export const getAllInstructorsByParams = async (
   page = 1,
   limit = 10,
-  search
+  search,
 ) => {
   try {
     const offset = (page - 1) * limit;
@@ -406,7 +406,7 @@ export const getAllInstructorsByParams = async (
       GROUP BY ip.user_id
       LIMIT ? OFFSET ?
     `,
-      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset]
+      [`%${search}%`, `%${search}%`, `%${search}%`, limit, offset],
     );
 
     const [totalInstructors] = await db.promise().query(
@@ -416,7 +416,7 @@ export const getAllInstructorsByParams = async (
         WHERE role_id = 2 AND
          (i.name LIKE ? OR i.email LIKE ? OR ip.specialization LIKE ?)
         `,
-      [`%${search}%`, `%${search}%`, `%${search}%`]
+      [`%${search}%`, `%${search}%`, `%${search}%`],
     );
 
     return { instructors, totalInstructors: totalInstructors[0].total };
@@ -428,12 +428,18 @@ export const getAllInstructorsByParams = async (
 export const getAllInstructorsDetails = async () => {
   try {
     const [instructors] = await db.promise().query(`
-    SELECT ip.*, u.name, u.email, u.status, u.joined_date, JSON_ARRAYAGG(c.title) AS courses, COUNT(DISTINCT e.student_id) AS total_students
-    FROM instructor_profiles ip
-    LEFT JOIN users u ON ip.user_id = u.id
-    LEFT JOIN courses c ON ip.user_id = c.instructor_id
-    LEFT JOIN enrollments e ON c.id = e.course_id
-    GROUP BY ip.user_id;
+      SELECT ip.*, u.name, u.email, u.status, u.joined_date, COUNT(DISTINCT e.student_id) AS total_students,
+     	JSON_ARRAYAGG(
+      		JSON_OBJECT(
+     			'course_id',c.id,
+          'title', c.title
+                    )
+                ) AS courses
+      FROM instructor_profiles ip
+      LEFT JOIN users u ON ip.user_id = u.id
+      LEFT JOIN courses c ON ip.user_id = c.instructor_id
+      LEFT JOIN enrollments e ON c.id = e.course_id
+      GROUP BY ip.user_id;
     `);
     return instructors;
   } catch (error) {
@@ -451,7 +457,7 @@ export const createInstructor = async (data) => {
     const [result] = await db.promise().query(
       `INSERT INTO users (name, email, password_hash, role_id)
       VALUES (?, ?, ?, ?)`,
-      [name, email, hashedPassword, 2]
+      [name, email, hashedPassword, 2],
     );
 
     const userId = result.insertId;
@@ -460,13 +466,13 @@ export const createInstructor = async (data) => {
       `
       INSERT INTO instructor_profiles (user_id, specialization, bio)
       VALUES (?, ?, ?)`,
-      [userId, specialization, bio]
+      [userId, specialization, bio],
     );
   } catch (error) {
     errorHandler(
       error,
       "createInstructor",
-      "create instructor account and profile"
+      "create instructor account and profile",
     );
   }
 };
@@ -562,12 +568,12 @@ export const getAllStudents = async (page = 1, limit = 10, status, search) => {
 
     const [students] = await db.promise().query(
       `
-       SELECT u.id, 
+       SELECT u.id,
              CONCAT('s', LPAD(u.id, 7, '0')) AS student_code,
-             u.name, 
-             u.email, 
-             u.status, 
-             u.joined_date, 
+             u.name,
+             u.email,
+             u.status,
+             u.joined_date,
              pl.name AS plan,
              COUNT(e.course_id) AS total_courses
         FROM users u
@@ -579,7 +585,7 @@ export const getAllStudents = async (page = 1, limit = 10, status, search) => {
         ORDER BY student_code ASC
         LIMIT ? OFFSET ?
     `,
-      [...params, limit, offset]
+      [...params, limit, offset],
     );
 
     const [totalStudents] = await db.promise().query(
@@ -589,7 +595,7 @@ export const getAllStudents = async (page = 1, limit = 10, status, search) => {
         LEFT JOIN student_plans pl ON sp.plan_id = pl.id
         ${whereSql}
         `,
-      [...params]
+      [...params],
     );
 
     return { students, totalStudents: totalStudents[0].total };
@@ -606,7 +612,7 @@ export const getStudentDetails = async (studentId) => {
       FROM student_profiles_view
       WHERE id = ?
     `,
-      [studentId]
+      [studentId],
     );
 
     return students;
@@ -622,7 +628,7 @@ export const createStudent = async ({ name, email, password, plan }) => {
     const [result] = await db.promise().query(
       `INSERT INTO users (name, email, password_hash, role_id)
       VALUES (?, ?, ?, ?)`,
-      [name, email, hashedPassword, 1]
+      [name, email, hashedPassword, 1],
     );
 
     const userId = result.insertId;
@@ -631,7 +637,7 @@ export const createStudent = async ({ name, email, password, plan }) => {
       `
       INSERT INTO student_profiles (user_id, plan_id)
       VALUES (?, ?)`,
-      [userId, plan]
+      [userId, plan],
     );
   } catch (error) {
     errorHandler(error, "createStudent", "create student account");
@@ -743,7 +749,7 @@ export const getAllCategoriesByParams = async (page, limit, search) => {
       GROUP BY cat.id
       LIMIT ? OFFSET ?
     `,
-      [`%${search}%`, limit, offset]
+      [`%${search}%`, limit, offset],
     );
 
     const [totalCategories] = await db.promise().query(
@@ -752,7 +758,7 @@ export const getAllCategoriesByParams = async (page, limit, search) => {
       FROM categories
       WHERE name LIKE ?
     `,
-      [`%${search}%`]
+      [`%${search}%`],
     );
 
     return { categories, totalCategories: totalCategories[0].total };
@@ -767,7 +773,7 @@ export const createCategory = async ({ name, color, description }) => {
       .promise()
       .query(
         `INSERT INTO categories (name, color_theme, description) VALUES (?, ?, ?)`,
-        [name, color, description]
+        [name, color, description],
       );
   } catch (error) {
     errorHandler(error, "createCategory", "create category");
@@ -838,7 +844,7 @@ export const createAdmin = async ({ name, email, password }) => {
       .promise()
       .query(
         "INSERT INTO users (name, email, password_hash, role_id) VALUES (?, ?, ?, ?)",
-        [name, email, hashedPassword, 3]
+        [name, email, hashedPassword, 3],
       );
   } catch (error) {
     errorHandler(error, "createAdmin", "create admin account");
