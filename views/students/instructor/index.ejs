@@ -2,7 +2,7 @@
 <div id="studentInstructorsContent">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-lg md:text-2xl font-bold text-gray-800">Instructors</h2>
-    <a href="/students/instructors/create" class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 md:px-6 py-2 rounded-lg">Find / Add Instructor</a>
+    <a href="/student/instructors/create" class="bg-gradient-to-r from-red-600 to-orange-600 text-white px-3 md:px-6 py-2 rounded-lg">Find / Add Instructor</a>
   </div>
 
   <% if (instructors && instructors.length) { %>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="mt-4 flex space-x-2">
-        <a href="/students/instructors/<%= instructor.user_id %>" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg">View</a>
+        <a href="/student/instructor/<%= instructor.id %>" class="px-3 py-2 bg-blue-50 text-blue-600 rounded-lg">View</a>
       </div>
     </div>
     <% }) %>
@@ -28,7 +28,7 @@
   <% } else { %>
   <div class="bg-white rounded-lg p-6 text-center">
     <p class="text-gray-600">No instructors available.</p>
-    <a href="/students/instructors/create" class="mt-4 inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-2 rounded-lg">Add Instructor</a>
+    <a href="/student/instructors/create" class="mt-4 inline-block bg-gradient-to-r from-red-600 to-orange-600 text-white px-4 py-2 rounded-lg">Add Instructor</a>
   </div>
   <% } %>
 </div>

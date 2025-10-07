@@ -11,11 +11,20 @@ const errorHandler = (res, error, operation, message = "Internal server error") 
   if (res && !res.headersSent) res.status(500).send({ error: String(error), message });
 };
 
+// Helper function to get student ID from session
+const getStudentId = (req) => {
+  return req.session.user?.userId || 1;
+};
+
 export const listStudentsForStudentsArea = async (req, res) => {
   try {
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 10;
     const search = req.query.search || "";
+
+    // Get student data
+    const studentId = getStudentId(req);
+    const student = await studentModelGetById(studentId);
 
     const { students, totalStudents } = await studentModelGetAll(page, limit, search);
 
@@ -24,6 +33,7 @@ export const listStudentsForStudentsArea = async (req, res) => {
       title: "Students",
       students,
       totalStudents,
+      student,
     });
   } catch (error) {
     errorHandler(res, error, "listStudentsForStudentsArea");

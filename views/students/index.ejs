@@ -82,7 +82,7 @@
           </li>
           <li>
             <a
-              href="#progress"
+              href="/student/progress"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -97,7 +97,7 @@
           </li>
           <li>
             <a
-              href="#assignments"
+              href="/student/assignments"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -117,7 +117,7 @@
           </li>
           <li>
             <a
-              href="#certificates"
+              href="/student/certificates"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -132,7 +132,7 @@
           </li>
           <li>
             <a
-              href="#calendar"
+              href="/student/calendar"
               class="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-all"
             >
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -159,10 +159,10 @@
           <div
             class="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full flex items-center justify-center"
           >
-            <span class="text-sm font-bold text-white">JS</span>
+            <span class="text-sm font-bold text-white"><%= (student.name || 'Student').charAt(0).toUpperCase() %></span>
           </div>
           <div class="flex-1">
-            <p class="text-sm font-medium text-gray-800">John Smith</p>
+            <p class="text-sm font-medium text-gray-800"><%= student.name || 'Student' %></p>
             <p class="text-xs text-gray-600">Student</p>
           </div>
           <svg
