@@ -9,8 +9,6 @@ import flash from "connect-flash";
 
 import adminRoutes from "./routes/adminRoutes.js";
 import instructorRoutes from "./routes/instructorRoutes.js";
-
-import courseRoutes from "./routes/courseRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 // import { setUserData } from "./middleware/authMiddleware.js";
 
@@ -72,8 +70,6 @@ app.set("layout", false);
 
 app.use("/admin", adminRoutes);
 app.use("/instructor", instructorRoutes);
-// app.use("/student", studentRoutes);
-app.use("/api/courses", courseRoutes);
 app.use("/", authRoutes);
 
 app.listen(PORT, () => {

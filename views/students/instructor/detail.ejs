@@ -1,0 +1,15 @@
+<div class="bg-white rounded-2xl p-6 shadow-lg">
+  <div class="flex items-start space-x-6">
+    <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-2xl">
+      <%= instructor.name.split(' ').map(n=>n[0]).join('') %>
+    </div>
+    <div class="flex-1">
+      <h2 class="text-2xl font-bold"><%= instructor.name %></h2>
+      <p class="text-sm text-gray-600"><%= instructor.specialization %></p>
+      <div class="mt-4 text-gray-700"><%= instructor.bio %></div>
+    </div>
+  </div>
+  <div class="mt-6">
+    <a href="/students/instructors" class="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg">Back to Instructors</a>
+  </div>
+</div>
