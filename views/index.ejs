@@ -608,3 +608,43 @@
 
       <!-- FontAwesome Icons -->
       <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+<script>
+  // Select all nav links and sections
+  const sections = document.querySelectorAll("section");
+  const navLinks = document.querySelectorAll("nav a");
+
+  // Function to update active link color based on scroll position
+  function setActiveLink() {
+    let index = sections.length;
+
+    // Find which section is currently in view
+    while (--index && window.scrollY + 150 < sections[index].offsetTop) {}
+
+    // Remove active gradient from all links
+    navLinks.forEach((link) => link.classList.remove("active-link"));
+
+    // Add active gradient to current section link
+    navLinks[index].classList.add("active-link");
+  }
+
+  // When scrolling, update active link
+  window.addEventListener("scroll", setActiveLink);
+
+  // When clicking a nav link, immediately highlight it
+  navLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      navLinks.forEach((l) => l.classList.remove("active-link"));
+      link.classList.add("active-link");
+    });
+  });
+</script>
+
+<!-- Style for the active gradient color -->
+<style>
+  .active-link {
+    background: linear-gradient(to right, #9333ea, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+  }
+</style>
