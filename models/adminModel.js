@@ -577,7 +577,7 @@ export const getAllStudents = async (page = 1, limit = 10, status, search) => {
              pl.name AS plan,
              COUNT(e.course_id) AS total_courses
         FROM users u
-        JOIN student_profiles sp ON sp.user_id = u.id
+        LEFT JOIN student_profiles sp ON sp.user_id = u.id
         LEFT JOIN student_plans pl ON sp.plan_id = pl.id
         LEFT JOIN enrollments e ON u.id = e.student_id
         ${whereSql}
