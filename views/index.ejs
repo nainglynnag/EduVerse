@@ -4,19 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EduVerse - Your Learning Universe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              "blue-950": "#1e3a8a",
-            },
-          },
-        },
-      };
-    </script>
+    <link rel="stylesheet" type="text/css" href="/css/main.css">
   </head>
+  
   <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
       <!-- Navigation -->
       <nav class="bg-white/90 backdrop-blur-sm shadow-lg fixed w-full z-50">
@@ -86,6 +76,7 @@
 
             <!-- CTA Button -->
             <button
+            onclick="window.location.href='/signin'"
               class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2 rounded-full hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105"
             >
               Get Started
@@ -111,7 +102,7 @@
             <!-- Call to Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="#features"
+                href="/signin"
                 class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-lg"
               >
                 Start Learning Today
@@ -520,7 +511,7 @@
           </p>
           <div class="flex flex-col sm:flex-row gap-4 justify-center">
             <button
-            
+             onclick="window.location.href='/signin'"
               class="bg-white text-purple-600 px-8 py-4 rounded-full text-lg font-semibold hover:bg-gray-100 transition-all transform hover:scale-105"
             >
               Start Free Trial
