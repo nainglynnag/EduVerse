@@ -61,7 +61,7 @@ router.use((req, res, next) => {
 
 router.get("/", adminLogin);
 router.post("/", adminLoginHandler);
-router.get("/logout", adminLogout);
+router.get("/logout", isLoggedIn, adminLogout);
 
 router.get("/dashboard", isLoggedIn, adminDashboard);
 

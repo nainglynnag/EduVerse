@@ -1,0 +1,377 @@
+<div class="md:px-4 py-4 mx-auto">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Edit Profile</h2>
+    <p class="text-gray-600">Update your instructor profile information</p>
+  </div>
+
+  <!-- Success Message -->
+  <% if (typeof success !== 'undefined' && success) { %>
+  <div class="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6 shadow-lg animate-fade-in success-message">
+    <div class="flex items-start">
+      <div class="flex-shrink-0">
+        <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center shadow-md success-icon">
+          <i class="fas fa-check text-white text-lg"></i>
+        </div>
+      </div>
+      <div class="ml-4 flex-1">
+        <div class="flex items-center justify-between">
+          <button onclick="fadeOutMessage(this)" 
+                  class="text-green-400 hover:text-green-600 transition-colors">
+            <i class="fas fa-times text-sm"></i>
+          </button>
+        </div>
+        <h3 class="text-green-700 font-medium mb-2">Profile updated successfully!</h3>
+        <p class="text-green-600 text-sm">Your changes have been saved.</p>
+        <div class="mt-3 flex items-center text-xs text-green-500">
+        </div>
+      </div>
+    </div>
+    <!-- Progress bar animation -->
+    <div class="mt-4 w-full bg-green-200 rounded-full h-1">
+      <div class="bg-gradient-to-r from-green-500 to-emerald-500 h-1 rounded-full animate-progress"></div>
+    </div>
+  </div>
+  <% } %>
+
+  <form
+    id="editProfileForm"
+    class="space-y-8"
+    action="/instructor/profile/edit"
+    method="POST"
+  >
+    <!-- Basic Information -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <% if (typeof error !=='undefined' && error) { %>
+      <div id="flashError" class="text-sm text-red-600 text-center mb-4">
+        <%= error %>
+      </div>
+      <% } %>
+
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Basic Information</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Full Name *
+          </label>
+          <input
+            type="text"
+            name="name"
+            required
+            value="<%= typeof form !== 'undefined' && form.name ? form.name : '' %>"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter your full name"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Email *
+          </label>
+          <input
+            type="email"
+            name="email"
+            required
+            pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+            value="<%= typeof form !== 'undefined' && form.email ? form.email : '' %>"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter your email address"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Professional Information -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Professional Information</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Specialization *
+          </label>
+          <input
+            type="text"
+            name="specialization"
+            required
+            value="<%= typeof form !== 'undefined' && form.specialization ? form.specialization : '' %>"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="e.g., Web Development, Data Science, Design"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <input
+            type="password"
+            name="password"
+            placeholder="Leave blank to keep current password"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+          <p class="text-xs text-gray-500 mt-1">Leave blank to keep your current password</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bio Section -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">About You</h3>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-2">
+          Bio *
+        </label>
+        <textarea
+          name="bio"
+          rows="6"
+          required
+          placeholder="Tell us about yourself, your experience, teaching philosophy, and what makes you a great instructor..."
+          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        ><%= typeof form !== 'undefined' && form.bio ? form.bio.trim() : '' %></textarea>
+        <p class="text-xs text-gray-500 mt-1">This will be displayed on your instructor profile</p>
+      </div>
+    </div>
+
+    <!-- Profile Preview -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Profile Preview</h3>
+      <div class="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+        <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+          <span class="text-xl font-bold text-white">
+            <%= typeof form !== 'undefined' && form.name ? form.name.charAt(0).toUpperCase() : 'I' %>
+          </span>
+        </div>
+        <div class="flex-1">
+          <h4 class="text-lg font-semibold text-gray-900">
+            <%= typeof form !== 'undefined' && form.name ? form.name : 'Instructor Name' %>
+          </h4>
+          <p class="text-purple-600 font-medium">
+            <%= typeof form !== 'undefined' && form.specialization ? form.specialization : 'Specialization' %>
+          </p>
+          <p class="text-gray-600 text-sm mt-2">
+            <%= typeof form !== 'undefined' && form.bio ? form.bio.substring(0, 150) + (form.bio.length > 150 ? '...' : '') : 'Your bio will appear here...' %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end space-x-4">
+      <button
+        type="button"
+        onclick="window.history.back()"
+        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+      >
+        <i class="fas fa-save mr-2"></i>
+        Save Changes
+      </button>
+    </div>
+  </form>
+</div>
+
+ <style>
+   .animate-fade-in {
+     animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   
+   @keyframes fadeIn {
+     0% {
+       opacity: 0;
+       transform: translateY(-20px) scale(0.95);
+     }
+     50% {
+       opacity: 0.8;
+       transform: translateY(-5px) scale(0.98);
+     }
+     100% {
+       opacity: 1;
+       transform: translateY(0) scale(1);
+     }
+   }
+   
+   .animate-progress {
+     animation: progressBar 2s ease-out;
+   }
+   
+   @keyframes progressBar {
+     0% {
+         width: 0%;
+       }
+       100% {
+         width: 100%;
+       }
+   }
+   
+   .message-toast {
+     animation: slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+   }
+   
+   @keyframes slideIn {
+     from {
+       transform: translateX(100%) scale(0.9);
+       opacity: 0;
+     }
+     to {
+       transform: translateX(0) scale(1);
+       opacity: 1;
+     }
+   }
+   
+   /* Hover effects for interactive elements */
+   .success-message:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+     transition: all 0.3s ease;
+   }
+   
+   /* Pulse animation for the icon */
+   .success-icon {
+     animation: pulse 2s infinite;
+   }
+   
+   @keyframes pulse {
+     0%, 100% {
+       transform: scale(1);
+     }
+     50% {
+       transform: scale(1.05);
+     }
+   }
+   
+   /* Fade out animation */
+   .fade-out {
+     animation: fadeOut 0.8s ease-in-out forwards;
+   }
+   
+   @keyframes fadeOut {
+     0% {
+       opacity: 1;
+       transform: translateY(0) scale(1);
+       max-height: 200px;
+       margin-bottom: 1.5rem;
+       padding: 1.5rem;
+     }
+     50% {
+       opacity: 0.5;
+       transform: translateY(-5px) scale(0.98);
+     }
+     100% {
+       opacity: 0;
+       transform: translateY(-20px) scale(0.95);
+       max-height: 0;
+       margin-bottom: 0;
+       padding: 0;
+     }
+   }
+ </style>
+
+ <script>
+   // Auto-hide success/error messages with fade animation
+   setTimeout(() => {
+     const successEl = document.querySelector('.success-message');
+     const errorEl = document.getElementById('flashError');
+     
+     if (successEl) {
+       successEl.classList.add('fade-out');
+       // Remove element after animation completes
+       setTimeout(() => {
+         if (successEl.parentElement) {
+           successEl.remove();
+         }
+       }, 800); // Match the fadeOut animation duration
+     }
+     
+     if (errorEl) {
+       errorEl.classList.add('fade-out');
+       setTimeout(() => {
+         if (errorEl.parentElement) {
+           errorEl.remove();
+         }
+       }, 800);
+     }
+   }, 4000); // Show for 4 seconds before starting fade
+
+   // Function to fade out message when close button is clicked
+   function fadeOutMessage(button) {
+     const messageEl = button.closest('.success-message') || button.closest('#flashError');
+     if (messageEl) {
+       messageEl.classList.add('fade-out');
+       setTimeout(() => {
+         if (messageEl.parentElement) {
+           messageEl.remove();
+         }
+       }, 800);
+     }
+   }
+
+   // Form validation and submission feedback
+   document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+     const name = document.querySelector('input[name="name"]').value.trim();
+     const email = document.querySelector('input[name="email"]').value.trim();
+     const specialization = document.querySelector('input[name="specialization"]').value.trim();
+     const bio = document.querySelector('textarea[name="bio"]').value.trim();
+
+     if (!name || !email || !specialization || !bio) {
+       e.preventDefault();
+       showMessage('Please fill in all required fields.', 'error');
+       return;
+     }
+
+     // Email validation
+     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+     if (!emailRegex.test(email)) {
+       e.preventDefault();
+       showMessage('Please enter a valid email address.', 'error');
+       return;
+     }
+
+     // Show loading state
+     const submitBtn = document.querySelector('button[type="submit"]');
+     const originalText = submitBtn.innerHTML;
+     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+     submitBtn.disabled = true;
+
+     // Re-enable button after 3 seconds (in case of network issues)
+     setTimeout(() => {
+       submitBtn.innerHTML = originalText;
+       submitBtn.disabled = false;
+     }, 3000);
+   });
+
+   // Function to show messages
+   function showMessage(message, type = 'success') {
+     // Remove existing messages
+     const existingMessage = document.querySelector('.message-toast');
+     if (existingMessage) {
+       existingMessage.remove();
+     }
+
+     // Create new message
+     const messageDiv = document.createElement('div');
+     messageDiv.className = `message-toast fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg ${
+       type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'
+     }`;
+     
+     messageDiv.innerHTML = `
+       <div class="flex items-center">
+         <i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'} mr-3"></i>
+         <span class="font-medium">${message}</span>
+         <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-gray-400 hover:text-gray-600">
+           <i class="fas fa-times"></i>
+         </button>
+       </div>
+     `;
+
+     document.body.appendChild(messageDiv);
+
+     // Auto-remove after 5 seconds
+     setTimeout(() => {
+       if (messageDiv.parentElement) {
+         messageDiv.remove();
+       }
+     }, 5000);
+   }
+ </script>

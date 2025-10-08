@@ -29,7 +29,7 @@ export const postSignIn = async (req, res) => {
 
     // Find user by email
     const user = await findUserByEmail(email);
-    // console.log(user);
+    console.log("Found user:", user);
     if (!user) {
       // return res.redirect("/signin?error=Invalid credentials");
       return res.render("auth/signin", {
@@ -75,8 +75,8 @@ export const postSignIn = async (req, res) => {
       name: user.name,
     };
 
-    // console.log("req user :", req.session.user);
-    // console.log("redirectUrl :", redirectUrl);
+    console.log("req user :", req.session.user);
+    console.log("redirectUrl :", redirectUrl);
 
     res.redirect(redirectUrl);
   } catch (error) {

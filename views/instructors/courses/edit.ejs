@@ -1,0 +1,355 @@
+
+<div class="md:px-4 py-4 mx-auto">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Edit Course</h2>
+    <p class="text-gray-600">Update your course details</p>
+  </div>
+
+  <% if (course) { %>
+    <form
+      id="editCourseForm"
+      class="space-y-8"
+      action="/instructor/courses/<%= course.id %>/edit"
+      method="POST"
+    >
+    <!-- Basic Information -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Basic Information</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Course Title *</label
+          >
+          <input
+            type="text"
+            id="courseTitle"
+            name="courseTitle"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter course title"
+            value="<%= course.title %>"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Category *</label
+          >
+          <select
+            id="courseCategory"
+            name="courseCategory"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="">Select category</option>
+            <% categories.forEach(category => { %>
+              <option value="<%= category.id %>" <%= course.category_id == category.id ? 'selected' : '' %>>
+                <%= category.name %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Short Description *</label
+          >
+          <textarea
+            id="courseDescription"
+            name="courseDescription"
+            required
+            rows="3"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Brief description of your course"
+          ><%= course.description || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Details -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Course Details</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Price ($) *</label
+          >
+          <input
+            type="number"
+            id="coursePrice"
+            name="coursePrice"
+            required
+            min="0"
+            step="0.01"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="0.00"
+            value="<%= course.price || 0 %>"
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Difficulty Level *</label
+          >
+          <select
+            id="courseDifficulty"
+            name="courseDifficulty"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="">Select Difficulty level</option>
+            <% difficultyLevels.forEach(difficulty => { %>
+              <option value="<%= difficulty.id %>" <%= course.difficulty_id == difficulty.id ? 'selected' : '' %>>
+                <%= difficulty.name %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Status</label
+          >
+          <select
+            id="status"
+            name="status"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="draft" <%= course.status === 'draft' ? 'selected' : '' %>>Draft</option>
+            <option value="published" <%= course.status === 'published' ? 'selected' : '' %>>Published</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <h3 class="text-lg font-bold text-gray-800 mb-4">Course Content</h3>
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Learning Objectives *</label
+          >
+          <textarea
+            id="courseObjectives"
+            name="courseObjectives"
+            required
+            rows="4"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="What will students learn from this course?"
+          ><%= typeof objectives !== 'undefined' && objectives && objectives.length > 0 ? objectives.map(obj => '• ' + obj.objective.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim()).join('\n') : '' %></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Prerequisites *</label
+          >
+          <textarea
+            id="coursePrerequisites"
+            name="coursePrerequisites"
+            required
+            rows="3"
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="What should students know before taking this course?"
+          ><%= typeof prerequisites !== 'undefined' && prerequisites && prerequisites.length > 0 ? prerequisites.map(prereq => '• ' + prereq.prerequisite.replace(/^[•\-\*\u2022\u2023\u25E6\u2043\u2042\s]+/, '').trim()).join('\n') : '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Course Lessons -->
+    <div class="bg-white rounded-2xl p-6 shadow-lg">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-800">Course Lessons</h3>
+      </div>
+      <div id="lessonsContainer" class="space-y-4 mb-4">
+        <!-- Lessons will be added dynamically -->
+      </div>
+
+      <button
+        type="button"
+        onclick="addLesson()"
+        class="w-full border-2 border-dashed border-gray-300 rounded-lg p-6 text-gray-600 hover:border-purple-500 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200 flex flex-col items-center justify-center space-y-2"
+      >
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+        <span class="font-medium">Add New Lesson</span>
+        <span class="text-sm opacity-75">Click to add another lesson to your course</span>
+      </button>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="flex justify-end space-x-4">
+      <button
+        type="button"
+        onclick="window.history.back()"
+        class="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300"
+      >
+        Update Course
+      </button>
+    </div>
+    </form>
+  <% } else { %>
+    <!-- Course not found -->
+    <div class="bg-white rounded-2xl shadow-lg p-8 text-center">
+      <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+      </svg>
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">Course Not Found</h3>
+      <p class="text-gray-600 mb-4">The course you're looking for doesn't exist or you don't have permission to edit it.</p>
+      <a href="/instructor/courses" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-all">
+        Back to Courses
+      </a>
+    </div>
+  <% } %>
+</div>
+
+      <script id="lessonsData" type="application/json"><%- JSON.stringify(typeof lessons !== 'undefined' ? lessons : []) %></script>
+
+
+      <script>
+        let lessonCounter = 0;
+        let existingLessons = JSON.parse(document.getElementById('lessonsData').textContent);
+
+        // Load existing lessons when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+          loadExistingLessons();
+        });
+
+        function loadExistingLessons() {
+          const container = document.getElementById('lessonsContainer');
+          container.innerHTML = '';
+
+          existingLessons.forEach((lesson, index) => {
+            addLessonToContainer(lesson, index);
+          });
+
+          if (existingLessons.length === 0) {
+            addLesson();
+          }
+          
+          updateLessonNumbers();
+        }
+
+        function addLesson() {
+          lessonCounter++;
+          const lessonsContainer = document.getElementById("lessonsContainer");
+          const lessonDiv = document.createElement("div");
+          lessonDiv.className = "border border-gray-200 rounded-lg p-4";
+          
+          // Calculate the lesson number based on current lessons count
+          const currentLessonCount = lessonsContainer.children.length;
+          const lessonNumber = currentLessonCount + 1;
+          const isFirstLesson = lessonNumber === 1;
+          
+          lessonDiv.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-medium text-gray-800">Lesson ${lessonNumber}</h4>
+                <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700 remove-lesson-btn" style="display: ${isFirstLesson ? 'none' : 'block'};">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Title *</label>
+                    <input type="text" name="lessonTitles[]" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter lesson title">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes)</label>
+                    <input type="number" name="lessonDurations[]" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="15">
+                </div>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
+                <textarea name="lessonDescriptions[]" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of this lesson"></textarea>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
+                <input type="url" name="lessonVideoUrls[]" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                <p class="text-xs text-gray-500 mt-1">Supported: YouTube, Vimeo, or direct video file URLs</p>
+            </div>
+        `;
+          lessonsContainer.appendChild(lessonDiv);
+          updateDeleteButtonVisibility();
+        }
+
+        function addLessonToContainer(lesson, index) {
+          lessonCounter++;
+          const lessonsContainer = document.getElementById("lessonsContainer");
+          const lessonDiv = document.createElement("div");
+          lessonDiv.className = "border border-gray-200 rounded-lg p-4";
+          const isFirstLesson = index === 0;
+          const lessonNumber = index + 1; // Use index + 1 for correct numbering
+          lessonDiv.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="font-medium text-gray-800">Lesson ${lessonNumber}</h4>
+                <button type="button" onclick="removeLesson(this)" class="text-red-600 hover:text-red-700 remove-lesson-btn" style="display: ${isFirstLesson ? 'none' : 'block'};">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Title *</label>
+                    <input type="text" name="lessonTitles[]" value="${lesson.title || ''}" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Enter lesson title">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes)</label>
+                    <input type="number" name="lessonDurations[]" value="${lesson.duration_mins || ''}" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="15">
+                </div>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lesson Description</label>
+                <textarea name="lessonDescriptions[]" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Brief description of this lesson">${lesson.description || ''}</textarea>
+            </div>
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Video URL</label>
+                <input type="url" name="lessonVideoUrls[]" value="${lesson.video_url || ''}" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="https://www.youtube.com/watch?v=... or https://vimeo.com/...">
+                <p class="text-xs text-gray-500 mt-1">Supported: YouTube, Vimeo, or direct video file URLs</p>
+            </div>
+            ${lesson.id ? `<input type="hidden" name="lessonIds[]" value="${lesson.id}">` : ''}
+        `;
+          lessonsContainer.appendChild(lessonDiv);
+        }
+
+        function removeLesson(button) {
+          button.closest(".border").remove();
+          updateDeleteButtonVisibility();
+          updateLessonNumbers();
+        }
+
+        function updateDeleteButtonVisibility() {
+          const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
+          lessonDivs.forEach((lessonDiv, index) => {
+            const deleteBtn = lessonDiv.querySelector('.remove-lesson-btn');
+            if (deleteBtn) {
+              deleteBtn.style.display = index === 0 ? 'none' : 'block';
+            }
+          });
+        }
+
+        function updateLessonNumbers() {
+          const lessonDivs = document.querySelectorAll('#lessonsContainer > .border');
+          lessonDivs.forEach((lessonDiv, index) => {
+            const lessonHeader = lessonDiv.querySelector('h4');
+            if (lessonHeader) {
+              lessonHeader.textContent = `Lesson ${index + 1}`;
+            }
+          });
+        }
+
+       </script>
