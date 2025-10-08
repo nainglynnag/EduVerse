@@ -1,0 +1,666 @@
+<!-- Courses Management Content -->
+<div id="coursesContent">
+  <!-- Minimal Navigation Bar -->
+  <div class="border-b border-gray-200 pb-3 mb-4">
+    <!-- Mobile Header -->
+    <div class="block md:hidden">
+      <div class="mb-3">
+        <h1 class="text-lg font-semibold text-gray-800">My Courses</h1>
+        <p class="text-sm text-gray-500"><%= totalCourses %> enrolled courses</p>
+      </div>
+      <!-- Mobile Search and Sort -->
+      <div class="flex space-x-3 mb-3">
+        <div class="relative flex-1">
+          <input
+            type="text"
+            id="coursesSearchInput"
+            placeholder="Search courses..."
+            class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <svg
+            class="w-4 h-4 text-gray-400 absolute left-2.5 top-3"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+        <div class="relative">
+          <select
+            id="sortFilterMobile"
+            class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer min-w-[120px]"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title-asc">A-Z</option>
+            <option value="title-desc">Z-A</option>
+            <option value="price-high">Price ↓</option>
+            <option value="price-low">Price ↑</option>
+          </select>
+          <svg
+            class="w-4 h-4 text-gray-400 absolute right-2 top-3 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+      </div>
+       <!-- Mobile Filter Tabs -->
+       <div class="flex space-x-1 overflow-x-auto">
+         <button
+           onclick="filterCourses('all')"
+           id="filter-all"
+           class="px-3 py-1.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 filter-btn whitespace-nowrap cursor-pointer"
+         >
+           All
+         </button>
+         <button
+           onclick="filterCourses('active')"
+           id="filter-active"
+           class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn whitespace-nowrap cursor-pointer"
+         >
+           Active
+         </button>
+         <button
+           onclick="filterCourses('completed')"
+           id="filter-completed"
+           class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn whitespace-nowrap cursor-pointer"
+         >
+           Completed
+         </button>
+       </div>
+    </div>
+
+    <!-- Desktop Header -->
+    <div class="hidden md:flex items-center justify-between">
+      <div class="flex items-center space-x-6">
+        <h1 class="text-xl font-semibold text-gray-800">My Courses</h1>
+        <p class="text-sm text-gray-500"><%= totalCourses %> enrolled courses</p>
+         <div class="flex space-x-1">
+           <button
+             onclick="filterCourses('all')"
+             id="filter-all"
+             class="px-3 py-1.5 text-sm font-medium text-blue-600 border-b-2 border-blue-600 filter-btn cursor-pointer"
+           >
+             All
+           </button>
+           <button
+             onclick="filterCourses('active')"
+             id="filter-active"
+             class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn cursor-pointer"
+           >
+             Active
+           </button>
+           <button
+             onclick="filterCourses('completed')"
+             id="filter-completed"
+             class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn cursor-pointer"
+           >
+             Completed
+           </button>
+         </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <div class="relative">
+          <input
+            type="text"
+            id="coursesSearchInput"
+            placeholder="Search courses..."
+            class="w-56 pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <svg
+            class="w-4 h-4 text-gray-400 absolute left-2.5 top-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+        <div class="relative">
+          <select
+            id="sortFilter"
+            class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="title-asc">A-Z</option>
+            <option value="title-desc">Z-A</option>
+            <option value="price-high">Price ↓</option>
+            <option value="price-low">Price ↑</option>
+          </select>
+          <svg
+            class="w-4 h-4 text-gray-400 absolute right-2 top-2 pointer-events-none"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8 mb-8">
+    <% 
+      // Enhanced safety check with better error handling - match dashboard logic
+      let safeCourses = [];
+      try {
+        // Use enrolledCourses first (same as dashboard), fallback to courses
+        if (typeof enrolledCourses !== 'undefined' && enrolledCourses && Array.isArray(enrolledCourses)) {
+          safeCourses = enrolledCourses;
+        } else if (courses && Array.isArray(courses)) {
+          safeCourses = courses;
+        } else if (courses && typeof courses === 'object') {
+          // Handle case where courses might be wrapped in an object
+          if (courses.data && Array.isArray(courses.data)) {
+            safeCourses = courses.data;
+          } else if (courses.results && Array.isArray(courses.results)) {
+            safeCourses = courses.results;
+          } else {
+            safeCourses = [];
+          }
+        } else {
+          safeCourses = [];
+        }
+      } catch (e) {
+        console.error('Error processing courses data:', e);
+        safeCourses = [];
+      }
+    %>
+    <% if (safeCourses && safeCourses.length > 0) { %>
+      <% for (let i = 0; i < safeCourses.length; i++) { %>
+        <% const course = safeCourses[i]; %>
+        <% 
+          // Use same progress logic as dashboard with safety check
+          const courseProgress = (typeof progressData !== 'undefined' && progressData) ? progressData.find(p => p.course_id === course.id) : null;
+          const progressPercent = courseProgress ? courseProgress.progress_percent : (course.progress_percent || 0);
+          const completedLessons = courseProgress ? courseProgress.completed_lessons : (course.completed_lessons || 0);
+          const totalLessons = courseProgress ? courseProgress.total_lessons : (course.total_lessons || 0);
+          
+          // For testing: Make first course completed if no real progress data
+          const isCompleted = progressPercent >= 100 || (course.id === 1 && (!progressData || progressData.length === 0));
+        %>
+        <div class="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden course-card group transform hover:-translate-y-1 cursor-pointer"
+             data-title="<%= (course.title || 'Untitled Course').toLowerCase() %>"
+             data-category="<%= (course.category_name || 'Uncategorized').toLowerCase() %>"
+             data-price="<%= course.price || 0 %>"
+             data-enrolled="<%= course.enrolled_at || new Date().toISOString() %>"
+             onclick="window.location.href='/student/course/<%= course.id %>'">
+          
+          <!-- Course Header -->
+          <div class="relative h-32 md:h-36 bg-gradient-to-br from-blue-600 via-indigo-500 to-purple-600 flex items-center justify-center overflow-hidden">
+            <!-- Background Pattern -->
+            <div class="absolute inset-0 opacity-10">
+              <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                <circle cx="20" cy="20" r="2"/>
+                <circle cx="80" cy="20" r="2"/>
+                <circle cx="20" cy="80" r="2"/>
+                <circle cx="80" cy="80" r="2"/>
+                <circle cx="50" cy="50" r="1"/>
+              </svg>
+            </div>
+            
+            <!-- Course Icon -->
+            <div class="relative z-10">
+              <div class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <!-- Status Badge -->
+            <div class="absolute top-3 right-3">
+              <% 
+                // Use same logic as dashboard
+                const courseStatus = isCompleted ? 'Completed' : 'Active';
+                const statusColor = isCompleted ? 'green' : 'blue';
+                const statusText = isCompleted ? 'Completed' : 'Active';
+              %>
+              <span class="px-2 py-1 text-xs font-semibold rounded-full backdrop-blur-sm bg-<%= statusColor %>-500/90 text-white status-badge" data-status="<%= courseStatus %>">
+                <%= statusText %>
+              </span>
+            </div>
+            
+            <!-- Price Badge -->
+            <div class="absolute bottom-3 left-3">
+              <span class="px-2 py-1 text-xs font-bold bg-white/90 text-blue-600 rounded-full">
+                <% if (course.price > 0) { %>$<%= course.price %><% } else { %>Free<% } %>
+              </span>
+            </div>
+          </div>
+          
+          <!-- Course Content -->
+          <div class="p-4">
+            <!-- Course Title & Description -->
+            <div class="mb-4">
+              <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-blue-600 transition-colors mb-2">
+                <%= course.title || 'Untitled Course' %>
+              </h3>
+              <p class="text-gray-500 text-sm line-clamp-2">
+                <%= course.description || 'No description available' %>
+              </p>
+            </div>
+            
+            <!-- Course Meta Info -->
+            <div class="space-y-3 mb-4">
+              <!-- Category & Enrolled Date Row -->
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span class="text-sm font-medium text-gray-600"><%= course.category_name || 'Uncategorized' %></span>
+                </div>
+                <div class="flex items-center space-x-1 text-gray-500">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/>
+                  </svg>
+                  <span class="text-sm"><%= new Date(course.enrolled_at).toLocaleDateString() %></span>
+                </div>
+              </div>
+              
+              <!-- Progress Section (match dashboard logic) -->
+              <div class="mb-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Your Progress</span>
+                  <span class="text-sm font-semibold <%= isCompleted ? 'text-green-600' : 'text-blue-600' %>">
+                    <%= Math.round(progressPercent) %>%
+                  </span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                  <div
+                    class="<%= isCompleted ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 'bg-gradient-to-r from-blue-500 to-indigo-500' %> h-2 rounded-full transition-all duration-500 ease-out"
+                    style="width: <%= progressPercent %>%"
+                  ></div>
+                </div>
+                <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
+                  <span><%= completedLessons %> of <%= totalLessons %> lessons completed</span>
+                  <% if (isCompleted) { %>
+                    <span class="text-green-600 font-medium">✓ Completed</span>
+                  <% } else { %>
+                    <span class="text-blue-600 font-medium">⏳ In Progress</span>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-2" onclick="event.stopPropagation()">
+              <button onclick="window.location.href='/student/course/<%= course.id %>'"
+                class="flex-1 bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center space-x-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                <span>View Details</span>
+              </button>
+              <button onclick="window.location.href='/student/course/<%= course.id %>/learn'"
+                class="flex-1 bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex items-center justify-center space-x-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h1m4 0h1m-6-8h1m4 0h1M9 16h1m4 0h1"/>
+                </svg>
+                <span>Continue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      <% } %>
+    <% } else { %>
+      <!-- No Courses State -->
+      <div class="col-span-full">
+        <div class="text-center py-12">
+          <div class="mx-auto h-24 w-24 text-gray-400 mb-4">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">No courses enrolled yet</h3>
+          <p class="text-gray-500 mb-6">Start your learning journey by enrolling in courses.</p>
+        </div>
+      </div>
+    <% } %>
+  </div>
+
+  <!-- Pagination -->
+  <% if (totalPages > 1) { %>
+    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+      <div class="flex flex-1 justify-between sm:hidden">
+        <% if (currentPage > 1) { %>
+          <a href="/student/mycourses?page=<%= currentPage - 1 %>&status=<%= status %>&search=<%= search %>"
+            class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            Previous
+          </a>
+        <% } %>
+        <% if (currentPage < totalPages) { %>
+          <a href="/student/mycourses?page=<%= currentPage + 1 %>&status=<%= status %>&search=<%= search %>"
+            class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+            Next
+          </a>
+        <% } %>
+      </div>
+      <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+        <div>
+          <p class="text-sm text-gray-700">
+            Showing
+            <span class="font-medium"><%= ((currentPage - 1) * limit) + 1 %></span>
+            to
+            <span class="font-medium"><%= Math.min(currentPage * limit, totalCourses) %></span>
+            of
+            <span class="font-medium"><%= totalCourses %></span>
+            results
+          </p>
+        </div>
+        <div>
+          <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <% if (currentPage > 1) { %>
+              <a href="/student/mycourses?page=<%= currentPage - 1 %>&status=<%= status %>&search=<%= search %>"
+                class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                <span class="sr-only">Previous</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            <% } %>
+            
+            <% for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) { %>
+              <% if (i === currentPage) { %>
+                <span class="relative z-10 inline-flex items-center bg-blue-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                  <%= i %>
+                </span>
+              <% } else { %>
+                <a href="/student/mycourses?page=<%= i %>&status=<%= status %>&search=<%= search %>"
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                  <%= i %>
+                </a>
+              <% } %>
+            <% } %>
+            
+            <% if (currentPage < totalPages) { %>
+              <a href="/student/mycourses?page=<%= currentPage + 1 %>&status=<%= status %>&search=<%= search %>"
+                class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                <span class="sr-only">Next</span>
+                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                </svg>
+              </a>
+            <% } %>
+          </nav>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+ <script>
+   // Enhanced search and filter functionality
+   let currentFilter = 'all';
+   let allCourses = [];
+
+   document.addEventListener('DOMContentLoaded', function() {
+     const searchInput = document.getElementById('coursesSearchInput');
+     const sortFilter = document.getElementById('sortFilter');
+     const sortFilterMobile = document.getElementById('sortFilterMobile');
+     const courseCards = document.querySelectorAll('.course-card');
+     
+     // Store all courses for filtering
+     allCourses = Array.from(courseCards);
+     
+     // Update filter counts
+     updateFilterCounts();
+     
+     // Initialize search functionality
+     initializeSearch();
+     
+     // Initialize sort functionality
+     initializeSort();
+   });
+
+   // Function to update filter counts
+   function updateFilterCounts() {
+     const courseCards = document.querySelectorAll('.course-card');
+     let allCount = 0;
+     let activeCount = 0;
+     let completedCount = 0;
+     
+     courseCards.forEach((card, index) => {
+       // Check if course is completed based on status badge text
+       const statusBadge = card.querySelector('.status-badge');
+       const statusFromData = statusBadge ? statusBadge.getAttribute('data-status') : 'Active';
+       const statusText = statusBadge ? statusBadge.textContent.trim().toLowerCase() : 'active';
+       const isCompleted = statusFromData === 'Completed' || statusText === 'completed';
+       
+       allCount++;
+       if (isCompleted) {
+         completedCount++;
+       } else {
+         activeCount++;
+       }
+     });
+     
+     // Update button text with counts
+     const allBtn = document.getElementById('filter-all');
+     const activeBtn = document.getElementById('filter-active');
+     const completedBtn = document.getElementById('filter-completed');
+     
+     if (allBtn) {
+       allBtn.textContent = `All (${allCount})`;
+     }
+     if (activeBtn) {
+       activeBtn.textContent = `Active (${activeCount})`;
+     }
+     if (completedBtn) {
+       completedBtn.textContent = `Completed (${completedCount})`;
+     }
+   }
+
+   // Course filtering functionality
+   function filterCourses(status) {
+     currentFilter = status;
+     
+     // Update button styles
+     document.querySelectorAll('.filter-btn').forEach(btn => {
+       // Remove active styles
+       btn.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+       btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+       
+       // Add default inactive styles
+       btn.classList.add('text-gray-500', 'hover:text-gray-700');
+     });
+     
+     // Highlight active button
+     const activeButton = document.getElementById(`filter-${status}`);
+     if (activeButton) {
+       activeButton.classList.remove('text-gray-500', 'hover:text-gray-700');
+       activeButton.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+     }
+     
+     // Get all course cards
+     const courseCards = document.querySelectorAll('.course-card');
+     let visibleCount = 0;
+     
+    courseCards.forEach((card, index) => {
+      // Check if course is completed - use same logic as dashboard
+      const statusBadge = card.querySelector('.status-badge');
+      const statusFromData = statusBadge ? statusBadge.getAttribute('data-status') : 'Active';
+      const statusText = statusBadge ? statusBadge.textContent.trim().toLowerCase() : 'active';
+      const isCompleted = statusFromData === 'Completed' || statusText === 'completed';
+      
+      // Determine if this course matches the filter
+      let matchesFilter = false;
+      if (status === 'all') {
+        matchesFilter = true;
+      } else if (status === 'active' && !isCompleted) {
+        matchesFilter = true;
+      } else if (status === 'completed' && isCompleted) {
+        matchesFilter = true;
+      }
+       
+       if (matchesFilter) {
+         card.style.display = 'block';
+         visibleCount++;
+       } else {
+         card.style.display = 'none';
+       }
+     });
+     
+     // Handle empty state
+     const existingEmptyState = document.querySelector('.col-span-full');
+     
+     // Remove empty state if it exists (no more empty state messages)
+     if (existingEmptyState) {
+       existingEmptyState.remove();
+     }
+     
+     // Update filter counts after filtering
+     updateFilterCounts();
+   }
+
+   // Search functionality
+   function initializeSearch() {
+     const searchInputs = document.querySelectorAll('#coursesSearchInput');
+     
+     searchInputs.forEach(searchInput => {
+       searchInput.addEventListener('input', function() {
+         const searchTerm = this.value.toLowerCase().trim();
+         searchCourses(searchTerm);
+       });
+     });
+   }
+
+   function searchCourses(searchTerm) {
+     const courseCards = document.querySelectorAll('.course-card');
+     let visibleCount = 0;
+
+     courseCards.forEach(card => {
+       const title = card.getAttribute('data-title') || '';
+       const category = card.getAttribute('data-category') || '';
+       const description = card.getAttribute('data-description') || '';
+       
+       // Check if course matches search term
+       const matchesSearch = searchTerm === '' || (
+         title.includes(searchTerm) || 
+         category.includes(searchTerm) || 
+         description.includes(searchTerm)
+       );
+       
+       // Check if course matches current filter
+       let matchesFilter = true;
+       if (currentFilter && currentFilter !== 'all') {
+         const statusBadge = card.querySelector('.status-badge');
+         const statusFromData = statusBadge ? statusBadge.getAttribute('data-status') : 'Active';
+         const statusText = statusBadge ? statusBadge.textContent.trim().toLowerCase() : 'active';
+         const isCompleted = statusFromData === 'Completed' || statusText === 'completed';
+         
+         if (currentFilter === 'active' && isCompleted) {
+           matchesFilter = false;
+         } else if (currentFilter === 'completed' && !isCompleted) {
+           matchesFilter = false;
+         }
+       }
+       
+       if (matchesSearch && matchesFilter) {
+         card.style.display = 'block';
+         visibleCount++;
+       } else {
+         card.style.display = 'none';
+       }
+     });
+     
+     // Remove empty state if it exists (no more empty state messages)
+     const existingEmptyState = document.querySelector('.col-span-full');
+     if (existingEmptyState) {
+       existingEmptyState.remove();
+     }
+   }
+
+   function clearSearch() {
+     const searchInputs = document.querySelectorAll('#coursesSearchInput');
+     searchInputs.forEach(input => {
+       input.value = '';
+     });
+     searchCourses('');
+   }
+
+   // Sort functionality
+   function initializeSort() {
+     const sortFilter = document.getElementById('sortFilter');
+     const sortFilterMobile = document.getElementById('sortFilterMobile');
+     
+     if (sortFilter) {
+       sortFilter.addEventListener('change', function() {
+         sortCourses(this.value);
+       });
+     }
+
+     if (sortFilterMobile) {
+       sortFilterMobile.addEventListener('change', function() {
+         sortCourses(this.value);
+       });
+     }
+   }
+
+   function sortCourses(sortBy) {
+     const courseCards = Array.from(document.querySelectorAll('.course-card'));
+     const container = document.querySelector('.grid');
+     
+     // Remove empty state if it exists
+     const existingEmptyState = document.querySelector('.col-span-full');
+     if (existingEmptyState) {
+       existingEmptyState.remove();
+     }
+     
+     courseCards.sort((a, b) => {
+       switch (sortBy) {
+         case 'newest':
+           return new Date(b.getAttribute('data-enrolled')) - new Date(a.getAttribute('data-enrolled'));
+         case 'oldest':
+           return new Date(a.getAttribute('data-enrolled')) - new Date(b.getAttribute('data-enrolled'));
+         case 'title-asc':
+           return a.getAttribute('data-title').localeCompare(b.getAttribute('data-title'));
+         case 'title-desc':
+           return b.getAttribute('data-title').localeCompare(a.getAttribute('data-title'));
+         case 'price-high':
+           return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+         case 'price-low':
+           return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+         default:
+           return 0;
+       }
+     });
+
+     // Re-append sorted cards
+     courseCards.forEach(card => container.appendChild(card));
+   }
+
+   // Make functions available globally
+   window.filterCourses = filterCourses;
+   window.clearSearch = clearSearch;
+   window.sortCourses = sortCourses;
+   
+   
+ </script>

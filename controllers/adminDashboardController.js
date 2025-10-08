@@ -56,7 +56,7 @@ export const adminLoginHandler = async (req, res) => {
 export const adminLogout = (req, res) => {
   try {
     req.session.destroy();
-    req.flash("success", "Successfully logged out");
+    // req.flash("success", "Successfully logged out");
     res.redirect("/admin");
   } catch (error) {
     req.flash("error", "Failed to log out!");

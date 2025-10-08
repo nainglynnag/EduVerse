@@ -1,0 +1,1159 @@
+<!-- Courses Management Content -->
+<div id="coursesContent">
+        <!-- Success Messages -->
+        <% if (typeof req !== 'undefined' && req.query.draft_saved === 'true') { %>
+          <div class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded-lg">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              Course saved as draft successfully!
+            </div>
+          </div>
+        <% } %>
+
+        
+        <% if (typeof req !== 'undefined' && req.query.course_published === 'true') { %>
+          <div class="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded-lg">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              Course published successfully!
+            </div>
+          </div>
+        <% } %>
+
+        <!-- Minimal Navigation Bar -->
+        <div class="border-b border-gray-200 pb-3 mb-4">
+          <!-- Mobile Header -->
+          <div class="block md:hidden">
+            <div class="mb-3">
+              <h1 class="text-lg font-semibold text-gray-800">My Courses</h1>
+            </div>
+            <!-- Mobile Search and Sort -->
+            <div class="flex space-x-3 mb-3">
+              <div class="relative flex-1">
+                <input
+                  type="text"
+                  id="coursesSearchInput"
+                  placeholder="Search courses..."
+                  class="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                />
+                <svg
+                  class="w-4 h-4 text-gray-400 absolute left-2.5 top-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+              <div class="relative">
+                <select
+                  id="sortFilterMobile"
+                  class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer min-w-[120px]"
+                >
+                  <option value="newest">Newest</option>
+                  <option value="oldest">Oldest</option>
+                  <option value="title-asc">A-Z</option>
+                  <option value="title-desc">Z-A</option>
+                  <option value="price-high">Price ↓</option>
+                  <option value="price-low">Price ↑</option>
+                  <option value="students-high">Students ↓</option>
+                  <option value="students-low">Students ↑</option>
+                </select>
+                <svg
+                  class="w-4 h-4 text-gray-400 absolute right-2 top-3 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+              <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+              />
+            </svg>
+              </div>
+            </div>
+            <!-- Mobile Filter Tabs -->
+            <div class="flex space-x-1 overflow-x-auto">
+              <button
+                onclick="filterCourses('all')"
+                id="filter-all"
+                class="px-3 py-1.5 text-sm font-medium text-purple-600 border-b-2 border-purple-600 filter-btn whitespace-nowrap"
+              >
+                All
+              </button>
+              <button
+                onclick="filterCourses('published')"
+                id="filter-published"
+                class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn whitespace-nowrap"
+              >
+                Published
+              </button>
+              <button
+                onclick="filterCourses('draft')"
+                id="filter-draft"
+                class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn whitespace-nowrap"
+              >
+                Draft
+              </button>
+            </div>
+        </div>
+
+          <!-- Desktop Header -->
+          <div class="hidden md:flex items-center justify-between">
+            <div class="flex items-center space-x-6">
+              <h1 class="text-xl font-semibold text-gray-800">My Courses</h1>
+              <div class="flex space-x-1">
+               <button
+                 onclick="filterCourses('all')"
+                 id="filter-all"
+                  class="px-3 py-1.5 text-sm font-medium text-purple-600 border-b-2 border-purple-600 filter-btn"
+               >
+                  All
+               </button>
+               <button
+                 onclick="filterCourses('published')"
+                 id="filter-published"
+                  class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn"
+               >
+                 Published
+               </button>
+               <button
+                 onclick="filterCourses('draft')"
+                 id="filter-draft"
+                  class="px-3 py-1.5 text-sm font-medium text-gray-500 hover:text-gray-700 filter-btn"
+               >
+                 Draft
+               </button>
+              </div>
+            </div>
+            <div class="flex items-center space-x-3">
+            <div class="relative">
+              <input
+                type="text"
+                id="coursesSearchInput"
+                  placeholder="Search courses..."
+                  class="w-56 pl-8 pr-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+              <svg
+                  class="w-4 h-4 text-gray-400 absolute left-2.5 top-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              </div>
+              <div class="relative">
+                <select
+                  id="sortFilterDesktop"
+                  class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent cursor-pointer"
+                >
+                  <option value="newest">Newest First</option>
+                  <option value="oldest">Oldest First</option>
+                  <option value="title-asc">Title A-Z</option>
+                  <option value="title-desc">Title Z-A</option>
+                  <option value="price-high">Price High-Low</option>
+                  <option value="price-low">Price Low-High</option>
+                  <option value="students-high">Most Students</option>
+                  <option value="students-low">Least Students</option>
+                </select>
+                <svg
+                  class="w-4 h-4 text-gray-400 absolute right-2 top-2 pointer-events-none"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+        <!-- Responsive Courses Grid -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8"
+          id="coursesGrid"
+        >
+          <% 
+            // Enhanced safety check with better error handling
+            let safeCourses = [];
+            try {
+              if (courses && Array.isArray(courses)) {
+                safeCourses = courses;
+              } else if (courses && typeof courses === 'object') {
+                // Handle case where courses might be wrapped in an object
+                if (courses.data && Array.isArray(courses.data)) {
+                  safeCourses = courses.data;
+                } else if (courses.results && Array.isArray(courses.results)) {
+                  safeCourses = courses.results;
+                } else {
+                  safeCourses = [];
+                }
+              } else {
+                safeCourses = [];
+              }
+            } catch (e) {
+              console.error('Error processing courses data:', e);
+              safeCourses = [];
+            }
+          %>
+          <% if (safeCourses && safeCourses.length > 0) { %>
+            <% for (let i = 0; i < safeCourses.length; i++) { %>
+              <% const course = safeCourses[i]; %>
+              <div class="bg-white rounded-xl md:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden course-card group transform hover:-translate-y-1"
+                   data-title="<%= (course.title || 'Untitled Course').toLowerCase() %>"
+                   data-category="<%= (course.category_name || 'Uncategorized').toLowerCase() %>"
+                   data-difficulty="<%= (course.difficulty_name || 'Unknown').toLowerCase() %>"
+                   data-status="<%= (course.status || 'draft').toLowerCase() %>"
+                   data-description="<%= (course.description || 'No description available').toLowerCase() %>"
+                   data-created="<%= course.created_at || new Date().toISOString() %>"
+                   data-students="<%= course.enrollment_count || 0 %>"
+                   data-price="<%= course.price || 0 %>">
+                
+                <!-- Course Header -->
+                <div class="relative h-32 md:h-36 bg-gradient-to-br from-purple-600 via-pink-500 to-indigo-600 flex items-center justify-center overflow-hidden">
+                  <!-- Background Pattern -->
+                  <div class="absolute inset-0 opacity-10">
+                    <svg class="w-full h-full" viewBox="0 0 100 100" fill="currentColor">
+                      <circle cx="20" cy="20" r="2"/>
+                      <circle cx="80" cy="20" r="2"/>
+                      <circle cx="20" cy="80" r="2"/>
+                      <circle cx="80" cy="80" r="2"/>
+                      <circle cx="50" cy="50" r="1"/>
+                    </svg>
+                  </div>
+                  
+                  <!-- Course Icon -->
+                  <div class="relative z-10">
+                    <div class="w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                      <svg class="w-6 h-6 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                  </svg>
+                    </div>
+                  </div>
+                  
+                  <!-- Status Badge -->
+                  <div class="absolute top-3 right-3">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full backdrop-blur-sm <%= course.status === 'published' ? 'bg-green-500/90 text-white' : 'bg-yellow-500/90 text-white' %>">
+                      <%= course.status === 'published' ? 'Published' : 'Draft' %>
+                    </span>
+                  </div>
+                  
+                  <!-- Price Badge -->
+                  <div class="absolute bottom-3 left-3">
+                    <span class="px-2 py-1 text-xs font-bold bg-white/90 text-purple-600 rounded-full">
+                      $<%= course.price || 0 %>
+                    </span>
+                  </div>
+                </div>
+                
+                <!-- Course Content -->
+                <div class="p-4">
+                  <!-- Course Title & Description -->
+                  <div class="mb-4">
+                    <h3 class="font-bold text-gray-800 text-base leading-tight group-hover:text-purple-600 transition-colors mb-2">
+                      <%= course.title || 'Untitled Course' %>
+                    </h3>
+                    <p class="text-gray-500 text-sm line-clamp-2">
+                      <%= course.description || 'No description available' %>
+                    </p>
+                  </div>
+                  
+                  <!-- Course Meta Info -->
+                  <div class="space-y-3 mb-4">
+                    <!-- Category & Difficulty Row -->
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-2">
+                        <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <span class="text-sm font-medium text-gray-600"><%= course.category_name || 'Uncategorized' %></span>
+                      </div>
+                      <div class="flex items-center space-x-1 text-gray-500">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm"><%= course.difficulty_name || 'Unknown' %></span>
+                      </div>
+                    </div>
+                    
+                    <!-- Students & Date Row -->
+                    <div class="flex items-center justify-between">
+                      <div class="flex items-center space-x-1 text-gray-500">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                        </svg>
+                        <span class="text-sm"><%= course.enrollment_count || 0 %> students</span>
+                  </div>
+                      <div class="flex items-center space-x-1 text-gray-500">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-sm"><%= course.created_at ? new Date(course.created_at).toLocaleDateString() : 'Unknown' %></span>
+                    </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Action Buttons -->
+                  <div class="flex space-x-2">
+                    <a href="/instructor/courses/<%= course.id %>" class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 text-sm font-medium text-center shadow-md hover:shadow-lg">
+                      View Details
+                    </a>
+                    <button onclick="editCourse('<%= course.id %>')" class="px-3 py-2 border-2 border-gray-300 text-gray-700 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-all duration-200 text-sm font-medium">
+                      Edit
+                    </button>
+                    <button onclick="deleteCourse('<%= course.id %>', '<%= course.title %>')" class="px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-all duration-200 text-sm font-medium border border-red-200">
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          <% } else { %>
+            <!-- Responsive Empty State -->
+            <div class="col-span-full text-center py-8 md:py-16">
+              <div class="bg-white rounded-xl md:rounded-3xl p-6 md:p-12 shadow-xl border border-gray-100">
+                <!-- Animated Icon -->
+                <div class="relative mb-6 md:mb-8">
+                  <div class="w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto">
+                    <svg class="w-8 h-8 md:w-12 md:h-12 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                </svg>
+                  </div>
+                  <!-- Floating Elements -->
+                  <div class="absolute -top-1 -right-1 md:-top-2 md:-right-2 w-4 h-4 md:w-6 md:h-6 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <div class="absolute -bottom-1 -left-1 md:-bottom-2 md:-left-2 w-3 h-3 md:w-4 md:h-4 bg-pink-400 rounded-full animate-pulse delay-1000"></div>
+                </div>
+                
+                <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-3">No Courses Yet</h3>
+                <p class="text-gray-600 mb-6 md:mb-8 max-w-md mx-auto leading-relaxed text-sm md:text-base">
+                  You haven't created any courses yet. Start your teaching journey by creating your first course and sharing your knowledge with students worldwide.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+                  <a href="/instructor/courses/create" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-lg md:rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm md:text-base">
+                  Create Your First Course
+                </a>
+                  <a href="#" class="border-2 border-gray-200 text-gray-700 px-6 md:px-8 py-2.5 md:py-3 rounded-lg md:rounded-xl hover:border-purple-300 hover:bg-purple-50 transition-all duration-200 font-medium text-sm md:text-base">
+                    View Course Templates
+                  </a>
+                </div>
+                
+                <!-- Quick Tips -->
+                <div class="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-100">
+                  <h4 class="text-xs md:text-sm font-semibold text-gray-700 mb-3 md:mb-4">Quick Tips to Get Started:</h4>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm text-gray-600">
+                    <div class="flex items-center space-x-2">
+                      <div class="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <span>Plan your course structure</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-2 h-2 bg-pink-500 rounded-full"></div>
+                      <span>Create engaging content</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <div class="w-2 h-2 bg-indigo-500 rounded-full"></div>
+                      <span>Set clear learning objectives</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+        
+        <!-- Pagination -->
+        <% if (pagination && pagination.totalPages > 1) { %>
+        <div class="mt-auto px-4 pt-4">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+            <!-- Items per page -->
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">Show</span>
+              <select
+                onchange="location.href='?page=1&limit='+this.value"
+                class="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="12" <%= pagination.limit == 12 ? 'selected' : '' %>>12</option>
+                <option value="24" <%= pagination.limit == 24 ? 'selected' : '' %>>24</option>
+                <option value="48" <%= pagination.limit == 48 ? 'selected' : '' %>>48</option>
+                <option value="96" <%= pagination.limit == 96 ? 'selected' : '' %>>96</option>
+              </select>
+              <span class="text-sm text-gray-600">per page</span>
+            </div>
+
+            <!-- Pagination Numbers -->
+            <div class="flex items-center space-x-2">
+              <!-- Prev Button -->
+              <button
+                onclick="location.href='?page=<%= pagination.currentPage - 1 %>&limit=<%= pagination.limit %>'"
+                class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                  <%= pagination.currentPage <= 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-purple-50 text-purple-600 hover:bg-purple-100' %>"
+                <%= pagination.currentPage <= 1 ? 'disabled' : '' %>>
+                Prev
+              </button>
+
+              <!-- Page Numbers -->
+              <div class="flex items-center space-x-1">
+                <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                  <button
+                    onclick="location.href='?page=<%= i %>&limit=<%= pagination.limit %>'"
+                    class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
+                      <%= pagination.currentPage === i ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-purple-50 hover:text-purple-600' %>">
+                    <%= i %>
+                  </button>
+                <% } %>
+              </div>
+
+              <!-- Next Button -->
+              <button
+                onclick="location.href='?page=<%= pagination.currentPage + 1 %>&limit=<%= pagination.limit %>'"
+                class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+                  <%= pagination.currentPage >= pagination.totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-purple-50 text-purple-600 hover:bg-purple-100' %>"
+                <%= pagination.currentPage >= pagination.totalPages ? 'disabled' : '' %>>
+                Next
+              </button>
+              
+            </div>
+
+            <!-- Jump to Page -->
+            <div class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">Go to</span>
+              <input
+                type="number"
+                min="1"
+                max="<%= pagination.totalPages %>"
+                value="<%= pagination.currentPage %>"
+                onchange="location.href='?page='+this.value+'&limit=<%= pagination.limit %>'"
+                class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Course Detail Modal -->
+    <div
+      id="courseDetailModal"
+      class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-2 sm:p-4"
+    >
+      <div
+        class="bg-white rounded-xl sm:rounded-2xl max-w-5xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto shadow-2xl mx-2 sm:mx-0"
+      >
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-600 p-4 sm:p-6 rounded-t-xl sm:rounded-t-2xl">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3 sm:space-x-4 flex-1 min-w-0">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-sm rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/>
+                </svg>
+              </div>
+              <div class="min-w-0 flex-1">
+                <h2 id="modalCourseTitle" class="text-lg sm:text-2xl font-bold text-white truncate">
+                  Course Title
+                </h2>
+                <div class="flex items-center space-x-2 sm:space-x-4 mt-1 sm:mt-2 flex-wrap">
+                  <span id="modalCourseStatus" class="px-2 sm:px-3 py-1 text-xs font-semibold rounded-full bg-white/20 text-white backdrop-blur-sm">
+                    Status
+                  </span>
+                  <span id="modalCoursePrice" class="px-2 sm:px-3 py-1 text-xs font-bold bg-white/90 text-purple-600 rounded-full">
+                    $0
+                  </span>
+                </div>
+              </div>
+            </div>
+            <button
+              onclick="closeCourseDetail()"
+              class="text-white/80 hover:text-white hover:bg-white/20 p-2 rounded-lg transition-all duration-200 flex-shrink-0 ml-2"
+            >
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-4 sm:p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Main Course Information -->
+            <div class="lg:col-span-2 space-y-4 sm:space-y-6">
+              <!-- Course Description -->
+              <div class="bg-gradient-to-br from-gray-50 to-purple-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-purple-100">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-800">Course Description</h3>
+                </div>
+                <p id="modalCourseDescription" class="text-gray-600 leading-relaxed"></p>
+              </div>
+
+              <!-- Course Details Grid -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 hover:border-purple-300 transition-colors">
+                  <div class="flex items-center space-x-3 mb-2">
+                    <div class="w-6 h-6 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-medium text-gray-800">Category</h4>
+                  </div>
+                  <p id="modalCourseCategory" class="text-gray-600 text-sm"></p>
+                </div>
+
+                <div class="bg-white rounded-lg sm:rounded-xl p-3 sm:p-4 border border-gray-200 hover:border-purple-300 transition-colors">
+                  <div class="flex items-center space-x-3 mb-2">
+                    <div class="w-6 h-6 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg class="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                    </div>
+                    <h4 class="font-medium text-gray-800">Difficulty</h4>
+                  </div>
+                  <p id="modalCourseDifficulty" class="text-gray-600 text-sm"></p>
+                </div>
+              </div>
+
+              <!-- Learning Objectives -->
+              <div class="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-indigo-100">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-800">Learning Objectives</h3>
+                </div>
+                <ul
+                  id="modalCourseObjectives"
+                  class="space-y-2 text-gray-600"
+                ></ul>
+              </div>
+
+              <!-- Course Lessons -->
+              <div class="bg-gradient-to-br from-pink-50 to-purple-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-pink-100">
+                <div class="flex items-center space-x-3 mb-4">
+                  <div class="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-800">Course Lessons</h3>
+                </div>
+                <div id="modalCourseLessons" class="space-y-3"></div>
+              </div>
+            </div>
+
+            <!-- Sidebar - Statistics & Actions -->
+            <div class="space-y-4 sm:space-y-6">
+              <!-- Course Statistics -->
+              <div class="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-purple-100">
+                <div class="flex items-center space-x-3 mb-4 sm:mb-6">
+                  <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                    </svg>
+                  </div>
+                  <h3 class="text-lg font-semibold text-gray-800">Course Statistics</h3>
+                </div>
+                
+                <div class="space-y-3 sm:space-y-4">
+                  <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+                        </svg>
+                      </div>
+                      <span class="text-gray-600 font-medium">Enrolled Students</span>
+                    </div>
+                    <span id="modalEnrolledStudents" class="text-lg font-bold text-purple-600">0</span>
+                  </div>
+
+                  <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                      </div>
+                      <span class="text-gray-600 font-medium">Completion Rate</span>
+                    </div>
+                    <span id="modalCompletionRate" class="text-lg font-bold text-green-600">0%</span>
+                  </div>
+
+                  <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      </div>
+                      <span class="text-gray-600 font-medium">Average Rating</span>
+                    </div>
+                    <span id="modalAverageRating" class="text-lg font-bold text-yellow-600">0.0</span>
+                  </div>
+
+                  <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-100">
+                    <div class="flex items-center space-x-3">
+                      <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/>
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                        </svg>
+                      </div>
+                      <span class="text-gray-600 font-medium">Total Revenue</span>
+                    </div>
+                    <span id="modalTotalRevenue" class="text-lg font-bold text-emerald-600">$0</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="space-y-3">
+                <button
+                  onclick="editCourse()"
+                  class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2 text-sm sm:text-base"
+                >
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+                  </svg>
+                  <span>Edit Course</span>
+                </button>
+                
+                <button
+                  onclick="deleteCourse()"
+                  class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center justify-center space-x-2 text-sm sm:text-base"
+                >
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" clip-rule="evenodd"/>
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                  </svg>
+                  <span>Delete Course</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+                   <script>
+        // Course filtering functionality
+        let currentFilter = 'all';
+        let allCourses = [];
+
+        // Initialize courses data from server-side rendering
+        document.addEventListener('DOMContentLoaded', function() {
+          // Get all course cards
+          const courseCards = document.querySelectorAll('#coursesGrid > div');
+          allCourses = Array.from(courseCards);
+          
+          // Update filter counts
+          updateFilterCounts();
+          
+          // Initialize search functionality
+          initializeSearch();
+          
+          // Initialize sort functionality
+          initializeSort();
+          
+          // Fallback: try again after a short delay in case DOM isn't fully ready
+          setTimeout(() => {
+            const sortFilterMobile = document.getElementById('sortFilterMobile');
+            const sortFilterDesktop = document.getElementById('sortFilterDesktop');
+            if (!sortFilterMobile && !sortFilterDesktop) {
+              console.log('Retrying sort initialization...');
+              initializeSort();
+            }
+          }, 100);
+        });
+        
+        // Function to update filter counts
+        function updateFilterCounts() {
+          const courseCards = document.querySelectorAll('#coursesGrid > div:not(.col-span-full)');
+          let allCount = 0;
+          let publishedCount = 0;
+          let draftCount = 0;
+          
+          courseCards.forEach(card => {
+            const statusBadge = card.querySelector('.px-3.py-1.text-xs.font-semibold.rounded-full');
+            const courseStatus = statusBadge ? statusBadge.textContent.trim().toLowerCase() : '';
+            const dataStatus = card.getAttribute('data-status') || '';
+            
+            allCount++;
+            if (courseStatus === 'published' || dataStatus === 'published') {
+              publishedCount++;
+            } else if (courseStatus === 'draft' || dataStatus === 'draft') {
+              draftCount++;
+            }
+          });
+          
+          // Update button text with counts
+          const allBtn = document.getElementById('filter-all');
+          const publishedBtn = document.getElementById('filter-published');
+          const draftBtn = document.getElementById('filter-draft');
+          
+          if (allBtn) {
+            allBtn.textContent = `All (${allCount})`;
+          }
+          if (publishedBtn) {
+            publishedBtn.textContent = `Published (${publishedCount})`;
+          }
+          if (draftBtn) {
+            draftBtn.textContent = `Draft (${draftCount})`;
+          }
+        }
+
+                 function filterCourses(status) {
+           currentFilter = status;
+           
+           // Update button styles for minimal tab design
+           document.querySelectorAll('.filter-btn').forEach(btn => {
+             // Remove active styles
+             btn.classList.remove('text-purple-600', 'border-b-2', 'border-purple-600');
+             btn.classList.remove('text-gray-500', 'hover:text-gray-700');
+             
+             // Add default inactive styles
+             btn.classList.add('text-gray-500', 'hover:text-gray-700');
+           });
+           
+           // Highlight active button
+           const activeButton = document.getElementById(`filter-${status}`);
+           activeButton.classList.remove('text-gray-500', 'hover:text-gray-700');
+           activeButton.classList.add('text-purple-600', 'border-b-2', 'border-purple-600');
+           
+           // Get all course cards (excluding any empty state divs)
+           const courseCards = document.querySelectorAll('#coursesGrid > div:not(.col-span-full)');
+           let visibleCount = 0;
+           
+           courseCards.forEach(card => {
+             // Look for the status badge in the new design
+             const statusBadge = card.querySelector('.px-3.py-1.text-xs.font-semibold.rounded-full');
+             const courseStatus = statusBadge ? statusBadge.textContent.trim().toLowerCase() : '';
+             
+             // Also check the data-status attribute as a fallback
+             const dataStatus = card.getAttribute('data-status') || '';
+             
+             // Determine if this course matches the filter
+             let matchesFilter = false;
+             if (status === 'all') {
+               matchesFilter = true;
+             } else if (courseStatus === status || dataStatus === status) {
+               matchesFilter = true;
+             }
+             
+             if (matchesFilter) {
+               card.style.display = 'block';
+               visibleCount++;
+             } else {
+               card.style.display = 'none';
+             }
+           });
+           
+           // Handle empty state
+           const existingEmptyState = document.querySelector('#coursesGrid .col-span-full');
+           
+           if (visibleCount === 0 && status !== 'all') {
+             // Show empty state for filtered results
+             if (!existingEmptyState || !existingEmptyState.querySelector('.text-gray-400')) {
+               const emptyStateHtml = `
+                 <div class="col-span-full text-center py-12">
+                   <div class="bg-white rounded-2xl p-8 shadow-lg">
+                     <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                       <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                     </svg>
+                     <h3 class="text-lg font-semibold text-gray-800 mb-2">No ${status.charAt(0).toUpperCase() + status.slice(1)} Courses</h3>
+                     <p class="text-gray-600 mb-4">You don't have any ${status} courses yet.</p>
+                     <button onclick="filterCourses('all')" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-all">
+                       View All Courses
+                     </button>
+                   </div>
+                 </div>
+               `;
+               document.getElementById('coursesGrid').insertAdjacentHTML('beforeend', emptyStateHtml);
+             }
+           } else {
+             // Remove empty state if it exists
+             if (existingEmptyState) {
+               existingEmptyState.remove();
+             }
+           }
+              
+              // Update filter counts after filtering
+              updateFilterCounts();
+            }
+
+        // Search functionality
+        function initializeSearch() {
+          const searchInputs = document.querySelectorAll('#coursesSearchInput');
+          
+          searchInputs.forEach(searchInput => {
+            searchInput.addEventListener('input', function() {
+              const searchTerm = this.value.toLowerCase().trim();
+              searchCourses(searchTerm);
+            });
+          });
+        }
+
+        function searchCourses(searchTerm) {
+          const courseCards = document.querySelectorAll('#coursesGrid > div:not(.col-span-full)');
+          let visibleCount = 0;
+
+          courseCards.forEach(card => {
+            const title = card.getAttribute('data-title') || '';
+            const category = card.getAttribute('data-category') || '';
+            const difficulty = card.getAttribute('data-difficulty') || '';
+            const status = card.getAttribute('data-status') || '';
+            const description = card.getAttribute('data-description') || '';
+            
+            // Check if course matches search term
+            const matchesSearch = searchTerm === '' || (
+              title.includes(searchTerm) || 
+              category.includes(searchTerm) || 
+              difficulty.includes(searchTerm) || 
+              status.includes(searchTerm) ||
+              description.includes(searchTerm)
+            );
+            
+            // Check if course matches current filter
+            let matchesFilter = true;
+            if (currentFilter && currentFilter !== 'all') {
+              const statusBadge = card.querySelector('.px-3.py-1.text-xs.font-semibold.rounded-full, .px-2.py-1.text-xs.font-semibold.rounded-full');
+              const courseStatus = statusBadge ? statusBadge.textContent.trim().toLowerCase() : '';
+              const dataStatus = card.getAttribute('data-status') || '';
+              
+              matchesFilter = courseStatus === currentFilter || dataStatus === currentFilter;
+            }
+            
+            if (matchesSearch && matchesFilter) {
+              card.style.display = 'block';
+              visibleCount++;
+            } else {
+              card.style.display = 'none';
+            }
+          });
+          
+          // Handle empty state for search results
+          const existingEmptyState = document.querySelector('#coursesGrid .col-span-full');
+          
+          if (visibleCount === 0 && searchTerm !== '') {
+            // Show empty state for search results
+            if (!existingEmptyState || !existingEmptyState.querySelector('.text-gray-400')) {
+              const emptyStateHtml = `
+                <div class="col-span-full text-center py-12">
+                  <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                    </svg>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">No Courses Found</h3>
+                    <p class="text-gray-600 mb-4">No courses match your search criteria "<span class="font-medium">${searchTerm}</span>".</p>
+                    <button onclick="clearSearch()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
+                      Clear Search
+                    </button>
+                  </div>
+                </div>
+              `;
+              document.getElementById('coursesGrid').insertAdjacentHTML('beforeend', emptyStateHtml);
+            }
+          } else {
+            // Remove empty state if it exists
+            if (existingEmptyState) {
+              existingEmptyState.remove();
+            }
+          }
+        }
+
+        function clearSearch() {
+          const searchInputs = document.querySelectorAll('#coursesSearchInput');
+          searchInputs.forEach(input => {
+            input.value = '';
+          });
+          searchCourses('');
+        }
+
+        // Make clearSearch available globally
+        window.clearSearch = clearSearch;
+
+        // Sort functionality
+        function initializeSort() {
+          const sortFilterMobile = document.getElementById('sortFilterMobile');
+          const sortFilterDesktop = document.getElementById('sortFilterDesktop');
+          
+          console.log('Initializing sort functionality...');
+          console.log('Mobile sort filter:', sortFilterMobile);
+          console.log('Desktop sort filter:', sortFilterDesktop);
+          
+          // Add event listener to mobile sort dropdown
+          if (sortFilterMobile) {
+            sortFilterMobile.addEventListener('change', function() {
+              const sortValue = this.value;
+              console.log('Mobile sort dropdown changed to:', sortValue);
+              sortCourses(sortValue);
+              // Sync desktop dropdown
+              if (sortFilterDesktop) {
+                sortFilterDesktop.value = sortValue;
+              }
+            });
+            console.log('Mobile sort event listener added successfully');
+          }
+          
+          // Add event listener to desktop sort dropdown
+          if (sortFilterDesktop) {
+            sortFilterDesktop.addEventListener('change', function() {
+              const sortValue = this.value;
+              console.log('Desktop sort dropdown changed to:', sortValue);
+              sortCourses(sortValue);
+              // Sync mobile dropdown
+              if (sortFilterMobile) {
+                sortFilterMobile.value = sortValue;
+              }
+            });
+            console.log('Desktop sort event listener added successfully');
+          }
+          
+          if (!sortFilterMobile && !sortFilterDesktop) {
+            console.error('No sort filter elements found!');
+          }
+        }
+
+        function sortCourses(sortValue) {
+          console.log('Sorting courses by:', sortValue);
+          const courseCards = Array.from(document.querySelectorAll('#coursesGrid > div:not(.col-span-full)'));
+          const coursesGrid = document.getElementById('coursesGrid');
+          
+          console.log('Found course cards:', courseCards.length);
+          console.log('Found courses grid:', coursesGrid);
+          
+          // Remove empty state if it exists
+          const existingEmptyState = document.querySelector('#coursesGrid .col-span-full');
+          if (existingEmptyState) {
+            existingEmptyState.remove();
+          }
+          
+          // Sort the course cards based on the selected option
+          courseCards.sort((a, b) => {
+            switch (sortValue) {
+              case 'newest':
+                const dateA = new Date(a.getAttribute('data-created') || '1970-01-01');
+                const dateB = new Date(b.getAttribute('data-created') || '1970-01-01');
+                return dateB - dateA;
+                
+              case 'oldest':
+                const dateA2 = new Date(a.getAttribute('data-created') || '1970-01-01');
+                const dateB2 = new Date(b.getAttribute('data-created') || '1970-01-01');
+                return dateA2 - dateB2;
+                
+              case 'title-asc':
+                const titleA = a.getAttribute('data-title') || '';
+                const titleB = b.getAttribute('data-title') || '';
+                return titleA.localeCompare(titleB);
+                
+              case 'title-desc':
+                const titleA2 = a.getAttribute('data-title') || '';
+                const titleB2 = b.getAttribute('data-title') || '';
+                return titleB2.localeCompare(titleA2);
+                
+              case 'price-high':
+                const priceA = parseFloat(a.getAttribute('data-price') || '0');
+                const priceB = parseFloat(b.getAttribute('data-price') || '0');
+                return priceB - priceA;
+                
+              case 'price-low':
+                const priceA2 = parseFloat(a.getAttribute('data-price') || '0');
+                const priceB2 = parseFloat(b.getAttribute('data-price') || '0');
+                return priceA2 - priceB2;
+                
+              case 'students-high':
+                const studentsA = parseInt(a.getAttribute('data-students') || '0');
+                const studentsB = parseInt(b.getAttribute('data-students') || '0');
+                return studentsB - studentsA;
+                
+              case 'students-low':
+                const studentsA2 = parseInt(a.getAttribute('data-students') || '0');
+                const studentsB2 = parseInt(b.getAttribute('data-students') || '0');
+                return studentsA2 - studentsB2;
+                
+              default:
+                return 0;
+            }
+          });
+          
+          // Re-append the sorted cards to the grid
+          courseCards.forEach(card => {
+            coursesGrid.appendChild(card);
+          });
+          
+          console.log('Sort completed successfully');
+        }
+
+        // Make sortCourses available globally for testing
+        window.sortCourses = sortCourses;
+        window.testSort = function() {
+          console.log('=== TESTING SORT FUNCTIONALITY ===');
+          const sortFilterMobile = document.getElementById('sortFilterMobile');
+          const sortFilterDesktop = document.getElementById('sortFilterDesktop');
+          
+          console.log('Mobile sort filter:', sortFilterMobile);
+          console.log('Desktop sort filter:', sortFilterDesktop);
+          
+          if (sortFilterMobile) {
+            console.log('Mobile current sort value:', sortFilterMobile.value);
+            console.log('Mobile available options:', Array.from(sortFilterMobile.options).map(opt => opt.value));
+          }
+          
+          if (sortFilterDesktop) {
+            console.log('Desktop current sort value:', sortFilterDesktop.value);
+            console.log('Desktop available options:', Array.from(sortFilterDesktop.options).map(opt => opt.value));
+          }
+          
+          const courseCards = document.querySelectorAll('#coursesGrid > div:not(.col-span-full)');
+          console.log('Course cards found:', courseCards.length);
+          
+          if (courseCards.length > 0) {
+            console.log('Sample course data:');
+            Array.from(courseCards).slice(0, 3).forEach((card, index) => {
+              console.log(`Card ${index}:`, {
+                title: card.getAttribute('data-title'),
+                created: card.getAttribute('data-created'),
+                price: card.getAttribute('data-price'),
+                students: card.getAttribute('data-students')
+              });
+            });
+          }
+        };
+
+        // Course detail modal functions
+        function openCourseDetail(courseId) {
+          // Find the course data from the server-side rendered courses
+          const courseCard = document.querySelector(`[onclick="openCourseDetail('${courseId}')"]`).closest('.bg-white.rounded-2xl');
+          
+          if (courseCard) {
+            // Extract course data from the card
+            const title = courseCard.querySelector('h3').textContent;
+            const description = courseCard.querySelector('p').textContent;
+            const category = courseCard.querySelector('.space-y-2 .flex:first-child span:first-child').textContent;
+            const price = courseCard.querySelector('.space-y-2 .flex:first-child span:last-child').textContent;
+            const difficulty = courseCard.querySelector('.space-y-2 .flex:last-child span:first-child').textContent;
+            const students = courseCard.querySelector('.space-y-2 .flex:last-child span:last-child').textContent;
+            const status = courseCard.querySelector('.px-2.py-1.text-xs.rounded-full').textContent;
+            
+            // Populate modal with course data
+            document.getElementById('modalCourseTitle').textContent = title;
+            document.getElementById('modalCourseDescription').textContent = description;
+            document.getElementById('modalCourseCategory').textContent = category;
+            document.getElementById('modalCoursePrice').textContent = price;
+            document.getElementById('modalCourseDifficulty').textContent = difficulty;
+            document.getElementById('modalCourseStatus').textContent = status;
+            
+            // Update enrolled students count
+            const studentCount = students.replace(' students', '');
+            document.getElementById('modalEnrolledStudents').textContent = studentCount;
+            
+            // Store course ID for edit/delete operations
+            document.getElementById('courseDetailModal').setAttribute('data-course-id', courseId);
+            
+            // Show modal
+            document.getElementById('courseDetailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          } else {
+            alert('Course not found');
+          }
+        }
+
+       function closeCourseDetail() {
+         document.getElementById("courseDetailModal").classList.add("hidden");
+         document.body.style.overflow = "auto";
+       }
+
+       // Course management functions
+       function editCourse(courseId) {
+         // If courseId is not provided, get it from the modal
+         if (!courseId) {
+           courseId = document.getElementById('courseDetailModal').getAttribute('data-course-id');
+         }
+         window.location.href = `/instructor/courses/${courseId}/edit`;
+       }
+
+
+       function deleteCourse(courseId, courseTitle) {
+         // If courseId is not provided, get it from the modal
+         if (!courseId) {
+           courseId = document.getElementById('courseDetailModal').getAttribute('data-course-id');
+           courseTitle = document.getElementById('modalCourseTitle').textContent;
+         }
+         
+         if (confirm(`Are you sure you want to delete the course "${courseTitle}"? This action cannot be undone.`)) {
+           fetch(`/instructor/courses/${courseId}`, {
+             method: 'DELETE',
+             headers: {
+               'Content-Type': 'application/json'
+             }
+           })
+           .then(response => response.json())
+           .then(data => {
+             if (data.success) {
+               alert('Course deleted successfully!');
+               // Reload the page to refresh the course list
+               window.location.reload();
+             } else {
+               alert('Error deleting course: ' + data.message);
+             }
+           })
+           .catch(error => {
+             console.error('Error deleting course:', error);
+             alert('Error deleting course. Please try again.');
+           });
+         }
+       }
+
+       // Close modals when clicking outside
+       document
+         .getElementById("courseDetailModal")
+         .addEventListener("click", function (e) {
+           if (e.target === this) {
+             closeCourseDetail();
+           }
+         });
+
+     </script>

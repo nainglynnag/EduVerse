@@ -1,0 +1,631 @@
+<!-- Students Management Content -->
+<div id="studentsContent">
+  <!-- Page Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-gray-800">My Students</h2>
+      <p class="text-gray-600 mt-1">Manage and view all students enrolled in your courses</p>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-sm">Total Students</p>
+          <p class="text-3xl font-bold text-purple-600"><%= students ? students.length : 0 %></p>
+        </div>
+        <div class="bg-purple-100 p-3 rounded-full">
+          <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-sm">Total Enrollments</p>
+          <p class="text-3xl font-bold text-purple-600"><%= totalEnrollments || 0 %></p>
+        </div>
+        <div class="bg-purple-100 p-3 rounded-full">
+          <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-gray-600 text-sm">Avg. Courses/Student</p>
+          <p class="text-3xl font-bold text-purple-600"><%= students && students.length > 0 ? (totalEnrollments / students.length).toFixed(1) : 0 %></p>
+        </div>
+        <div class="bg-purple-100 p-3 rounded-full">
+          <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-lg mb-8">
+    <div class="flex flex-col gap-4">
+      <!-- Search Input -->
+      <div class="w-full">
+        <input 
+          type="text" 
+          id="searchInput"
+          placeholder="Search students by name or email..." 
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base"
+        >
+      </div>
+      
+      <!-- Filters Row -->
+      <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <div class="flex-1">
+          <select id="courseFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base">
+            <option value="">All Courses</option>
+            <% if (courses && courses.length > 0) { %>
+              <% courses.forEach(course => { %>
+                <option value="<%= course.title %>"><%= course.title %></option>
+              <% }); %>
+            <% } %>
+          </select>
+        </div>
+        <div class="flex-1">
+          <select id="sortFilter" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-base">
+            <option value="name">Sort by Name</option>
+            <option value="courses">Sort by Courses</option>
+            <option value="joined">Sort by Join Date</option>
+            <option value="study-time">Sort by Study Time</option>
+            <option value="lessons">Sort by Lessons Completed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students List -->
+  <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div class="p-6 border-b border-gray-200">
+      <h3 class="text-lg font-semibold text-gray-800">Student List</h3>
+    </div>
+
+    <div id="studentsList" class="divide-y divide-gray-200">
+      <% if (students && students.length > 0) { %>
+        <% students.forEach(student => { %>
+          <div class="p-6 hover:bg-gray-50 transition-colors student-card" 
+               data-name="<%= student.name.toLowerCase() %>" 
+               data-email="<%= student.email.toLowerCase() %>"
+               data-courses="<%= student.enrolled_courses.toLowerCase() %>"
+               data-lessons-completed="<%= student.lessons_completed || 0 %>"
+               data-study-time="<%= student.completed_lessons_time || 0 %>"
+               data-joined-date="<%= student.joined_date %>">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span class="text-white font-semibold text-lg"><%= student.name.charAt(0).toUpperCase() %></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-semibold text-gray-800 text-lg truncate"><%= student.name %></h4>
+                  <p class="text-gray-600 truncate"><%= student.email %></p>
+                  <p class="text-sm text-gray-500">Joined <%= new Date(student.joined_date).toLocaleDateString() %></p>
+                </div>
+              </div>
+              
+              <div class="text-right sm:text-right">
+                <% 
+                  const lessonsCompleted = student.lessons_completed || 0;
+                  const totalLessons = Math.floor((student.total_study_time_minutes || 0) / 30); // Estimate total lessons (30 min per lesson)
+                  const isCompleted = lessonsCompleted >= totalLessons && totalLessons > 0;
+                  const isStillLearning = lessonsCompleted > 0 && !isCompleted;
+                  const isNotStarted = lessonsCompleted === 0;
+                %>
+                
+                <% if (isCompleted) { %>
+                  <div class="mb-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                      </svg>
+                      All Lessons Completed
+                    </span>
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    <div class="flex items-center justify-end space-x-1">
+                      <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-medium">
+                        <%= Math.floor((student.completed_lessons_time || 0) / 60) %>h <%= (student.completed_lessons_time || 0) % 60 %>m
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                      Total: <%= Math.floor((student.total_study_time_minutes || 0) / 60) %>h <%= (student.total_study_time_minutes || 0) % 60 %>m
+                    </div>
+                  </div>
+                <% } else if (isStillLearning) { %>
+                  <div class="mb-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      Still Learning
+                    </span>
+                  </div>
+                  <div class="text-sm text-gray-600">
+                    <div class="flex items-center justify-end space-x-1">
+                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-medium">
+                        <%= Math.floor((student.completed_lessons_time || 0) / 60) %>h <%= (student.completed_lessons_time || 0) % 60 %>m
+                      </span>
+                    </div>
+                    <div class="text-xs text-gray-500 mt-1">
+                      <%= lessonsCompleted %>/<%= totalLessons %> lessons • <%= Math.floor((student.total_study_time_minutes || 0) / 60) %>h <%= (student.total_study_time_minutes || 0) % 60 %>m total
+                    </div>
+                  </div>
+                <% } else { %>
+                  <div class="mb-2">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      Not Started
+                    </span>
+                  </div>
+                  <div class="text-sm text-gray-500">
+                    <div class="flex items-center justify-end space-x-1">
+                      <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                      </svg>
+                      <span class="font-medium">
+                        <%= Math.floor((student.total_study_time_minutes || 0) / 60) %>h <%= (student.total_study_time_minutes || 0) % 60 %>m available
+                      </span>
+                    </div>
+                  </div>
+                <% } %>
+                <p class="text-sm text-gray-600 max-w-xs truncate mt-2" title="<%= student.enrolled_courses %>">
+                  <%= student.enrolled_courses %>
+                </p>
+              </div>
+            </div>
+            
+            <!-- Course Details (Expandable) -->
+            <div class="mt-4 pt-4 border-t border-gray-100">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h5 class="font-medium text-gray-700">Enrolled Courses:</h5>
+                <button onclick="toggleCourseDetails(this)" class="text-purple-600 hover:text-purple-700 text-sm font-medium self-start sm:self-auto">
+                  Show Details
+                </button>
+              </div>
+              <div class="course-details hidden mt-3">
+                <div class="space-y-4">
+                  <% const courseList = student.enrolled_courses.split(', '); %>
+                  <% courseList.forEach((course, index) => { %>
+                    <% 
+                      // Calculate progress for this course based on actual lesson completion
+                      const courseLessonsCompleted = Math.floor((student.lessons_completed || 0) / courseList.length);
+                      const courseTotalLessons = Math.floor((student.total_study_time_minutes || 0) / courseList.length / 30);
+                      const progressPercent = courseTotalLessons > 0 ? Math.min(100, Math.round((courseLessonsCompleted / courseTotalLessons) * 100)) : 0;
+                      const isCompleted = progressPercent >= 100;
+                      const isInProgress = progressPercent > 0 && progressPercent < 100;
+                    %>
+                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-3 gap-3">
+                        <div class="flex items-center space-x-3">
+                          <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div class="min-w-0 flex-1">
+                            <h6 class="font-semibold text-gray-800 text-sm truncate"><%= course %></h6>
+                            <p class="text-xs text-gray-500">Course Progress</p>
+                          </div>
+                        </div>
+                        <div class="text-right sm:text-right">
+                          <div class="flex items-center space-x-2">
+                            <span class="text-lg font-bold text-purple-600"><%= Math.round(progressPercent) %>%</span>
+                            <% if (isCompleted) { %>
+                              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                Completed
+                              </span>
+                            <% } else if (isInProgress) { %>
+                              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                In Progress
+                              </span>
+                            <% } else { %>
+                              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                Not Started
+                              </span>
+                            <% } %>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Progress Bar -->
+                      <div class="relative">
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+                          <div class="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden progress-bar"
+                               data-width="<%= progressPercent %>">
+                            <% if (isCompleted) { %>
+                              <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600"></div>
+                              <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 animate-pulse"></div>
+                            <% } else if (isInProgress) { %>
+                              <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                              <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500 animate-pulse"></div>
+                            <% } else { %>
+                              <div class="absolute inset-0 bg-gradient-to-r from-gray-300 to-gray-400"></div>
+                            <% } %>
+                          </div>
+                        </div>
+                        
+                        <!-- Progress percentage indicator -->
+                        <% if (progressPercent > 0) { %>
+                          <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+                            <span class="text-xs font-semibold text-white drop-shadow-sm">
+                              <%= Math.round(progressPercent) %>%
+                            </span>
+                          </div>
+                        <% } %>
+                      </div>
+                      
+                      <!-- Course stats -->
+                      <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-3 text-xs text-gray-500 gap-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4">
+                          <span class="flex items-center space-x-1">
+                            <svg class="w-3 h-3 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                            </svg>
+                            <span class="truncate">Est. Time: ~<%= Math.floor((student.total_study_time_minutes || 0) / courseList.length / 60) %>h <%= Math.floor(((student.total_study_time_minutes || 0) / courseList.length) % 60) %>m</span>
+                          </span>
+                          <% 
+                            const courseIsCompleted = courseLessonsCompleted >= courseTotalLessons && courseTotalLessons > 0;
+                            const courseIsStillLearning = courseLessonsCompleted > 0 && !courseIsCompleted;
+                          %>
+                          
+                          <% if (courseIsCompleted) { %>
+                            <span class="flex items-center space-x-1">
+                              <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                              </svg>
+                              <span>All lessons completed</span>
+                            </span>
+                          <% } else if (courseIsStillLearning) { %>
+                            <span class="flex items-center space-x-1">
+                              <svg class="w-3 h-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                              </svg>
+                              <span>Still learning: <%= courseLessonsCompleted %>/<%= courseTotalLessons %> lessons</span>
+                            </span>
+                          <% } else { %>
+                            <span class="flex items-center space-x-1">
+                              <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                              </svg>
+                              <span>Not started yet</span>
+                            </span>
+                          <% } %>
+                        </div>
+                        <div class="text-right">
+                          <button onclick="showCourseDetails('<%= course %>', '<%= student.name %>', '<%= courseLessonsCompleted %>', '<%= courseTotalLessons %>', '<%= progressPercent %>')" 
+                                  class="text-purple-600 hover:text-purple-700 font-medium transition-colors cursor-pointer">
+                            View Details →
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <!-- Empty State -->
+        <div class="text-center py-12">
+          <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
+          </svg>
+          <h3 class="text-lg font-semibold text-gray-800 mb-2">No Students Yet</h3>
+          <p class="text-gray-600 mb-4">Students will appear here once they enroll in your courses.</p>
+          <a href="/instructor/courses" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all">
+            View My Courses
+          </a>
+        </div>
+      <% } %>
+    </div>
+    
+    <!-- Pagination -->
+    <% if (pagination && pagination.totalPages > 1) { %>
+    <div class="mt-auto px-6 py-4 border-t border-gray-200 bg-gray-50">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+
+        <!-- Items per page -->
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Show</span>
+          <select
+            onchange="location.href='?page=1&limit='+this.value"
+            class="px-3 py-1 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          >
+            <option value="10" <%= pagination.limit == 10 ? 'selected' : '' %>>10</option>
+            <option value="20" <%= pagination.limit == 20 ? 'selected' : '' %>>20</option>
+            <option value="50" <%= pagination.limit == 50 ? 'selected' : '' %>>50</option>
+            <option value="100" <%= pagination.limit == 100 ? 'selected' : '' %>>100</option>
+          </select>
+          <span class="text-sm text-gray-600">per page</span>
+        </div>
+
+        <!-- Pagination Numbers -->
+        <div class="flex items-center space-x-2">
+          <!-- Prev Button -->
+          <button
+            onclick="location.href='?page=<%= pagination.currentPage - 1 %>&limit=<%= pagination.limit %>'"
+            class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+              <%= pagination.currentPage <= 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-purple-50 text-purple-600 hover:bg-purple-100' %>"
+            <%= pagination.currentPage <= 1 ? 'disabled' : '' %>>
+            Prev
+          </button>
+
+          <!-- Page Numbers -->
+          <div class="flex items-center space-x-1">
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+              <button
+                onclick="location.href='?page=<%= i %>&limit=<%= pagination.limit %>'"
+                class="w-10 h-10 text-sm font-medium rounded-xl transition-all duration-200
+                  <%= pagination.currentPage === i ? 'bg-purple-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-purple-50 hover:text-purple-600' %>">
+                <%= i %>
+              </button>
+            <% } %>
+          </div>
+
+          <!-- Next Button -->
+          <button
+            onclick="location.href='?page=<%= pagination.currentPage + 1 %>&limit=<%= pagination.limit %>'"
+            class="flex items-center px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200
+              <%= pagination.currentPage >= pagination.totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-purple-50 text-purple-600 hover:bg-purple-100' %>"
+            <%= pagination.currentPage >= pagination.totalPages ? 'disabled' : '' %>>
+            Next
+          </button>
+          
+        </div>
+
+        <!-- Jump to Page -->
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Go to</span>
+          <input
+            type="number"
+            min="1"
+            max="<%= pagination.totalPages %>"
+            value="<%= pagination.currentPage %>"
+            onchange="location.href='?page='+this.value+'&limit=<%= pagination.limit %>'"
+            class="w-16 px-2 py-1 text-sm text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          />
+        </div>
+
+      </div>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  // Search and filter functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Initialize progress bars
+    const progressBars = document.querySelectorAll('.progress-bar');
+    progressBars.forEach(bar => {
+      const width = bar.getAttribute('data-width');
+      bar.style.width = width + '%';
+    });
+    const searchInput = document.getElementById('searchInput');
+    const courseFilter = document.getElementById('courseFilter');
+    const sortFilter = document.getElementById('sortFilter');
+    const studentCards = document.querySelectorAll('.student-card');
+
+    function filterStudents() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedCourse = courseFilter.value.toLowerCase();
+
+      studentCards.forEach(card => {
+        const name = card.dataset.name;
+        const email = card.dataset.email;
+        const courses = card.dataset.courses;
+        
+        const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+        const matchesCourse = !selectedCourse || courses.includes(selectedCourse);
+        
+        if (matchesSearch && matchesCourse) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function sortStudents() {
+      const sortBy = sortFilter.value;
+      const studentsList = document.getElementById('studentsList');
+      const cards = Array.from(studentCards);
+
+      cards.sort((a, b) => {
+        switch(sortBy) {
+          case 'name':
+            return a.dataset.name.localeCompare(b.dataset.name);
+          case 'courses':
+            // Extract course count from the enrolled courses text
+            const aCoursesText = a.dataset.courses;
+            const bCoursesText = b.dataset.courses;
+            const aCourses = aCoursesText ? aCoursesText.split(',').length : 0;
+            const bCourses = bCoursesText ? bCoursesText.split(',').length : 0;
+            return bCourses - aCourses;
+          case 'study-time':
+            // Use data attribute for more reliable sorting
+            const aStudyTime = parseInt(a.dataset.studyTime) || 0;
+            const bStudyTime = parseInt(b.dataset.studyTime) || 0;
+            return bStudyTime - aStudyTime;
+          case 'lessons':
+            // Use data attribute for more reliable sorting
+            const aLessons = parseInt(a.dataset.lessonsCompleted) || 0;
+            const bLessons = parseInt(b.dataset.lessonsCompleted) || 0;
+            return bLessons - aLessons;
+          case 'joined':
+            // Sort by joined date (newest first)
+            const aDate = new Date(a.dataset.joinedDate);
+            const bDate = new Date(b.dataset.joinedDate);
+            return bDate - aDate;
+          default:
+            return 0;
+        }
+      });
+
+      cards.forEach(card => studentsList.appendChild(card));
+    }
+
+    function extractLessonCount(text) {
+      // Extract number from text like "2 lessons completed" or "Still Learning"
+      const match = text.match(/(\d+)/);
+      return match ? parseInt(match[1]) : 0;
+    }
+
+    function parseTimeToMinutes(timeString) {
+      const match = timeString.match(/(\d+)h\s*(\d+)m/);
+      if (match) {
+        return parseInt(match[1]) * 60 + parseInt(match[2]);
+      }
+      return 0;
+    }
+
+    searchInput.addEventListener('input', filterStudents);
+    courseFilter.addEventListener('change', filterStudents);
+    sortFilter.addEventListener('change', sortStudents);
+  });
+
+  // Toggle course details
+  function toggleCourseDetails(button) {
+    const details = button.parentElement.nextElementSibling;
+    const isHidden = details.classList.contains('hidden');
+    
+    if (isHidden) {
+      details.classList.remove('hidden');
+      button.textContent = 'Hide Details';
+    } else {
+      details.classList.add('hidden');
+      button.textContent = 'Show Details';
+    }
+  }
+
+  // Show detailed course information
+  function showCourseDetails(courseName, studentName, lessonsCompleted, totalLessons, progressPercent) {
+    // Create modal content
+    const modalContent = `
+      <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onclick="closeCourseModal()">
+        <div class="bg-white rounded-2xl p-4 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+          <div class="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Course Details</h3>
+            <button onclick="closeCourseModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+          
+          <div class="space-y-6">
+            <!-- Course Info -->
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-4 sm:p-6 border border-purple-100">
+              <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-4">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                  </svg>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h4 class="text-lg sm:text-xl font-bold text-gray-800 truncate">${courseName}</h4>
+                  <p class="text-gray-600 truncate">Student: ${studentName}</p>
+                </div>
+              </div>
+              
+              <!-- Progress Bar -->
+              <div class="mb-4">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-sm font-medium text-gray-700">Course Progress</span>
+                  <span class="text-lg font-bold text-purple-600">${progressPercent}%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-1000 ease-out relative overflow-hidden" style="width: ${progressPercent}%">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-500"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+              <div class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 text-center">
+                <div class="text-xl sm:text-2xl font-bold text-blue-600">${lessonsCompleted}</div>
+                <div class="text-xs sm:text-sm text-gray-600">Lessons Completed</div>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 text-center">
+                <div class="text-xl sm:text-2xl font-bold text-purple-600">${totalLessons}</div>
+                <div class="text-xs sm:text-sm text-gray-600">Total Lessons</div>
+              </div>
+              <div class="bg-white border border-gray-200 rounded-lg p-3 sm:p-4 text-center">
+                <div class="text-xl sm:text-2xl font-bold text-green-600">${Math.round((lessonsCompleted / totalLessons) * 100)}%</div>
+                <div class="text-xs sm:text-sm text-gray-600">Completion Rate</div>
+              </div>
+            </div>
+            
+            <!-- Additional Info -->
+            <div class="bg-gray-50 rounded-lg p-4 sm:p-6">
+              <h5 class="font-semibold text-gray-800 mb-3">Course Information</h5>
+              <div class="space-y-2 text-sm text-gray-600">
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                  <span>Status:</span>
+                  <span class="font-medium">${progressPercent >= 100 ? 'Completed' : progressPercent > 0 ? 'In Progress' : 'Not Started'}</span>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                  <span>Estimated Duration:</span>
+                  <span class="font-medium">~${Math.floor(totalLessons * 30 / 60)}h ${totalLessons * 30 % 60}m</span>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-0">
+                  <span>Time Spent:</span>
+                  <span class="font-medium">~${Math.floor(lessonsCompleted * 30 / 60)}h ${lessonsCompleted * 30 % 60}m</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalContent);
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Close course modal
+  function closeCourseModal() {
+    const modal = document.querySelector('.fixed.inset-0.bg-black.bg-opacity-50');
+    if (modal) {
+      modal.remove();
+      document.body.style.overflow = 'auto';
+    }
+  }
+</script>
