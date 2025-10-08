@@ -282,7 +282,7 @@
         <div class="space-y-3">
           <button
             onclick="window.location.href='/admin/edit-course/<%= course.id %>' "
-            class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
           >
             Edit Course
           </button>
@@ -292,7 +292,7 @@
             Duplicate Course
           </button> -->
           <button
-            class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors btn-delete"
+            class="w-full bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer btn-delete"
             data-action="/admin/delete-course/<%= course.id %>"
             data-confirm-message="Are you sure you want to delete <%= course.title %> course? This action cannot be undone."
           >
